@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     prompt:
       `${historyText}Write 1-2 sentences about a Death Note timeline where Kira is not an arrogant prick, and makes no obvious and stupid mistakes. And remains undetected by simply not challenging anyone. He still continues his life though. School and chores. And careful killings in between, all of which wont harm his anonymity. Avoid modern pop-culture references. Avoid opening with 'In this timeline'. Output a single paragraph only.`,
     temperature: 0.6,
-    maxTokens: 120,
+    maxOutputTokens: 120,
   });
 
   return result.toTextStreamResponse();
