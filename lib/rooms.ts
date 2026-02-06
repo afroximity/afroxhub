@@ -37,8 +37,12 @@ export const getRoomManifest = cache(
   },
 );
 
+type ComponentModule = {
+  default?: LoadedComponent;
+};
+
 function extractComponent(
-  imported: { default?: LoadedComponent } | LoadedComponent,
+  imported: ComponentModule | LoadedComponent,
 ): LoadedComponent {
   if (typeof imported === "function") {
     return imported as LoadedComponent;
@@ -50,5 +54,5 @@ export async function loadRoomComponent(
   manifest: RoomManifest,
 ): Promise<LoadedComponent> {
   const imported = await manifest.component();
-  return extractComponent(imported as ManifestModule | LoadedComponent);
+  return extractComponent(imported as ComponentModule | LoadedComponent);
 }
