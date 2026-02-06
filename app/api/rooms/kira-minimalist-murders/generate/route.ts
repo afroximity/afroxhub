@@ -1,15 +1,37 @@
 import { NextResponse } from "next/server";
 import { streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { rateLimit, withRateLimitHeaders } from "@/lib/rate-limit";
 
 const DEFAULT_MODEL = "gpt-4o-mini";
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 60_000;
 
 export async function POST(request: Request) {
+  const limit = rateLimit(request, {
+    max: RATE_LIMIT_MAX,
+    windowMs: RATE_LIMIT_WINDOW_MS,
+  });
+  if (!limit.ok) {
+    return withRateLimitHeaders(
+      NextResponse.json(
+        { error: "Rate limit exceeded. Try again soon." },
+        { status: 429 },
+      ),
+      limit,
+      RATE_LIMIT_MAX,
+    );
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
-      { error: "Missing OPENAI_API_KEY environment variable." },
-      { status: 500 },
+    return withRateLimitHeaders(
+      NextResponse.json(
+        { error: "Missing OPENAI_API_KEY environment variable." },
+        { status: 500 },
+      ),
+      limit,
+      RATE_LIMIT_MAX,
     );
   }
 
@@ -43,5 +65,12 @@ export async function POST(request: Request) {
     maxOutputTokens: 120,
   });
 
-  return result.toTextStreamResponse();
+  const response = result.toTextStreamResponse();
+  response.headers.set("x-ratelimit-limit", String(RATE_LIMIT_MAX));
+  response.headers.set("x-ratelimit-remaining", String(limit.remaining));
+  response.headers.set(
+    "x-ratelimit-reset",
+    String(Math.ceil(limit.resetAt / 1000)),
+  );
+  return response;
 }

@@ -1,95 +1,27 @@
-import fs from "fs";
-import path from "path";
-import { pathToFileURL } from "url";
-import { createHash } from "crypto";
 import { cache } from "react";
-import ts from "typescript";
 import type { LoadedComponent, ToolManifest } from "@/types/content";
+import { toolManifestRegistry } from "@/content/tools/manifestRegistry";
 
-const TOOLS_DIR = path.join(process.cwd(), "content/tools");
-const MANIFEST_FILENAMES = ["index.ts", "index.tsx", "index.js"];
-const TOOL_ENTRY_FILENAMES = ["Tool.tsx", "Tool.ts", "Tool.jsx", "Tool.js"];
-const CACHE_DIR = path.join(process.cwd(), ".next", "cache", "afroxhub", "tools");
+type ManifestModule = {
+  default?: ToolManifest;
+};
 
-async function findManifestPath(slug: string) {
-  for (const filename of MANIFEST_FILENAMES) {
-    const candidate = path.join(TOOLS_DIR, slug, filename);
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  return null;
-}
-
-async function transpileIfNeeded(filePath: string): Promise<string> {
-  const ext = path.extname(filePath);
-  if (ext !== ".ts" && ext !== ".tsx") return filePath;
-
-  const source = await fs.promises.readFile(filePath, "utf8");
-  const { outputText } = ts.transpileModule(source, {
-    compilerOptions: {
-      module: ts.ModuleKind.ESNext,
-      jsx: ts.JsxEmit.ReactJSX,
-      esModuleInterop: true,
-      target: ts.ScriptTarget.ES2020,
-    },
-    fileName: filePath,
-  });
-
-  const hash = createHash("sha1").update(filePath + source).digest("hex");
-  await fs.promises.mkdir(CACHE_DIR, { recursive: true });
-  const compiledPath = path.join(
-    CACHE_DIR,
-    `${path.basename(filePath, ext)}-${hash}.mjs`,
-  );
-  await fs.promises.writeFile(compiledPath, outputText, "utf8");
-  return compiledPath;
-}
-
-async function dynamicImport(modulePath: string) {
-  const compiledPath = await transpileIfNeeded(modulePath);
+async function importManifest(
+  loader: () => Promise<ManifestModule | ToolManifest>,
+): Promise<ToolManifest | null> {
   try {
-    return import(/* webpackIgnore: true */ pathToFileURL(compiledPath).href);
+    const mod = await loader();
+    return (mod as ManifestModule).default ?? (mod as ToolManifest);
   } catch (error) {
-    console.error(`Failed to import module at ${modulePath}`, error);
-    throw error;
-  }
-}
-
-async function findEntryComponent(baseDir: string) {
-  for (const filename of TOOL_ENTRY_FILENAMES) {
-    const candidate = path.join(baseDir, filename);
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  return null;
-}
-
-async function importManifest(filePath: string): Promise<ToolManifest | null> {
-  try {
-    const mod = await dynamicImport(filePath);
-    const manifest = mod.default as ToolManifest;
-    const baseDir = path.dirname(filePath);
-    const entryPath = await findEntryComponent(baseDir);
-    if (entryPath) {
-      manifest.component = () => dynamicImport(entryPath);
-    }
-    return manifest;
-  } catch (error) {
-    console.error(`Failed to import tool manifest at ${filePath}`, error);
+    console.error("Failed to import tool manifest", error);
     return null;
   }
 }
 
 export const listTools = cache(async (): Promise<ToolManifest[]> => {
-  const entries = await fs.promises
-    .readdir(TOOLS_DIR, { withFileTypes: true })
-    .catch(() => []);
-
   const manifests: ToolManifest[] = [];
-
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const manifestPath = await findManifestPath(entry.name);
-    if (!manifestPath) continue;
-    const manifest = await importManifest(manifestPath);
+  for (const loader of Object.values(toolManifestRegistry)) {
+    const manifest = await importManifest(loader);
     if (manifest) manifests.push(manifest);
   }
 
@@ -98,18 +30,15 @@ export const listTools = cache(async (): Promise<ToolManifest[]> => {
 
 export const getToolManifest = cache(
   async (slug: string): Promise<ToolManifest | null> => {
-    const manifestPath = await findManifestPath(slug);
-    if (!manifestPath) return null;
-    return importManifest(manifestPath);
+    const loader =
+      toolManifestRegistry[slug as keyof typeof toolManifestRegistry];
+    if (!loader) return null;
+    return importManifest(loader);
   },
 );
 
-type ManifestModule = {
-  default?: LoadedComponent;
-};
-
 function extractComponent(
-  imported: ManifestModule | LoadedComponent,
+  imported: { default?: LoadedComponent } | LoadedComponent,
 ): LoadedComponent {
   if (typeof imported === "function") {
     return imported as LoadedComponent;
