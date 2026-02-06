@@ -87,7 +87,7 @@ export default function AutophagyTrackerTool() {
     setLastMealISO(value ? new Date(value).toISOString() : null);
   }
 
-  function setNow() {
+  function handleSetNow() {
     const now = new Date();
     handleInputChange(toInputValue(now));
   }
@@ -116,7 +116,7 @@ export default function AutophagyTrackerTool() {
           />
         </label>
         <button
-          onClick={setNow}
+          onClick={handleSetNow}
           className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
         >
           Set to now
