@@ -176,6 +176,7 @@ export default function AllocationReviewRoom() {
           sessionId?: string;
           scenarioIndex?: number;
           log?: LogEntry[];
+          contextRequests?: number;
           terminatedAt?: string | null;
         };
         if (parsed.sessionId) setSessionId(parsed.sessionId);
