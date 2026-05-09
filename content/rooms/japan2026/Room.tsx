@@ -894,7 +894,7 @@ export default function Japan2026Room() {
 
   // ── MAIN ─────────────────────────────────────────────────────────────────
   return (
-    <div style={{ fontFamily: C.sans, minHeight: "100vh", background: C.bg, color: C.ink, WebkitFontSmoothing: "antialiased" }}>
+    <div className="jp-root" style={{ fontFamily: C.sans, minHeight: "100vh", background: C.bg, color: C.ink, WebkitFontSmoothing: "antialiased", overflowX: "hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -902,23 +902,252 @@ export default function Japan2026Room() {
         a { color: inherit; text-decoration: none; }
         button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
         input, textarea { font: inherit; color: inherit; }
+        html { -webkit-text-size-adjust: 100%; }
+
+        /* ─────── MOBILE (≤ 760px) ─────────────────────────────────────── */
+        @media (max-width: 760px) {
+          .jp-root [data-r="header"]            { padding: 12px 16px !important; gap: 12px !important; }
+          .jp-root [data-r="header-title"]      { font-size: 15px !important; }
+          .jp-root [data-r="header-right"]      { gap: 12px !important; }
+          .jp-root [data-r="header-cd"]         { font-size: 13px !important; }
+          .jp-root [data-r="header-user-btn"]   { padding: 4px 10px 4px 4px !important; font-size: 11px !important; }
+          .jp-root [data-r="header-user-btn"] img { width: 24px !important; height: 24px !important; }
+
+          .jp-root [data-r="tabs-nav"]          { top: 53px !important; -webkit-overflow-scrolling: touch !important; }
+          .jp-root [data-r="tabs-inner"]        { padding: 0 16px !important; gap: 0 !important; }
+          .jp-root [data-r="tabs-inner"] button { padding: 14px 12px 12px !important; letter-spacing: .12em !important; }
+
+          .jp-root [data-r="page"]              { padding: 0 16px !important; }
+
+          /* hero blobs — keep but pull off-screen so they don't push layout */
+          .jp-root [data-r="hero-blob"]         { width: 360px !important; height: 360px !important; right: -180px !important; opacity: .05 !important; }
+
+          /* Özet hero */
+          .jp-root [data-r="ozet-hero"]         { padding: 56px 0 48px !important; }
+          .jp-root [data-r="ozet-hero"] h1      { font-size: clamp(64px, 16vw, 96px) !important; margin-bottom: 24px !important; line-height: .95 !important; }
+          .jp-root [data-r="ozet-hero"] p       { font-size: 17px !important; line-height: 1.45 !important; }
+          .jp-root [data-r="ozet-hero-eyebrow"] { margin-bottom: 24px !important; }
+
+          /* Özet stat strip 4 → 2 cols */
+          .jp-root [data-r="stats-4"]           { grid-template-columns: 1fr 1fr !important; row-gap: 28px !important; column-gap: 18px !important; padding-top: 28px !important; margin-bottom: 56px !important; }
+          .jp-root [data-r="stats-4"] > div     { padding: 0 !important; border-right: none !important; }
+          .jp-root [data-r="stats-4"] > div [data-r="stat-value"] { font-size: 38px !important; }
+
+          /* Özet body — itinerary + activity */
+          .jp-root [data-r="ozet-body"]         { grid-template-columns: 1fr !important; gap: 40px !important; padding-top: 48px !important; margin-bottom: 56px !important; }
+          .jp-root [data-r="ozet-itin-row"]     { grid-template-columns: 88px 1fr !important; gap: 16px !important; padding: 16px 0 !important; }
+          .jp-root [data-r="ozet-itin-row"] [data-r="ozet-itin-date"] { font-size: 17px !important; }
+          .jp-root [data-r="ozet-itin-row"] h4  { font-size: 17px !important; }
+          .jp-root [data-r="ozet-itin-row"] p   { font-size: 13px !important; }
+          .jp-root [data-r="ozet-footer"]       { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; padding-top: 32px !important; padding-bottom: 48px !important; }
+
+          /* TabHead generic */
+          .jp-root [data-r="tabhead"]           { grid-template-columns: 1fr !important; gap: 12px !important; padding: 48px 0 24px !important; align-items: start !important; }
+          .jp-root [data-r="tabhead"] h1        { font-size: clamp(40px, 12vw, 60px) !important; }
+          .jp-root [data-r="tabhead"] p         { text-align: left !important; max-width: none !important; font-size: 16px !important; }
+
+          /* DetSection */
+          .jp-root [data-r="det-section"]       { padding: 32px 0 !important; }
+          .jp-root [data-r="det-section"] > h2  { font-size: 24px !important; }
+          .jp-root [data-r="det-section"] > p   { font-size: 14px !important; margin-bottom: 24px !important; }
+
+          /* Eyebrow */
+          .jp-root [data-r="eyebrow"]           { margin-bottom: 18px !important; gap: 10px !important; }
+
+          /* Generic 2-col stack */
+          .jp-root [data-r="stack-2"]           { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .jp-root [data-r="stack-3"]           { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+          /* Auto-fill grids tighten */
+          .jp-root [data-r="auto-grid-280"]     { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .jp-root [data-r="auto-grid-260"]     { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .jp-root [data-r="auto-grid-320"]     { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+          /* InfoGrid */
+          .jp-root [data-r="info-grid"]         { grid-template-columns: 1fr !important; gap: 0 !important; padding-top: 24px !important; margin-top: 24px !important; }
+
+          /* IR row tighten */
+          .jp-root [data-r="ir-row"]            { gap: 12px !important; padding: 12px 0 !important; font-size: 13px !important; }
+          .jp-root [data-r="ir-row"] > span:first-child { font-size: 11px !important; }
+
+          /* Day row */
+          .jp-root [data-r="day-row"]           { grid-template-columns: 1fr !important; gap: 12px !important; padding: 24px 0 !important; position: relative !important; }
+          .jp-root [data-r="day-date"]          { position: static !important; padding-right: 36px !important; }
+          .jp-root [data-r="day-date-display"]  { font-size: 44px !important; }
+          .jp-root [data-r="day-date-display"] + div { margin-top: 8px !important; }
+          .jp-root [data-r="day-toggle"]        { position: absolute !important; top: 24px !important; right: 0 !important; font-size: 22px !important; padding-top: 0 !important; }
+          .jp-root [data-r="event-view"]        { grid-template-columns: 64px 1fr !important; gap: 12px !important; padding: 12px 0 !important; }
+          .jp-root [data-r="event-view"] > div:first-child { font-size: 10px !important; letter-spacing: .14em !important; }
+          .jp-root [data-r="event-view"] > div:last-child  { font-size: 14px !important; }
+          .jp-root [data-r="event-edit"]        { grid-template-columns: 16px 64px 1fr 22px !important; gap: 8px !important; }
+
+          /* Flight leg → stack vertical */
+          .jp-root [data-r="flight-leg"]        { grid-template-columns: 1fr !important; gap: 16px !important; padding: 24px 0 !important; }
+          .jp-root [data-r="flight-leg-mid"]    { min-width: 0 !important; flex-direction: row !important; gap: 14px !important; padding: 8px 0 !important; }
+          .jp-root [data-r="flight-leg-mid"] > div:nth-child(2) { flex: 1 !important; }
+          .jp-root [data-r="flight-leg"] [data-r="flight-end"] { text-align: left !important; }
+          .jp-root [data-r="flight-leg"] [data-r="flight-time"] { font-size: 36px !important; }
+          .jp-root [data-r="flight-leg"] [data-r="flight-name"] { font-size: 12px !important; }
+
+          /* Hotel image */
+          .jp-root [data-r="hotel-img"]         { max-height: 220px !important; margin-bottom: 16px !important; }
+
+          /* Phrasebook intro */
+          .jp-root [data-r="phrase-intro"]      { font-size: 14px !important; margin-bottom: 24px !important; }
+
+          /* Checklist toolbar */
+          .jp-root [data-r="cl-toolbar"]        { grid-template-columns: 1fr !important; gap: 12px !important; padding: 20px 0 !important; }
+          .jp-root [data-r="cl-toolbar"] [data-r="cl-toolbar-actions"] { justify-content: space-between !important; }
+          .jp-root [data-r="cl-toolbar"] input  { font-size: 16px !important; padding: 10px 0 !important; }
+
+          /* Checklist section header — drop the count column inline, move to title row */
+          .jp-root [data-r="cl-sec-head"]       { grid-template-columns: auto 1fr auto !important; gap: 12px !important; align-items: center !important; }
+          .jp-root [data-r="cl-sec-head"] [data-r="cl-sec-num"]   { width: auto !important; font-size: 12px !important; }
+          .jp-root [data-r="cl-sec-head"] [data-r="cl-sec-title"] { font-size: 18px !important; }
+          .jp-root [data-r="cl-sec-head"] [data-r="cl-sec-count"] { display: none !important; }
+
+          /* Checklist body */
+          .jp-root [data-r="cl-sec-body"]       { margin-left: 0 !important; padding-left: 16px !important; margin-top: 18px !important; }
+          .jp-root [data-r="cl-item"]           { grid-template-columns: auto 1fr !important; gap: 12px !important; padding: 12px 0 !important; align-items: start !important; }
+          .jp-root [data-r="cl-item"] > div:nth-child(2) { font-size: 14px !important; }
+          .jp-root [data-r="cl-item-meta"]      { grid-column: 1 / -1 !important; padding-left: 30px !important; text-align: left !important; padding-top: 0 !important; font-size: 10px !important; }
+
+          /* Gelmişken hero */
+          .jp-root [data-r="gelmis-hero"]       { padding: 56px 0 36px !important; }
+          .jp-root [data-r="gelmis-hero"] h1    { font-size: clamp(48px, 14vw, 80px) !important; }
+          .jp-root [data-r="gelmis-hero"] p     { font-size: 17px !important; }
+          .jp-root [data-r="gelmis-hero"] [data-r="gelmis-hero-count"] { font-size: 52px !important; }
+          .jp-root [data-r="gelmis-hero"] [data-r="gelmis-hero-edit"]  { top: 16px !important; right: 0 !important; padding: 6px 12px !important; font-size: 10px !important; }
+
+          /* Gelmişken section head */
+          .jp-root [data-r="gelmis-head"]       { grid-template-columns: 1fr auto auto !important; gap: 14px !important; padding: 28px 0 16px !important; align-items: baseline !important; }
+          .jp-root [data-r="gelmis-head"] [data-r="gelmis-head-label"]  { display: none !important; }
+          .jp-root [data-r="gelmis-head"] h2    { font-size: clamp(32px, 9vw, 48px) !important; grid-column: 1 / -1 !important; line-height: 1.05 !important; }
+          .jp-root [data-r="gelmis-head"] [data-r="gelmis-head-count"]  { font-size: 22px !important; }
+          .jp-root [data-r="gelmis-head"] [data-r="gelmis-head-toggle"] { font-size: 22px !important; padding-top: 0 !important; }
+
+          /* Gelmişken item row */
+          .jp-root [data-r="gelmis-item"]       { grid-template-columns: auto 1fr !important; gap: 14px !important; padding: 14px 4px !important; align-items: start !important; }
+          .jp-root [data-r="gelmis-item"] > div:nth-child(2) { font-size: 15px !important; }
+          .jp-root [data-r="gelmis-item-meta"]  { grid-column: 1 / -1 !important; padding-left: 34px !important; text-align: left !important; }
+
+          .jp-root [data-r="gelmis-foot"]       { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+
+          /* Documents */
+          .jp-root [data-r="doc-pills"]         { gap: 6px !important; padding: 24px 0 12px !important; }
+          .jp-root [data-r="doc-pills"] button  { padding: 7px 12px !important; font-size: 10px !important; letter-spacing: .12em !important; }
+          .jp-root [data-r="doc-cat"]           { padding: 24px 0 !important; }
+          .jp-root [data-r="doc-card"]          { min-height: 0 !important; padding: 16px 18px !important; }
+
+          /* Phrasebook category pills */
+          .jp-root [data-r="phrase-pills"]      { gap: 6px !important; padding: 24px 0 4px !important; }
+          .jp-root [data-r="phrase-pills"] button { padding: 7px 12px !important; font-size: 10px !important; letter-spacing: .12em !important; }
+
+          /* Acil */
+          .jp-root [data-r="emerg-section"]     { padding: 32px 0 !important; }
+          .jp-root [data-r="emerg-section"] h2  { font-size: 22px !important; margin-bottom: 20px !important; }
+          .jp-root [data-r="emerg-grid"]        { grid-template-columns: 1fr !important; gap: 0 !important; }
+          .jp-root [data-r="ei"]                { grid-template-columns: 1fr !important; gap: 8px !important; padding: 16px 0 !important; }
+          .jp-root [data-r="ei"] [data-r="ei-num"] { font-size: 20px !important; text-align: left !important; }
+
+          /* PNR cards */
+          .jp-root [data-r="pnr-grid"]          { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+          /* Araç hero */
+          .jp-root [data-r="car-hero"]          { grid-template-columns: 1fr !important; gap: 24px !important; padding: 32px 0 !important; }
+          .jp-root [data-r="car-hero"] h2       { font-size: clamp(36px, 11vw, 56px) !important; }
+          .jp-root [data-r="car-hero"] p        { font-size: 16px !important; margin-bottom: 20px !important; }
+
+          /* Nissan card head */
+          .jp-root [data-r="nissan-card-head"]  { gap: 12px !important; }
+          .jp-root [data-r="nissan-card-head"] > div:nth-child(2) { font-size: 17px !important; }
+          .jp-root [data-r="nissan-card-body"]  { padding-left: 0 !important; margin-top: 18px !important; }
+
+          /* Nissan inner layouts */
+          .jp-root [data-r="nissan-3"]          { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .jp-root [data-r="nissan-3"] > div    { padding: 16px !important; }
+          .jp-root [data-r="nissan-3"] img      { max-width: 110px !important; }
+
+          .jp-root [data-r="nissan-rules-row"]  { grid-template-columns: 1fr 64px !important; gap: 14px !important; padding: 12px 0 !important; }
+          .jp-root [data-r="nissan-rules-row"] img { width: 64px !important; height: 64px !important; }
+
+          .jp-root [data-r="nissan-signs-4"]    { grid-template-columns: repeat(2, 1fr) !important; gap: 14px !important; }
+
+          .jp-root [data-r="nissan-illegal"]    { grid-template-columns: 1fr !important; gap: 16px !important; }
+          .jp-root [data-r="nissan-illegal"] > img { max-width: 200px !important; margin: 0 auto !important; }
+
+          .jp-root [data-r="nissan-kaza"]       { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .jp-root [data-r="nissan-kaza"] > [data-r="kaza-arrow"] { display: none !important; }
+          .jp-root [data-r="nissan-kaza-contacts"] { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .jp-root [data-r="nissan-accident-form"] { grid-template-columns: 1fr !important; gap: 14px !important; }
+          .jp-root [data-r="nissan-accident-form"] img { max-width: 220px !important; }
+
+          .jp-root [data-r="nissan-noc-2"]      { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .jp-root [data-r="nissan-noc-4"]      { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+
+          .jp-root [data-r="nissan-fuel"]       { grid-template-columns: 1fr !important; gap: 12px !important; padding: 16px !important; text-align: left !important; }
+          .jp-root [data-r="nissan-fuel"] img   { max-width: 140px !important; margin: 0 auto !important; }
+
+          .jp-root [data-r="nissan-iade"]       { grid-template-columns: 1fr !important; gap: 14px !important; }
+          .jp-root [data-r="nissan-iade"] img   { max-width: 160px !important; margin: 0 auto !important; }
+          .jp-root [data-r="nissan-iade"] > div:last-child > div:first-child { font-size: 24px !important; }
+
+          .jp-root [data-r="nissan-contact"]    { grid-template-columns: 56px 1fr !important; gap: 12px !important; row-gap: 4px !important; padding: 14px 0 !important; }
+          .jp-root [data-r="nissan-contact"] img { width: 56px !important; height: 56px !important; }
+          .jp-root [data-r="nissan-contact"] [data-r="nissan-contact-num"] { grid-column: 2 !important; font-size: 18px !important; }
+
+          /* ETC table — let it scroll horizontally */
+          .jp-root [data-r="nissan-etc-wrap"]   { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+          .jp-root [data-r="nissan-etc-wrap"] table { min-width: 480px !important; }
+
+          /* Switch user modal */
+          .jp-root [data-r="switch-modal"]      { padding: 16px !important; }
+          .jp-root [data-r="switch-modal-card"] { padding: 32px 20px !important; }
+          .jp-root [data-r="switch-modal-card"] h3 { font-size: 28px !important; margin-bottom: 24px !important; }
+          .jp-root [data-r="switch-modal-card"] [data-r="login-grid"] { gap: 12px !important; }
+
+          /* Phrase card slight tighten */
+          .jp-root [data-r="phrase-card"]       { padding: 18px 18px 16px !important; }
+          .jp-root [data-r="phrase-card"] [data-r="phrase-jp"] { font-size: 20px !important; }
+        }
+
+        /* ─────── EXTRA-NARROW (≤ 380px, iPhone SE-ish) ───────────────── */
+        @media (max-width: 380px) {
+          .jp-root [data-r="header"]            { padding: 10px 12px !important; }
+          .jp-root [data-r="header-title"]      { font-size: 14px !important; }
+          .jp-root [data-r="header-cd"]         { font-size: 12px !important; }
+          .jp-root [data-r="page"]              { padding: 0 12px !important; }
+          .jp-root [data-r="tabs-inner"]        { padding: 0 12px !important; }
+          .jp-root [data-r="tabs-inner"] button { padding: 12px 10px 10px !important; font-size: 11px !important; letter-spacing: .1em !important; }
+
+          .jp-root [data-r="ozet-hero"] h1      { font-size: 56px !important; }
+          .jp-root [data-r="stats-4"] > div [data-r="stat-value"] { font-size: 32px !important; }
+          .jp-root [data-r="day-date-display"]  { font-size: 36px !important; }
+          .jp-root [data-r="ozet-itin-row"]     { grid-template-columns: 76px 1fr !important; gap: 12px !important; }
+
+          .jp-root [data-r="nissan-signs-4"]    { grid-template-columns: 1fr 1fr !important; }
+          .jp-root [data-r="nissan-noc-4"]      { grid-template-columns: 1fr 1fr !important; }
+
+          .jp-root [data-r="phrase-pills"] button,
+          .jp-root [data-r="doc-pills"] button  { padding: 6px 10px !important; }
+        }
       `}</style>
 
       {/* HEADER */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(250,250,248,.88)", backdropFilter: "saturate(180%) blur(14px)", borderBottom: `1px solid ${C.line}` }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 40px", gap: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <div data-r="header" style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 40px", gap: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
             <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: C.red, flexShrink: 0 }} />
-            <span style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "18px", letterSpacing: "-.02em" }}>
+            <span data-r="header-title" style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "18px", letterSpacing: "-.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               Japan 2026 <em style={{ fontStyle: "italic", color: C.muted, fontWeight: 300, marginLeft: "2px" }}>· Mayıs</em>
             </span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-            <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "15px", letterSpacing: "-.01em", color: C.ink2 }}>
+          <div data-r="header-right" style={{ display: "flex", alignItems: "center", gap: "28px", flexShrink: 0 }}>
+            <div data-r="header-cd" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "15px", letterSpacing: "-.01em", color: C.ink2 }}>
               <b style={{ fontWeight: 500, color: C.red, fontStyle: "italic" }}>{cdDays.gone ? "Gidiyoruz!" : cdDays.value}</b>
               {!cdDays.gone && ` ${cdDays.unit} kaldı`}
             </div>
-            <button onClick={() => setSwitchOpen(true)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "5px 14px 5px 5px", border: `1px solid ${C.line}`, borderRadius: "999px", fontSize: "12px", fontWeight: 500, letterSpacing: ".04em", transition: "border-color .15s" }}>
+            <button data-r="header-user-btn" onClick={() => setSwitchOpen(true)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "5px 14px 5px 5px", border: `1px solid ${C.line}`, borderRadius: "999px", fontSize: "12px", fontWeight: 500, letterSpacing: ".04em", transition: "border-color .15s" }}>
               <img src={u.avatar} alt={user} style={{ width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", display: "block" }} />
               {user.charAt(0).toUpperCase() + user.slice(1)}
             </button>
@@ -927,8 +1156,8 @@ export default function Japan2026Room() {
       </header>
 
       {/* TABS */}
-      <nav style={{ position: "sticky", top: "69px", zIndex: 49, background: "rgba(250,250,248,.88)", backdropFilter: "saturate(180%) blur(14px)", borderBottom: `1px solid ${C.line}`, overflowX: "auto", scrollbarWidth: "none" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", gap: "4px", padding: "0 40px" }}>
+      <nav data-r="tabs-nav" style={{ position: "sticky", top: "69px", zIndex: 49, background: "rgba(250,250,248,.88)", backdropFilter: "saturate(180%) blur(14px)", borderBottom: `1px solid ${C.line}`, overflowX: "auto", scrollbarWidth: "none" }}>
+        <div data-r="tabs-inner" style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", gap: "4px", padding: "0 40px" }}>
           {TABS.map(t => {
             const active = activeTab === t.id;
             const special = t.special;
@@ -958,15 +1187,15 @@ export default function Japan2026Room() {
       </nav>
 
       {/* PANELS */}
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 40px" }}>
+      <div data-r="page" style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 40px" }}>
 
         {/* ═══ ÖZET ═══ */}
         {activeTab === "ozet" && (
           <div>
-            <div style={{ position: "relative", padding: "120px 0 100px", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: "50%", right: "-180px", width: "720px", height: "720px", borderRadius: "50%", background: C.red, transform: "translateY(-50%)", zIndex: 0, opacity: .06 }} />
+            <div data-r="ozet-hero" style={{ position: "relative", padding: "120px 0 100px", overflow: "hidden" }}>
+              <div data-r="hero-blob" style={{ position: "absolute", top: "50%", right: "-180px", width: "720px", height: "720px", borderRadius: "50%", background: C.red, transform: "translateY(-50%)", zIndex: 0, opacity: .06 }} />
               <div style={{ position: "relative", zIndex: 1, maxWidth: "880px" }}>
-                <div style={{ fontSize: "11px", letterSpacing: ".32em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "36px", display: "flex", alignItems: "center", gap: "14px" }}>
+                <div data-r="ozet-hero-eyebrow" style={{ fontSize: "11px", letterSpacing: ".32em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "36px", display: "flex", alignItems: "center", gap: "14px" }}>
                   <span style={{ display: "inline-block", width: "36px", height: "1px", background: C.ink }} />
                   Issue 01 · İlkbahar
                 </div>
@@ -979,7 +1208,7 @@ export default function Japan2026Room() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: `1px solid ${C.line}`, paddingTop: "44px", marginBottom: "120px" }}>
+            <div data-r="stats-4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: `1px solid ${C.line}`, paddingTop: "44px", marginBottom: "120px" }}>
               {[
                 { label: "Hareket", value: "10", unit: "Mayıs", sub: "Pazar · İstanbul Havalimanı\nIST → ULN, OM162 · 13:20" },
                 { label: "Tokyo Varış", value: "11", unit: "Mayıs", sub: "Pazartesi · Narita 13:40\nHanabi check-in ~16:00" },
@@ -988,7 +1217,7 @@ export default function Japan2026Room() {
               ].map((s, i) => (
                 <div key={i} style={{ paddingLeft: i > 0 ? "32px" : 0, paddingRight: "32px", borderRight: i < 3 ? `1px solid ${C.line}` : "none" }}>
                   <div style={{ fontSize: "10px", letterSpacing: ".28em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "18px" }}>{s.label}</div>
-                  <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "54px", letterSpacing: "-.04em", lineHeight: 1, marginBottom: "10px" }}>
+                  <div data-r="stat-value" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "54px", letterSpacing: "-.04em", lineHeight: 1, marginBottom: "10px" }}>
                     {s.value} <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{s.unit}</em>
                   </div>
                   <div style={{ fontSize: "13px", color: C.muted, lineHeight: 1.5, whiteSpace: "pre-line" }}>{s.sub}</div>
@@ -996,7 +1225,7 @@ export default function Japan2026Room() {
               ))}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "80px", paddingTop: "80px", borderTop: `1px solid ${C.line}`, marginBottom: "80px" }}>
+            <div data-r="ozet-body" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "80px", paddingTop: "80px", borderTop: `1px solid ${C.line}`, marginBottom: "80px" }}>
               <div>
                 <Eyebrow num="02">Seyahat takvimi</Eyebrow>
                 <div>
@@ -1010,9 +1239,9 @@ export default function Japan2026Room() {
                     { date: "18 May", day: "Pazartesi", title: "Eve dönüş başlıyor", desc: "Hanabi check-out 05:00–10:00. Narita Express, OM502 14:40'ta kalkıyor. Ulan Batur'da gece geçer." },
                     { date: "19 May", day: "Salı",      title: "İstanbul varış",  desc: "OM161 İstanbul'a 11:25'te iner. Yolculuk bitti 🎌" },
                   ].map((row, i, arr) => (
-                    <div key={i} style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "32px", padding: "22px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.line2}` : "none", alignItems: "baseline" }}>
+                    <div key={i} data-r="ozet-itin-row" style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "32px", padding: "22px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.line2}` : "none", alignItems: "baseline" }}>
                       <div>
-                        <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "22px", letterSpacing: "-.02em", lineHeight: 1.1 }}>{row.date}</div>
+                        <div data-r="ozet-itin-date" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "22px", letterSpacing: "-.02em", lineHeight: 1.1 }}>{row.date}</div>
                         <small style={{ display: "block", fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: C.muted, marginTop: "4px", fontFamily: C.sans, fontWeight: 500 }}>{row.day}</small>
                       </div>
                       <div>
@@ -1044,7 +1273,7 @@ export default function Japan2026Room() {
               </aside>
             </div>
 
-            <div style={{ paddingBottom: "80px", paddingTop: "60px", borderTop: `1px solid ${C.line}`, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+            <div data-r="ozet-footer" style={{ paddingBottom: "80px", paddingTop: "60px", borderTop: `1px solid ${C.line}`, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
               <span>Japan 2026 — özel bir oda</span>
               <span>Eren, Zenci, Ossan için</span>
             </div>
@@ -1054,7 +1283,7 @@ export default function Japan2026Room() {
         {/* ═══ GÜNLER ═══ */}
         {activeTab === "gunler" && (
           <div>
-            <div style={{ padding: "80px 0 48px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", borderBottom: `1px solid ${C.line}` }}>
+            <div data-r="tabhead" style={{ padding: "80px 0 48px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", borderBottom: `1px solid ${C.line}`, gap: "24px", flexWrap: "wrap" }}>
               <div>
                 <h1 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(48px,6vw,84px)", letterSpacing: "-.04em", lineHeight: 1 }}>
                   Günler<em style={{ fontStyle: "italic", color: C.red }}>.</em>
@@ -1073,9 +1302,9 @@ export default function Japan2026Room() {
               {days.map((d, i) => {
                 const isOpen = openDays.has(i) || editingDays;
                 return (
-                  <div key={d.id} style={{ borderBottom: `1px solid ${C.line}`, padding: "36px 0", display: "grid", gridTemplateColumns: "200px 1fr 60px", gap: "48px", alignItems: "start" }}>
+                  <div key={d.id} data-r="day-row" style={{ borderBottom: `1px solid ${C.line}`, padding: "36px 0", display: "grid", gridTemplateColumns: "200px 1fr 60px", gap: "48px", alignItems: "start" }}>
                     {/* Date column */}
-                    <div style={{ position: "sticky", top: "140px", cursor: editingDays ? "default" : "pointer" }} onClick={() => !editingDays && setOpenDays(prev => { const s = new Set(prev); s.has(i) ? s.delete(i) : s.add(i); return s; })}>
+                    <div data-r="day-date" style={{ position: "sticky", top: "140px", cursor: editingDays ? "default" : "pointer" }} onClick={() => !editingDays && setOpenDays(prev => { const s = new Set(prev); s.has(i) ? s.delete(i) : s.add(i); return s; })}>
                       {editingDays ? (
                         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                           <input value={d.date} onChange={ev => updateDay(d.id, { date: ev.target.value })}
@@ -1093,7 +1322,7 @@ export default function Japan2026Room() {
                         </div>
                       ) : (
                         <div style={{ cursor: "pointer" }}>
-                          <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "64px", letterSpacing: "-.04em", lineHeight: .9 }}>
+                          <div data-r="day-date-display" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "64px", letterSpacing: "-.04em", lineHeight: .9 }}>
                             {d.date.split(" ")[0]} <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{d.date.split(" ")[1]}</em>
                           </div>
                           <div style={{ fontFamily: C.sans, fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, marginTop: "14px", fontWeight: 500 }}>{d.day}</div>
@@ -1103,14 +1332,14 @@ export default function Japan2026Room() {
                     </div>
 
                     {/* Events column */}
-                    <div onClick={!editingDays ? e => { e.stopPropagation(); } : undefined}>
+                    <div data-r="day-events" onClick={!editingDays ? e => { e.stopPropagation(); } : undefined}>
                       <div style={{ overflow: "hidden", maxHeight: isOpen ? "none" : 0 }}>
                         {editingDays ? (
                           <div>
                             {d.events.map((ev, ei) => {
                               const isOver = dragOverEv === ev.id && dragEv?.dayId === d.id && dragEv?.eventId !== ev.id;
                               return (
-                                <div key={ev.id}
+                                <div key={ev.id} data-r="event-edit"
                                   onDragOver={e => { if (dragEv?.dayId === d.id) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverEv(ev.id); } }}
                                   onDragLeave={() => setDragOverEv(prev => prev === ev.id ? null : prev)}
                                   onDrop={e => {
@@ -1154,7 +1383,7 @@ export default function Japan2026Room() {
                         ) : (
                           <div>
                             {d.events.map((ev, ei) => (
-                              <div key={ev.id} style={{ display: "grid", gridTemplateColumns: "90px 1fr", gap: "24px", padding: "14px 0", borderTop: ei > 0 ? `1px solid ${C.line2}` : "none", alignItems: "baseline" }}>
+                              <div key={ev.id} data-r="event-view" style={{ display: "grid", gridTemplateColumns: "90px 1fr", gap: "24px", padding: "14px 0", borderTop: ei > 0 ? `1px solid ${C.line2}` : "none", alignItems: "baseline" }}>
                                 <div style={{ fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: C.muted, fontWeight: 500, fontVariantNumeric: "tabular-nums", paddingTop: "2px" }}>{ev.time}</div>
                                 <div style={{ fontSize: "15px", lineHeight: 1.6, color: C.ink2 }}>{ev.text}</div>
                               </div>
@@ -1172,7 +1401,7 @@ export default function Japan2026Room() {
 
                     {/* Toggle chevron (hidden in edit mode) */}
                     {!editingDays && (
-                      <div onClick={() => setOpenDays(prev => { const s = new Set(prev); s.has(i) ? s.delete(i) : s.add(i); return s; })}
+                      <div data-r="day-toggle" onClick={() => setOpenDays(prev => { const s = new Set(prev); s.has(i) ? s.delete(i) : s.add(i); return s; })}
                         style={{ fontFamily: C.serif, fontSize: "24px", color: isOpen ? C.red : C.muted, textAlign: "right", lineHeight: 1, paddingTop: "8px", transform: isOpen ? "rotate(45deg)" : "none", transition: "transform .25s", fontWeight: 300, cursor: "pointer" }}>+</div>
                     )}
                   </div>
@@ -1225,7 +1454,7 @@ export default function Japan2026Room() {
               </DetSection>
 
               <DetSection title="Yolcu PNR'ları" titleEm="·" sub="Herkes hepsini görüyor. Kendi PNR'ın yıldızlı.">
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginTop: "8px" }}>
+                <div data-r="pnr-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginTop: "8px" }}>
                   {([
                     { who: "eren" as UserName, pnr: "9OY2JB", note: "", warn: false },
                     { who: "zenci" as UserName, pnr: "9NVSB3", note: "MIAT", warn: false },
@@ -1257,7 +1486,7 @@ export default function Japan2026Room() {
             <TabHead title="Oteller" lede="Shinjuku'da bir hafta, Namba'da bir gece." />
             <div style={{ paddingBottom: "120px" }}>
               <DetSection title="Hanabi Hotel" titleEm="ハナビホテル" sub="Tokyo · Shinjuku-ku · 7 gece">
-                <img src="/japan2026/hotels/hanabi.jpg" alt="Hanabi Hotel" style={{ width: "100%", height: "auto", maxHeight: "360px", objectFit: "cover", marginBottom: "24px", border: `1px solid ${C.line}` }} />
+                <img src="/japan2026/hotels/hanabi.jpg" alt="Hanabi Hotel" data-r="hotel-img" style={{ width: "100%", height: "auto", maxHeight: "360px", objectFit: "cover", marginBottom: "24px", border: `1px solid ${C.line}` }} />
                 <InfoGrid style={{ borderTop: "none", paddingTop: 0, marginTop: 0 }}>
                   <div>
                     <IR label="Adres" val="Hyakunincho 2-8-5, Shinjuku-ku" />
@@ -1284,7 +1513,7 @@ export default function Japan2026Room() {
               </DetSection>
 
               <DetSection title="Hotel Hillarys" titleEm="ホテルヒラリーズ" sub="Osaka · Naniwa-ku · 1 gece">
-                <img src="/japan2026/hotels/hillarys.jpg" alt="Hotel Hillarys" style={{ width: "100%", height: "auto", maxHeight: "360px", objectFit: "cover", marginBottom: "24px", border: `1px solid ${C.line}` }} />
+                <img src="/japan2026/hotels/hillarys.jpg" alt="Hotel Hillarys" data-r="hotel-img" style={{ width: "100%", height: "auto", maxHeight: "360px", objectFit: "cover", marginBottom: "24px", border: `1px solid ${C.line}` }} />
                 <InfoGrid style={{ borderTop: "none", paddingTop: 0, marginTop: 0 }}>
                   <div>
                     <IR label="Adres" val="Nippombashi 3-4-10, Naniwa-ku" />
@@ -1319,7 +1548,7 @@ export default function Japan2026Room() {
             <div style={{ paddingBottom: "120px" }}>
 
               {/* Hero — car photo + headline rental facts */}
-              <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "48px", padding: "48px 0", borderBottom: `1px solid ${C.line}`, alignItems: "center" }}>
+              <div data-r="car-hero" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "48px", padding: "48px 0", borderBottom: `1px solid ${C.line}`, alignItems: "center" }}>
                 <div>
                   <Eyebrow num="01">Senin aracın</Eyebrow>
                   <h2 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(40px,5vw,72px)", letterSpacing: "-.04em", lineHeight: 1, marginBottom: "20px" }}>
@@ -1375,7 +1604,7 @@ export default function Japan2026Room() {
                     {
                       id: "n01", n: "01", title: "Nissan'ın 3 isteği",
                       render: () => (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "8px" }}>
+                        <div data-r="nissan-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "8px" }}>
                           {[
                             { img: `${ICON}/belt.png`, label: "Tüm yolcular kemer takar" },
                             { img: `${ICON}/service_area.png`, label: "Sık mola — yorulmadan in" },
@@ -1402,7 +1631,7 @@ export default function Japan2026Room() {
                               { img: `${ICON}/confirm-traffic-rules-5.png`, label: "Alkol = 0. Sürüşte telefon yasak." },
                               { img: `${ICON}/confirm-traffic-rules-6.png`, label: "Sol şeritte sür, ama bordüre fazla yaklaşma." },
                             ].map((r, i, a) => (
-                              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 96px", gap: "20px", padding: "16px 0", borderBottom: i < a.length - 1 ? `1px solid ${C.line2}` : "none", alignItems: "center" }}>
+                              <div key={i} data-r="nissan-rules-row" style={{ display: "grid", gridTemplateColumns: "1fr 96px", gap: "20px", padding: "16px 0", borderBottom: i < a.length - 1 ? `1px solid ${C.line2}` : "none", alignItems: "center" }}>
                                 <span style={{ fontSize: "14px", lineHeight: 1.55, color: C.ink2 }}>{r.label}</span>
                                 <img src={r.img} alt="" style={{ width: "96px", height: "96px", objectFit: "contain" }} />
                               </div>
@@ -1410,7 +1639,7 @@ export default function Japan2026Room() {
                           </div>
                           <div style={{ marginTop: "32px", padding: "24px", border: `1px solid ${C.line}` }}>
                             <div style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "18px", marginBottom: "16px" }}>Yol işaretleri</div>
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+                            <div data-r="nissan-signs-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
                               {[
                                 { img: `${ICON}/no-parking.png`, label: "Park yasak" },
                                 { img: `${ICON}/no-parking-or-stopping.png`, label: "Park & duraklama yasak" },
@@ -1434,7 +1663,7 @@ export default function Japan2026Room() {
                     {
                       id: "n03", n: "03", title: "Yasak park",
                       render: () => (
-                        <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "32px", alignItems: "start" }}>
+                        <div data-r="nissan-illegal" style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "32px", alignItems: "start" }}>
                           <img src={`${ICON}/illegal_parking.png`} alt="" style={{ width: "100%", height: "auto" }} />
                           <div>
                             <p style={{ fontSize: "14px", lineHeight: 1.65, color: C.ink2, marginBottom: "20px" }}>
@@ -1461,6 +1690,7 @@ export default function Japan2026Room() {
                       render: () => (
                         <div>
                           <img src={`${ICON}/etc-gate.png`} alt="" style={{ width: "100%", height: "auto", maxHeight: "260px", objectFit: "contain", marginBottom: "24px" }} />
+                          <div data-r="nissan-etc-wrap">
                           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                             <thead>
                               <tr>
@@ -1485,6 +1715,7 @@ export default function Japan2026Room() {
                               </tr>
                             </tbody>
                           </table>
+                          </div>
                           <p style={{ fontSize: "13px", color: C.muted, marginTop: "16px", fontStyle: "italic" }}>ETC kart yuvada takılı mı kontrol et — yoksa mavi kapılar açılmaz.</p>
                         </div>
                       ),
@@ -1493,7 +1724,7 @@ export default function Japan2026Room() {
                       id: "n05", n: "05", title: "Kaza adımları",
                       render: () => (
                         <>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", gap: "12px", alignItems: "start", marginBottom: "32px" }}>
+                          <div data-r="nissan-kaza" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", gap: "12px", alignItems: "start", marginBottom: "32px" }}>
                             {[
                               { img: `${ICON}/injury.png`, n: "1", title: "Ambulans · 119", text: "Yaralı varsa önce ambulans. Yaralılara yardım et, sonra aracı güvenli alana çek." },
                               { img: `${ICON}/police.png`, n: "2", title: "Polis · 110", text: "Hem kazaya neden olan hem mağdur polise haber vermek zorunda. \"Kaza sertifikası\"nı al." },
@@ -1505,10 +1736,10 @@ export default function Japan2026Room() {
                                 <div style={{ fontFamily: C.serif, fontWeight: 500, fontSize: "16px" }}>{step.title}</div>
                                 <div style={{ fontSize: "12px", color: C.ink2, lineHeight: 1.55 }}>{step.text}</div>
                               </div>,
-                              i < arr.length - 1 ? <div key={`a${i}`} style={{ paddingTop: "40px", color: C.muted, fontSize: "20px" }}>›</div> : null,
+                              i < arr.length - 1 ? <div key={`a${i}`} data-r="kaza-arrow" style={{ paddingTop: "40px", color: C.muted, fontSize: "20px" }}>›</div> : null,
                             ]).filter(Boolean)}
                           </div>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                          <div data-r="nissan-kaza-contacts" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                             <div style={{ border: `1px solid ${C.line}`, padding: "20px" }}>
                               <div style={{ fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "10px" }}>Sompo Kaza Resepsiyonu</div>
                               <div style={{ fontSize: "12px", color: C.muted, marginBottom: "8px" }}>7/24 · 365 gün</div>
@@ -1523,7 +1754,7 @@ export default function Japan2026Room() {
                               <div style={{ fontSize: "12px", color: C.muted, marginTop: "10px" }}>Hızlı tuş: <span style={{ fontFamily: "ui-monospace, monospace" }}>#8139</span></div>
                             </div>
                           </div>
-                          <div style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "1fr 240px", gap: "24px", alignItems: "center", padding: "20px", background: C.line2 }}>
+                          <div data-r="nissan-accident-form" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "1fr 240px", gap: "24px", alignItems: "center", padding: "20px", background: C.line2 }}>
                             <div>
                               <div style={{ fontFamily: C.serif, fontWeight: 500, fontSize: "16px", marginBottom: "8px" }}>"Kaza sonrası ne yapılır" formu</div>
                               <div style={{ fontSize: "13px", color: C.ink2, lineHeight: 1.6 }}>Aracın inceleme dosyası (glove box'ta) içinde formu bul, doldur, iadede Nissan'a ver. Sigorta için şart.</div>
@@ -1536,7 +1767,7 @@ export default function Japan2026Room() {
                     {
                       id: "n06", n: "06", title: "NOC — Kullanım kaybı tarifesi",
                       render: () => (
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                        <div data-r="nissan-noc-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                           {[
                             { img: `${ICON}/img-accident-1.png`, label: "Küçük çizik / göçük", price: "max ¥50,000" },
                             { img: `${ICON}/img-accident-2.png`, label: "Ciddi hasar (kullanılamaz)", price: "max ¥100,000" },
@@ -1547,7 +1778,7 @@ export default function Japan2026Room() {
                               <img src={c.img} alt="" style={{ width: "100%", height: "auto" }} />
                             </div>
                           ))}
-                          <div style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginTop: "8px" }}>
+                          <div data-r="nissan-noc-4" style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginTop: "8px" }}>
                             {[
                               { img: `${ICON}/accident-example-1.png`, label: "Otoparkta · ayna ayarı, dikkatli direksiyon" },
                               { img: `${ICON}/accident-example-2.png`, label: "Arkadan çarpma · sürüşte telefon yok" },
@@ -1570,14 +1801,14 @@ export default function Japan2026Room() {
                       id: "n07", n: "07", title: "Yakıt",
                       render: () => (
                         <>
-                          <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "24px", alignItems: "center", padding: "20px", border: `1px solid ${C.line}` }}>
+                          <div data-r="nissan-fuel" style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "24px", alignItems: "center", padding: "20px", border: `1px solid ${C.line}` }}>
                             <img src={`${ICON}/fuel.png`} alt="" style={{ width: "100%", height: "auto" }} />
                             <div>
                               <div style={{ fontFamily: C.serif, fontWeight: 500, fontSize: "16px", marginBottom: "10px" }}>NOTE e-POWER → Regular benzin (レギュラー)</div>
                               <div style={{ fontSize: "13px", color: C.ink2, lineHeight: 1.65 }}>Yanlış yakıt = motor hasarı, ücret bizden çıkar. Yakıt türünü teslim alırken Nissan'a sor.</div>
                             </div>
                           </div>
-                          <div style={{ marginTop: "20px", display: "grid", gridTemplateColumns: "100px 1fr", gap: "24px", alignItems: "center", padding: "20px", border: `1px solid ${C.line}` }}>
+                          <div data-r="nissan-fuel" style={{ marginTop: "20px", display: "grid", gridTemplateColumns: "100px 1fr", gap: "24px", alignItems: "center", padding: "20px", border: `1px solid ${C.line}` }}>
                             <img src={`${ICON}/fuel_receipt.png`} alt="" style={{ width: "100%", height: "auto" }} />
                             <div style={{ fontSize: "13px", color: C.ink2, lineHeight: 1.65 }}>İadede full + benzin makbuzu zorunlu. Eksikse mesafeye göre fazla ücret biner (gerçek doluş ücretinden pahalı).</div>
                           </div>
@@ -1590,7 +1821,7 @@ export default function Japan2026Room() {
                     {
                       id: "n08", n: "08", title: "İade saati",
                       render: () => (
-                        <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "24px", alignItems: "center" }}>
+                        <div data-r="nissan-iade" style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "24px", alignItems: "center" }}>
                           <img src={`${ICON}/shop_call.png`} alt="" style={{ width: "100%", height: "auto" }} />
                           <div>
                             <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "32px", letterSpacing: "-.02em", lineHeight: 1, marginBottom: "8px" }}>
@@ -1613,13 +1844,13 @@ export default function Japan2026Room() {
                             { img: `${ICON}/contact-list-4.png`, label: "JAF · Yol yardım", sub: "Çekici, patlak lastik", num: "0570-00-8139", href: "tel:+81570008139" },
                             { img: `${ICON}/contact-list-5.png`, label: "Yabancı destek hattı", sub: "Trafik kazası dışındaki sorunlar", num: "03-6625-8290", href: "tel:+81366258290" },
                           ].map((c, i, a) => (
-                            <div key={i} style={{ display: "grid", gridTemplateColumns: "80px 1fr auto", gap: "20px", alignItems: "center", padding: "16px 0", borderBottom: i < a.length - 1 ? `1px solid ${C.line2}` : "none" }}>
+                            <div key={i} data-r="nissan-contact" style={{ display: "grid", gridTemplateColumns: "80px 1fr auto", gap: "20px", alignItems: "center", padding: "16px 0", borderBottom: i < a.length - 1 ? `1px solid ${C.line2}` : "none" }}>
                               <img src={c.img} alt="" style={{ width: "80px", height: "80px", objectFit: "contain" }} />
                               <div>
                                 <div style={{ fontFamily: C.serif, fontWeight: 500, fontSize: "16px", marginBottom: "4px" }}>{c.label}</div>
                                 <div style={{ fontSize: "12px", color: C.muted, lineHeight: 1.5 }}>{c.sub}</div>
                               </div>
-                              <a href={c.href} style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "22px", color: C.red, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", textDecoration: "none" }}>{c.num}</a>
+                              <a href={c.href} data-r="nissan-contact-num" style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "22px", color: C.red, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", textDecoration: "none" }}>{c.num}</a>
                             </div>
                           ))}
                         </div>
@@ -1652,14 +1883,14 @@ export default function Japan2026Room() {
                     const isOpen = araçNissanOpen.has(card.id);
                     return (
                       <div key={card.id} style={{ borderBottom: `1px solid ${C.line2}`, padding: "20px 0" }}>
-                        <div onClick={() => setAraçNissanOpen(prev => { const s = new Set(prev); s.has(card.id) ? s.delete(card.id) : s.add(card.id); return s; })}
+                        <div data-r="nissan-card-head" onClick={() => setAraçNissanOpen(prev => { const s = new Set(prev); s.has(card.id) ? s.delete(card.id) : s.add(card.id); return s; })}
                           style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "20px", alignItems: "center", cursor: "pointer", userSelect: "none" }}>
                           <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "14px", color: C.muted, fontVariantNumeric: "tabular-nums", letterSpacing: ".04em", width: "32px" }}>{card.n}</div>
                           <div style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "22px", letterSpacing: "-.02em", lineHeight: 1.2 }}>{card.title}</div>
                           <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "22px", color: isOpen ? C.red : C.muted, transform: isOpen ? "rotate(45deg)" : "none", transition: "transform .25s", lineHeight: 1 }}>+</div>
                         </div>
                         {isOpen && (
-                          <div style={{ marginTop: "24px", paddingLeft: "52px" }}>
+                          <div data-r="nissan-card-body" style={{ marginTop: "24px", paddingLeft: "52px" }}>
                             {card.render()}
                           </div>
                         )}
@@ -1697,7 +1928,7 @@ export default function Japan2026Room() {
             <TabHead title="Checklist" lede={editingCl ? "Düzenleme modu — kategori ve madde ekle, sil, sırala." : `${clSchema.length} kategori. Yaptıkça işaretle.`} />
 
             {/* Toolbar */}
-            <div style={{ display: "grid", gridTemplateColumns: editingCl ? "1fr auto" : "1fr auto auto", gap: "24px", padding: "32px 0", borderBottom: `1px solid ${C.line}`, alignItems: "center" }}>
+            <div data-r="cl-toolbar" style={{ display: "grid", gridTemplateColumns: editingCl ? "1fr auto" : "1fr auto auto", gap: "24px", padding: "32px 0", borderBottom: `1px solid ${C.line}`, alignItems: "center" }}>
               {!editingCl && (
                 <input type="search" value={clSearch} onChange={e => setClSearch(e.target.value)}
                   placeholder="Ara — IDP, sigorta, pasaport…"
@@ -1709,7 +1940,7 @@ export default function Japan2026Room() {
                   <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{clDone}</em>/{clTotal}
                 </div>
               )}
-              <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              <div data-r="cl-toolbar-actions" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
                 {!editingCl && (
                   <button onClick={() => { if (confirm("Tüm tikleri sıfırlamak istediğine emin misin?")) { setClState({}); fetch("/api/japan2026", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "checklist_reset" }) }).catch(console.error); } }}
                     style={{ fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
@@ -1801,11 +2032,11 @@ export default function Japan2026Room() {
 
                   return (
                     <div key={sec.id} style={{ borderBottom: `1px solid ${C.line}`, padding: "32px 0" }}>
-                      <div onClick={() => setOpenSecs(prev => { const s = new Set(prev); s.has(sec.id) ? s.delete(sec.id) : s.add(sec.id); return s; })}
+                      <div data-r="cl-sec-head" onClick={() => setOpenSecs(prev => { const s = new Set(prev); s.has(sec.id) ? s.delete(sec.id) : s.add(sec.id); return s; })}
                         style={{ display: "grid", gridTemplateColumns: "auto 1fr auto auto", gap: "24px", alignItems: "center", cursor: "pointer", userSelect: "none" }}>
-                        <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "14px", color: C.muted, fontVariantNumeric: "tabular-nums", letterSpacing: ".04em", width: "32px" }}>{String(si + 1).padStart(2, "0")}</div>
+                        <div data-r="cl-sec-num" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "14px", color: C.muted, fontVariantNumeric: "tabular-nums", letterSpacing: ".04em", width: "32px" }}>{String(si + 1).padStart(2, "0")}</div>
                         <div>
-                          <div style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "24px", letterSpacing: "-.02em", lineHeight: 1.2 }}>
+                          <div data-r="cl-sec-title" style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "24px", letterSpacing: "-.02em", lineHeight: 1.2 }}>
                             {sec.crit && <span style={{ color: C.red, fontSize: "9px", verticalAlign: "middle", marginRight: "10px" }}>●</span>}
                             {sec.owner && (
                               <span style={{ color: sec.owner === user ? C.red : C.muted, fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", marginRight: "12px", fontWeight: 600, fontFamily: C.sans }}>
@@ -1815,7 +2046,7 @@ export default function Japan2026Room() {
                             {sec.title}
                           </div>
                         </div>
-                        <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "18px", fontVariantNumeric: "tabular-nums", color: C.muted, letterSpacing: "-.01em" }}>
+                        <div data-r="cl-sec-count" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "18px", fontVariantNumeric: "tabular-nums", color: C.muted, letterSpacing: "-.01em" }}>
                           {secDone > 0 && <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{secDone}</em>}
                           {secDone === 0 && "0"}/{sec.items.length}
                         </div>
@@ -1827,20 +2058,20 @@ export default function Japan2026Room() {
                       </div>
 
                       {isOpen && (
-                        <div style={{ marginTop: "24px", marginLeft: "56px", paddingLeft: "24px", borderLeft: `1px solid ${C.line2}` }}>
+                        <div data-r="cl-sec-body" style={{ marginTop: "24px", marginLeft: "56px", paddingLeft: "24px", borderLeft: `1px solid ${C.line2}` }}>
                           {sec.note && <div style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, fontSize: "15px", color: C.ink2, marginBottom: "20px", padding: "14px 18px", background: "#FFF7E6", borderLeft: `2px solid #C99A2E`, lineHeight: 1.55 }}>{sec.note}</div>}
                           {(clSearch ? filtered : sec.items).map((item, li) => {
                             const st = clState[item.id];
                             const eu = st?.u ? USERS[st.u as UserName] : null;
                             return (
-                              <label key={item.id} style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "18px", padding: "14px 0", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "start", cursor: "pointer" }}>
+                              <label key={item.id} data-r="cl-item" style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "18px", padding: "14px 0", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "start", cursor: "pointer" }}>
                                 <input type="checkbox" checked={!!st?.v} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
                                   style={{ width: "18px", height: "18px", appearance: "none", border: `1px solid ${st?.v ? C.red : C.ink}`, background: st?.v ? C.red : "transparent", cursor: "pointer", position: "relative", marginTop: "2px", flexShrink: 0, borderRadius: "1px" }} />
                                 <div>
                                   <div style={{ fontSize: "15px", lineHeight: 1.55, color: st?.v ? C.muted : C.ink, fontWeight: 400, letterSpacing: "-.005em", textDecoration: st?.v ? "line-through" : "none", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>{item.label}</div>
                                 </div>
                                 {st?.v && eu && (
-                                  <div style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4, paddingTop: "3px" }}>
+                                  <div data-r="cl-item-meta" style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4, paddingTop: "3px" }}>
                                     <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: eu.color, marginRight: "6px", verticalAlign: "middle" }} />
                                     {st.u} · {st.t}
                                   </div>
@@ -1864,9 +2095,9 @@ export default function Japan2026Room() {
             <style>{`
               @keyframes gelmisGlow { 0%, 100% { opacity: .04 } 50% { opacity: .08 } }
             `}</style>
-            <div style={{ position: "relative", padding: "100px 0 60px", overflow: "hidden", borderBottom: `1px solid ${C.line}` }}>
-              <div style={{ position: "absolute", top: "-120px", right: "-200px", width: "640px", height: "640px", borderRadius: "50%", background: C.red, animation: "gelmisGlow 6s ease-in-out infinite", zIndex: 0 }} />
-              <button onClick={() => setEditingGelmis(e => !e)}
+            <div data-r="gelmis-hero" style={{ position: "relative", padding: "100px 0 60px", overflow: "hidden", borderBottom: `1px solid ${C.line}` }}>
+              <div data-r="hero-blob" style={{ position: "absolute", top: "-120px", right: "-200px", width: "640px", height: "640px", borderRadius: "50%", background: C.red, animation: "gelmisGlow 6s ease-in-out infinite", zIndex: 0 }} />
+              <button data-r="gelmis-hero-edit" onClick={() => setEditingGelmis(e => !e)}
                 style={{ position: "absolute", top: "32px", right: "0", zIndex: 2, padding: "8px 16px", border: `1px solid ${editingGelmis ? C.red : C.line}`, fontSize: "11px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", color: editingGelmis ? C.red : C.muted, background: "rgba(250,250,248,.85)", backdropFilter: "saturate(180%) blur(6px)", transition: "all .18s" }}>
                 {editingGelmis ? "Bitti ✓" : "Düzenle"}
               </button>
@@ -1882,7 +2113,7 @@ export default function Japan2026Room() {
                   Bir kez gelinen yer. İşaretledikçe Japonya'yı kazıyorsun.
                 </p>
                 <div style={{ marginTop: "44px", display: "flex", alignItems: "baseline", gap: "20px" }}>
-                  <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "72px", letterSpacing: "-.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                  <div data-r="gelmis-hero-count" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "72px", letterSpacing: "-.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
                     <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{gelmisDone}</em>
                     <span style={{ color: C.muted, fontSize: "32px", marginLeft: "10px" }}>/ {gelmisTotal}</span>
                   </div>
@@ -1983,19 +2214,19 @@ export default function Japan2026Room() {
                 const secPct = sec.items.length ? Math.round(secDone / sec.items.length * 100) : 0;
                 return (
                   <div key={sec.id} style={{ borderBottom: `1px solid ${C.line}` }}>
-                    <div onClick={() => setOpenSecs(prev => { const s = new Set(prev); s.has(sec.id) ? s.delete(sec.id) : s.add(sec.id); return s; })}
+                    <div data-r="gelmis-head" onClick={() => setOpenSecs(prev => { const s = new Set(prev); s.has(sec.id) ? s.delete(sec.id) : s.add(sec.id); return s; })}
                       style={{ display: "grid", gridTemplateColumns: "auto 1fr auto auto", gap: "32px", alignItems: "baseline", cursor: "pointer", userSelect: "none", padding: "44px 0 20px", position: "relative" }}>
-                      <span style={{ fontFamily: C.sans, fontSize: "11px", letterSpacing: ".28em", textTransform: "uppercase", fontWeight: 600, color: C.red, paddingTop: "8px" }}>★ Bölge</span>
+                      <span data-r="gelmis-head-label" style={{ fontFamily: C.sans, fontSize: "11px", letterSpacing: ".28em", textTransform: "uppercase", fontWeight: 600, color: C.red, paddingTop: "8px" }}>★ Bölge</span>
                       <h2 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(40px,5vw,68px)", letterSpacing: "-.04em", lineHeight: 1, fontStyle: region === "JAPONYA" ? "normal" : "italic" }}>
                         {region === "JAPONYA"
                           ? <span>{region}<span style={{ color: C.red }}>.</span></span>
                           : <em style={{ fontWeight: 400 }}>{region}<span style={{ color: C.red, fontStyle: "normal" }}>.</span></em>}
                       </h2>
-                      <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "32px", fontVariantNumeric: "tabular-nums", color: C.ink2, letterSpacing: "-.02em" }}>
+                      <div data-r="gelmis-head-count" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "32px", fontVariantNumeric: "tabular-nums", color: C.ink2, letterSpacing: "-.02em" }}>
                         <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{secDone}</em>
                         <span style={{ color: C.muted, fontSize: "18px", marginLeft: "4px" }}>/ {sec.items.length}</span>
                       </div>
-                      <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "28px", color: isOpen ? C.red : C.muted, transform: isOpen ? "rotate(45deg)" : "none", transition: "transform .25s", lineHeight: 1, paddingTop: "8px" }}>+</div>
+                      <div data-r="gelmis-head-toggle" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "28px", color: isOpen ? C.red : C.muted, transform: isOpen ? "rotate(45deg)" : "none", transition: "transform .25s", lineHeight: 1, paddingTop: "8px" }}>+</div>
                     </div>
 
                     <div style={{ height: "2px", background: C.line2, position: "relative", overflow: "hidden", marginBottom: isOpen ? "8px" : "32px" }}>
@@ -2008,7 +2239,7 @@ export default function Japan2026Room() {
                           const st = clState[item.id];
                           const eu = st?.u ? USERS[st.u as UserName] : null;
                           return (
-                            <label key={item.id} style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "20px", padding: "18px 8px", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "center", cursor: "pointer", transition: "background .15s" }}
+                            <label key={item.id} data-r="gelmis-item" style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "20px", padding: "18px 8px", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "center", cursor: "pointer", transition: "background .15s" }}
                               onMouseEnter={e => (e.currentTarget.style.background = "rgba(188,0,45,.04)")}
                               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                               <input type="checkbox" checked={!!st?.v} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
@@ -2017,7 +2248,7 @@ export default function Japan2026Room() {
                                 {item.label}
                               </div>
                               {st?.v && eu && (
-                                <div style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4 }}>
+                                <div data-r="gelmis-item-meta" style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4 }}>
                                   <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: eu.color, marginRight: "8px", verticalAlign: "middle" }} />
                                   {st.u} · {st.t}
                                 </div>
@@ -2037,7 +2268,7 @@ export default function Japan2026Room() {
                 </div>
               )}
 
-              <div style={{ paddingTop: "80px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+              <div data-r="gelmis-foot" style={{ paddingTop: "80px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
                 <span>Gelmişken — anılar için</span>
                 <span style={{ color: C.red }}>★ tek seferlik gelinecek bir yer ★</span>
               </div>
@@ -2060,7 +2291,7 @@ export default function Japan2026Room() {
                 return (
                   <div style={{ padding: "32px 0", borderBottom: `1px solid ${C.line}` }}>
                     <Eyebrow num="01">Senin belgelerin · {mine.length}</Eyebrow>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+                    <div data-r="auto-grid-260" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
                       {mine.map(g => <DocCard key={g.key} variants={g.variants} mine />)}
                     </div>
                   </div>
@@ -2068,7 +2299,7 @@ export default function Japan2026Room() {
               })()}
 
               {/* Filter pills */}
-              <div style={{ padding: "32px 0 16px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div data-r="doc-pills" style={{ padding: "32px 0 16px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 {([
                   { k: "all" as const,    label: "Tümü",  count: docs.length },
                   { k: "eren" as const,   label: "Eren",  count: docs.filter(d => d.owner === "eren").length },
@@ -2100,9 +2331,9 @@ export default function Japan2026Room() {
                     .sort((a, b) => (a.variants[0].owner === user ? -1 : b.variants[0].owner === user ? 1 : 0));
                   if (groups.length === 0) return null;
                   return (
-                    <div key={cat.key} style={{ padding: "32px 0", borderBottom: `1px solid ${C.line}` }}>
+                    <div key={cat.key} data-r="doc-cat" style={{ padding: "32px 0", borderBottom: `1px solid ${C.line}` }}>
                       <Eyebrow num={cat.key === "ticket" ? "02" : cat.key === "hotel" ? "03" : cat.key === "car" ? "04" : cat.key === "insurance" ? "05" : cat.key === "visa-qr" ? "06" : "07"}>{cat.label}</Eyebrow>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+                      <div data-r="auto-grid-280" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
                         {groups.map(g => <DocCard key={g.key} variants={g.variants} mine={g.variants[0].owner === user} />)}
                       </div>
                     </div>
@@ -2187,7 +2418,7 @@ export default function Japan2026Room() {
               <div style={{ paddingBottom: "120px" }}>
 
                 {/* Category pills */}
-                <div style={{ padding: "32px 0 8px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <div data-r="phrase-pills" style={{ padding: "32px 0 8px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   {PHRASE_CATS.map(c => {
                     const active = c.id === phraseCat;
                     return (
@@ -2203,13 +2434,13 @@ export default function Japan2026Room() {
                 {/* Active category */}
                 <div style={{ padding: "40px 0 0" }}>
                   <Eyebrow num={cat.num}>{cat.title}</Eyebrow>
-                  <p style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, color: C.muted, fontSize: "16px", marginBottom: "36px", maxWidth: "640px", lineHeight: 1.55 }}>{cat.intro}</p>
+                  <p data-r="phrase-intro" style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, color: C.muted, fontSize: "16px", marginBottom: "36px", maxWidth: "640px", lineHeight: 1.55 }}>{cat.intro}</p>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+                  <div data-r="auto-grid-320" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
                     {cat.phrases.map((p, i) => (
-                      <div key={i} style={{ border: `1px solid ${C.line}`, padding: "22px 22px 20px", background: "#fff", display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <div key={i} data-r="phrase-card" style={{ border: `1px solid ${C.line}`, padding: "22px 22px 20px", background: "#fff", display: "flex", flexDirection: "column", gap: "12px" }}>
                         <div>
-                          <div style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "22px", lineHeight: 1.2, color: C.ink, letterSpacing: "-.01em" }}>{p.jp}</div>
+                          <div data-r="phrase-jp" style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "22px", lineHeight: 1.2, color: C.ink, letterSpacing: "-.01em" }}>{p.jp}</div>
                           <div style={{ fontFamily: C.sans, fontSize: "13px", fontStyle: "italic", color: C.ink2, marginTop: "4px", letterSpacing: ".01em" }}>{p.romaji}</div>
                         </div>
                         <div style={{ height: "1px", background: C.line2 }} />
@@ -2245,13 +2476,13 @@ export default function Japan2026Room() {
 
       {/* SWITCH USER MODAL */}
       {switchOpen && (
-        <div onClick={() => setSwitchOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(17,17,17,.4)", backdropFilter: "blur(8px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: C.bg, padding: "48px 56px", maxWidth: "520px", width: "100%", textAlign: "center", position: "relative" }}>
+        <div data-r="switch-modal" onClick={() => setSwitchOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(17,17,17,.4)", backdropFilter: "blur(8px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px" }}>
+          <div data-r="switch-modal-card" onClick={e => e.stopPropagation()} style={{ background: C.bg, padding: "48px 56px", maxWidth: "520px", width: "100%", textAlign: "center", position: "relative" }}>
             <button onClick={() => setSwitchOpen(false)} style={{ position: "absolute", top: "20px", right: "24px", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kapat ✕</button>
             <h3 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "42px", letterSpacing: "-.03em", marginBottom: "32px" }}>
               Yolcuyu <em style={{ fontStyle: "italic", color: C.red }}>değiştir</em>
             </h3>
-            <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap" }}>
+            <div data-r="login-grid" style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap" }}>
               {(["eren", "zenci", "ossan"] as UserName[]).map(name => (
                 <LoginBtn key={name} onClick={() => doLogin(name)} avatar={USERS[name].avatar}>{name.charAt(0).toUpperCase() + name.slice(1)}</LoginBtn>
               ))}
@@ -2277,7 +2508,7 @@ function LoginBtn({ children, onClick, avatar }: { children: React.ReactNode; on
 
 function TabHead({ title, lede }: { title: string; lede: string }) {
   return (
-    <div style={{ padding: "80px 0 48px", display: "grid", gridTemplateColumns: "1fr auto", gap: "32px", alignItems: "end", borderBottom: `1px solid ${C.line}`, marginBottom: "0" }}>
+    <div data-r="tabhead" style={{ padding: "80px 0 48px", display: "grid", gridTemplateColumns: "1fr auto", gap: "32px", alignItems: "end", borderBottom: `1px solid ${C.line}`, marginBottom: "0" }}>
       <h1 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(48px,6vw,84px)", letterSpacing: "-.04em", lineHeight: 1 }}>
         {title}<em style={{ fontStyle: "italic", color: C.red }}>.</em>
       </h1>
@@ -2288,7 +2519,7 @@ function TabHead({ title, lede }: { title: string; lede: string }) {
 
 function Eyebrow({ children, num }: { children: React.ReactNode; num: string }) {
   return (
-    <div style={{ fontSize: "11px", letterSpacing: ".32em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "24px", display: "flex", alignItems: "center", gap: "14px" }}>
+    <div data-r="eyebrow" style={{ fontSize: "11px", letterSpacing: ".32em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "24px", display: "flex", alignItems: "center", gap: "14px" }}>
       <span style={{ display: "inline-block", width: "24px", height: "1px", background: C.ink }} />
       <span style={{ color: C.red, fontVariantNumeric: "tabular-nums" }}>{num}</span>
       {children}
@@ -2298,7 +2529,7 @@ function Eyebrow({ children, num }: { children: React.ReactNode; num: string }) 
 
 function DetSection({ title, titleEm, sub, children }: { title: string; titleEm: string; sub: string; children: React.ReactNode }) {
   return (
-    <div style={{ padding: "48px 0", borderBottom: `1px solid ${C.line}` }}>
+    <div data-r="det-section" style={{ padding: "48px 0", borderBottom: `1px solid ${C.line}` }}>
       <h2 style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "32px", letterSpacing: "-.02em", marginBottom: "6px" }}>
         {title} <em style={{ fontStyle: "italic", color: C.red }}>{titleEm}</em>
       </h2>
@@ -2314,14 +2545,14 @@ function FlightBlock({ children }: { children: React.ReactNode }) {
 
 function FlightLeg({ from, to, flight, dur }: { from: { time: string; code: string; name: string; date: string }; to: { time: string; code: string; name: string; date: string }; flight: string; dur: string }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "48px", padding: "36px 0", alignItems: "center", borderTop: `1px solid ${C.line2}` }}>
+    <div data-r="flight-leg" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "48px", padding: "36px 0", alignItems: "center", borderTop: `1px solid ${C.line2}` }}>
       <div>
-        <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "48px", letterSpacing: "-.03em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{from.time}</div>
+        <div data-r="flight-time" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "48px", letterSpacing: "-.03em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{from.time}</div>
         <div style={{ fontSize: "11px", letterSpacing: ".28em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginTop: "14px" }}>{from.code}</div>
-        <div style={{ fontSize: "13px", color: C.ink2, marginTop: "4px" }}>{from.name}</div>
+        <div data-r="flight-name" style={{ fontSize: "13px", color: C.ink2, marginTop: "4px" }}>{from.name}</div>
         <div style={{ fontSize: "12px", color: C.muted, marginTop: "10px", fontFamily: C.serif, fontStyle: "italic" }}>{from.date}</div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", minWidth: "140px" }}>
+      <div data-r="flight-leg-mid" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", minWidth: "140px" }}>
         <div style={{ fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>{flight}</div>
         <div style={{ width: "100%", height: "1px", background: C.ink, position: "relative", opacity: .7 }}>
           <span style={{ position: "absolute", right: "-3px", top: "-4px", width: "7px", height: "7px", borderRadius: "50%", background: C.red, display: "inline-block" }} />
@@ -2329,10 +2560,10 @@ function FlightLeg({ from, to, flight, dur }: { from: { time: string; code: stri
         </div>
         <div style={{ fontSize: "12px", color: C.ink2, fontFamily: C.serif, fontStyle: "italic" }}>{dur}</div>
       </div>
-      <div style={{ textAlign: "right" }}>
-        <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "48px", letterSpacing: "-.03em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{to.time}</div>
+      <div data-r="flight-end" style={{ textAlign: "right" }}>
+        <div data-r="flight-time" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "48px", letterSpacing: "-.03em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{to.time}</div>
         <div style={{ fontSize: "11px", letterSpacing: ".28em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginTop: "14px" }}>{to.code}</div>
-        <div style={{ fontSize: "13px", color: C.ink2, marginTop: "4px" }}>{to.name}</div>
+        <div data-r="flight-name" style={{ fontSize: "13px", color: C.ink2, marginTop: "4px" }}>{to.name}</div>
         <div style={{ fontSize: "12px", color: C.muted, marginTop: "10px", fontFamily: C.serif, fontStyle: "italic" }}>{to.date}</div>
       </div>
     </div>
@@ -2345,7 +2576,7 @@ function Layover({ children }: { children: React.ReactNode }) {
 
 function InfoGrid({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 64px", marginTop: "36px", paddingTop: "36px", borderTop: `1px solid ${C.line2}`, ...style }}>
+    <div data-r="info-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 64px", marginTop: "36px", paddingTop: "36px", borderTop: `1px solid ${C.line2}`, ...style }}>
       {children}
     </div>
   );
@@ -2353,7 +2584,7 @@ function InfoGrid({ children, style }: { children: React.ReactNode; style?: Reac
 
 function IR({ label, val, copy, id, copied, onCopy, href, valStyle }: { label: string; val: string; copy?: boolean; id?: string; copied?: string | null; onCopy?: (v: string, id: string) => void; href?: string; valStyle?: React.CSSProperties }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "16px", padding: "14px 0", borderBottom: `1px solid ${C.line2}`, fontSize: "14px" }}>
+    <div data-r="ir-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "16px", padding: "14px 0", borderBottom: `1px solid ${C.line2}`, fontSize: "14px" }}>
       <span style={{ color: C.muted, fontSize: "12px", letterSpacing: ".06em", fontWeight: 500 }}>{label}</span>
       {href
         ? <a href={href} style={{ fontWeight: 500, color: C.red, textDecoration: "underline", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>{val}</a>
@@ -2379,7 +2610,7 @@ function NoteBox({ children, type = "default" }: { children: React.ReactNode; ty
 
 function EmergSection({ title, children, last }: { title: string; children: React.ReactNode; last?: boolean }) {
   return (
-    <div style={{ padding: "48px 0", borderBottom: last ? "none" : `1px solid ${C.line}` }}>
+    <div data-r="emerg-section" style={{ padding: "48px 0", borderBottom: last ? "none" : `1px solid ${C.line}` }}>
       <h2 style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "28px", letterSpacing: "-.02em", marginBottom: "32px" }}>{title}</h2>
       {children}
     </div>
@@ -2387,7 +2618,7 @@ function EmergSection({ title, children, last }: { title: string; children: Reac
 }
 
 function EmergGrid({ children }: { children: React.ReactNode }) {
-  return <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "0 80px" }}>{children}</div>;
+  return <div data-r="emerg-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "0 80px" }}>{children}</div>;
 }
 
 function DragDots() {
@@ -2423,7 +2654,7 @@ function DocCard({ variants, mine }: { variants: DocEntry[]; mine?: boolean }) {
   const isOutdated = (d.meta as { outdated_schedule?: boolean })?.outdated_schedule;
 
   return (
-    <div style={{ padding: "20px 22px", border: `1px solid ${mine ? C.red : C.line}`, background: mine ? C.redSoft : "transparent", display: "flex", flexDirection: "column", gap: "14px", minHeight: "192px", position: "relative" }}>
+    <div data-r="doc-card" style={{ padding: "20px 22px", border: `1px solid ${mine ? C.red : C.line}`, background: mine ? C.redSoft : "transparent", display: "flex", flexDirection: "column", gap: "14px", minHeight: "192px", position: "relative" }}>
       {mine && <span style={{ position: "absolute", top: "10px", right: "12px", fontSize: "10px", color: C.red, letterSpacing: ".2em", fontWeight: 600 }}>★</span>}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         {o.avatar
@@ -2478,14 +2709,14 @@ function DocCard({ variants, mine }: { variants: DocEntry[]; mine?: boolean }) {
 
 function EI({ name, sub, num, href, plain, italic, numRed }: { name: string; sub: string; num: string; href?: string; plain?: boolean; italic?: boolean; numRed?: boolean }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "24px", alignItems: "baseline", padding: "20px 0", borderBottom: `1px solid ${C.line2}` }}>
+    <div data-r="ei" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "24px", alignItems: "baseline", padding: "20px 0", borderBottom: `1px solid ${C.line2}` }}>
       <div>
         <div style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "18px", letterSpacing: "-.01em", lineHeight: 1.3 }}>{name}</div>
         <small style={{ display: "block", fontFamily: C.sans, fontStyle: "normal", fontSize: "12px", color: C.muted, fontWeight: 400, letterSpacing: 0, marginTop: "4px", lineHeight: 1.5 }}>{sub}</small>
       </div>
       {href
-        ? <a href={href} style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "22px", letterSpacing: "-.01em", fontVariantNumeric: "tabular-nums", color: C.red, whiteSpace: "nowrap", textDecoration: "none" }}>{num}</a>
-        : <div style={{ fontFamily: plain ? C.sans : C.serif, fontWeight: plain ? 400 : 300, fontSize: plain ? "18px" : "22px", letterSpacing: plain ? 0 : "-.01em", fontVariantNumeric: plain ? undefined : "tabular-nums", color: numRed ? C.red : plain ? C.ink2 : C.red, whiteSpace: "nowrap", fontStyle: italic ? "italic" : "normal" }}>{num}</div>
+        ? <a href={href} data-r="ei-num" style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "22px", letterSpacing: "-.01em", fontVariantNumeric: "tabular-nums", color: C.red, whiteSpace: "nowrap", textDecoration: "none" }}>{num}</a>
+        : <div data-r="ei-num" style={{ fontFamily: plain ? C.sans : C.serif, fontWeight: plain ? 400 : 300, fontSize: plain ? "18px" : "22px", letterSpacing: plain ? 0 : "-.01em", fontVariantNumeric: plain ? undefined : "tabular-nums", color: numRed ? C.red : plain ? C.ink2 : C.red, whiteSpace: "nowrap", fontStyle: italic ? "italic" : "normal" }}>{num}</div>
       }
     </div>
   );
