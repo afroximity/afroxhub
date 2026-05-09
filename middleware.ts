@@ -11,7 +11,7 @@ const COOKIE = "jp26_auth";
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isRoom = path.startsWith("/rooms/japan2026");
-  const isDoc  = path.startsWith("/docs/japan2026");
+  const isDoc  = path.startsWith("/docs/japan2026") || path.startsWith("/japan2026/source");
   const isApi  = path.startsWith("/api/japan2026");
 
   // Auth route is always reachable.
@@ -54,6 +54,7 @@ export const config = {
   matcher: [
     "/rooms/japan2026/:path*",
     "/docs/japan2026/:path*",
+    "/japan2026/source/:path*",
     "/api/japan2026/:path*",
   ],
 };

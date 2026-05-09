@@ -53,7 +53,7 @@ Re-run the script. It's idempotent (upserts on `(room, id)` where `id = sha256(o
 
 Classifying a doc into Belgeler is **step 1**. The doc usually contains data that should also flow into other tabs. Step 2 is consuming that data and integrating it.
 
-Each time the user drops a new file in `resources/`, work through this checklist:
+Each time the user drops a new file in `public/japan2026/source/`, work through this checklist:
 
 ### A. Read the file completely
 Use the `Read` tool on the PDF or image. Extract every actionable fact:

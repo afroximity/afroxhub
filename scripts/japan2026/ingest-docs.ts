@@ -168,7 +168,7 @@ function shortId(s: string) {
 
 async function main() {
   const repoRoot = resolve(__dirname, "..", "..");
-  const resourcesDir = join(repoRoot, "resources");
+  const resourcesDir = join(repoRoot, "public", "japan2026", "source");
   const outDir = join(repoRoot, "public", "docs", "japan2026");
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
