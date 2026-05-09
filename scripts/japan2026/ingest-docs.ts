@@ -108,6 +108,12 @@ const RULES: Rule[] = [
     meta: { qr_for: "Immigration + Customs" },
   },
   {
+    match: eq("zenci-visit-japan-qr.jpeg"),
+    owner: "zenci", category: "visa-qr", doc_type: "visit-japan-web", slug: "visit-japan-web-qr",
+    lang: null, title: "Zenci · Visit Japan Web QR",
+    meta: { qr_for: "Immigration + Customs" },
+  },
+  {
     match: eq("WhatsApp Image 2026-05-03 at 14.07.07.jpeg"),
     owner: "ossan", category: "visa-qr", doc_type: "visit-japan-web", slug: "visit-japan-web-qr",
     lang: null, title: "Ossan · Visit Japan Web QR",

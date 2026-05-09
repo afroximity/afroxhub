@@ -1,0 +1,21 @@
+# afroxhub asset manifest
+# Auto-appended by scripts/assets/gifcities.ts and scripts/assets/buttons.ts.
+# One YAML doc per asset. See geocity.md §Preservation for the schema.
+
+- id: bg_purple-lace_01
+  file: /public/gifs/bg/purple-lace.jpg
+  source_page: "https://pixelmoondust.neocities.org/"
+  source_blob: "https://file.garden/ZWlUCY4S7Xz2vypS/archived%20backgrounds/colours/purple/backg130.jpg"
+  source_type: archived_gif
+  captured_on: 2026-05-09
+  query: "purple lace tile"
+  dimensions: tile
+  content_sha1: pending
+  mood_tags:
+    - bg
+    - purple
+    - lace
+    - hub-default
+  alt: "purple lace fabric tile used as the (site) hub wallpaper"
+  license_note: "Originally hotlinked from file.garden via pixelmoondust.neocities.org. Self-hosted 2026-05-09."
+

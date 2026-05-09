@@ -103,6 +103,39 @@ const PHRASE_CATS: PhraseCategory[] = [
     ],
   },
   {
+    id: "bekar", num: "03", title: "Bekâr hayatı",
+    intro: "Üç bekâr — Kabukicho'da gece, Golden Gai'de izakaya kuyruğu, son tren kaçırma riski, Tobita Shinchi merakı, eczanede utangaç sorular, sokak çıkartıcılarına 'hayır' deme sanatı. Üç altın kural: (1) Touts'tan bir şey alma — 'no foreigner' tabelası varsa girme, kavga etme. (2) Yakuza-bağlantılı dükkâna girme; ¥10,000'lik bira gelir. (3) Son tren ya 00:00 ya 00:30 — kaçırırsan ya kapsül otel ya sabah 05:00 ilk tren.",
+    phrases: [
+      { jp: "三人ですが、入れますか？", romaji: "San-nin desu ga, hairemasu ka?", tr: "Üç kişiyiz, yer var mı?", literal: "'üç kişiyiz, girebilir miyiz?'", use: "Izakaya, ramen, suşi bar girişinde. Küçük yerler 'man'in' (dolu) der — alınma, sıradaki kapı.", tone: "Standard nazik. Önce dışarıdan tezgâhı görmeye çalış." },
+      { jp: "とりあえず、生三つ！", romaji: "Toriaezu, nama mittsu!", tr: "Önce üç fıçı bira!", literal: "'şimdilik, taze üç!'", use: "Izakaya açılış hamlesi — masa daha menü açmadan söylenir. 'Toriaezu nama' Japonya'nın evrensel komutu.", tone: "Rahat, neşeli. Üç bekârın masaya oturduğu an söylenecek tek cümle." },
+      { jp: "お通しは何ですか？", romaji: "Otōshi wa nan desu ka?", tr: "Bu küçük tabak ne?", use: "İzakaya'da otomatik gelen mini meze. ¥300–600 masa başına — yasal masa ücreti yerine geçer, itiraz etme.", tone: "Bilen sorgu. Tepki vermek yabancı acemi belirtisi." },
+      { jp: "おすすめの日本酒、ありますか？", romaji: "Osusume no nihonshu, arimasu ka?", tr: "Tavsiye ettiğiniz sake var mı?", use: "Sake menüsü Japonca okunamaz — bırak şef seçsin. 'Karakuchi' (kuru) / 'amakuchi' (tatlı) tercih ekleyebilirsin.", tone: "Saygılı. Şef bunu komplimani sayar, en güzelini koyar." },
+      { jp: "同じものをもう一杯", romaji: "Onaji mono o mō ippai", tr: "Aynısından bir tane daha", use: "Bardağı kaldırıp söyle. 3 kişi içinse 'mō san-bai' (üç bardak daha).", tone: "Rahat, sürekli kullanılır. İzakaya ekonomisinin ana çarkı." },
+      { jp: "別々で払えますか？", romaji: "Betsu-betsu de haraemasu ka?", tr: "Ayrı ayrı ödeyebilir miyiz?", use: "Üç kişi, üç fatura. Küçük yerler kabul etmez — 'muri desu' (mümkün değil) derler. O zaman tek kart, sonra Splitwise.", tone: "Pratik. Önceden sor — hesap geldikten sonra kavga olmasın." },
+      { jp: "割り勘で", romaji: "Warikan de", tr: "Eşit bölüşelim / Alman usulü", use: "Tek fatura geldiyse içeride bölüşürsün. Japonya'da çok yaygın, utanılacak bir şey değil.", tone: "Standard erkek arası adet." },
+      { jp: "結構です、ありがとう", romaji: "Kekkō desu, arigatō", tr: "Almıyorum, sağolun", use: "Kabukicho'da, Susukino'da, Namba'da Afrikalı/Nijeryalı tout sana yapışır — 'cheap drink, beautiful girl'. Yürümeye devam et, göz teması yok, bunu tekrarla.", tone: "Net ama agresif değil. Durursan satarlar; ısrar ederse 'iie!' sertçe." },
+      { jp: "今、急いでいます", romaji: "Ima, isoide imasu", tr: "Şu an aceleyim", use: "Tout'a ikinci hamle. Yürürken söyle, durma.", tone: "Kibar bahane. Daha çok Japon tarzı 'hayır'." },
+      { jp: "外国人、大丈夫ですか？", romaji: "Gaikokujin, daijōbu desu ka?", tr: "Yabancı, sorun olur mu?", literal: "'yabancı, problem yok mu?'", use: "Snack bar, küçük izakaya, hostess kulübü kapısında. 'No foreigner' (gaijin okotowari) tabelası varsa ya da içeride hiç yabancı yoksa SOR — girip kovulmak çok daha utanç verici.", tone: "Saygılı, doğrudan. 'Iie' alırsan gülümseyip git — koruma amaçlı, fiyat kapanı problemi var." },
+      { jp: "料金はどうなっていますか？", romaji: "Ryōkin wa dō natte imasu ka?", tr: "Ücret sistemi nasıl?", use: "Hostess bar, snack, kyabakura'ya OTURMADAN ÖNCE sor. Set charge (¥3,000–10,000), nomihōdai (sınırsız içki ¥3,000–5,000/saat), shimei (kız seçme ¥1,000), service fee, tax — TÜM rakamları topla.", tone: "Ciddi pratik. Sormadan oturmak = sabah ¥80,000 fatura. Mama-san saygılı olur, açıklar." },
+      { jp: "ぼったくりですか？", romaji: "Bottakuri desu ka?", tr: "Bu kazık mı?", use: "Hesap absürt geldiyse direkt sor. 'Bottakuri' = klasik turist tuzağı kelimesi, mama-san duyunca tonu yumuşar — polis çağırma sinyali.", tone: "Sert ama serin. Gerçekten kazıkladılarsa: '110 wo yobimasu'. Genelde fiyat hızla düşer." },
+      { jp: "ここ、空いていますか？", romaji: "Koko, aite imasu ka?", tr: "Burası boş mu?", use: "Bar tezgâhında, dolu izakaya'da yan koltuk. Karşıdaki kız/grup için de — 'ai seki' (paylaşılan oturma) Japonya'da normal.", tone: "Nazik. Sohbet açmanın en doğal yolu." },
+      { jp: "一杯、ご馳走してもいいですか？", romaji: "Ippai, gochisō shite mo ii desu ka?", tr: "Bir içki ısmarlayabilir miyim?", literal: "'bir bardak, ziyafet etsem olur mu?'", use: "Bar/snack'te. 'Hai' alırsan barmen'e söyle. 'Iie' alırsan sırıt, devam etme.", tone: "Çok kibar. Israrcı erkeklik Japonya'da işlemez — bir kez teklif, ret = bitti." },
+      { jp: "お名前を聞いてもいいですか？", romaji: "Onamae o kiite mo ii desu ka?", tr: "Adınızı sorabilir miyim?", use: "İlk adım. Ardından kendin: 'Boku wa Eren desu' (ben Eren).", tone: "Saygılı. Direkt 'namae wa?' kabaca." },
+      { jp: "LINE交換してもいい？", romaji: "LINE kōkan shite mo ii?", tr: "LINE değişelim mi?", use: "Japonya'nın WhatsApp'ı LINE. Numara değil LINE QR. Whatsapp/Instagram fail.", tone: "Rahat, samimi. 'Iie' alırsan gülümse, geç." },
+      { jp: "彼氏、いますか？", romaji: "Kareshi, imasu ka?", tr: "Erkek arkadaşın var mı?", use: "Üçüncü-dördüncü içkiden sonra. Cevap 'iru' (var) ise oyun bitti, sırıt, dostluğa dön.", tone: "Direkt. Japon kız 'iru' der ama yalan olabilir — sosyal kibar ret. Üstelemek = ayıp." },
+      { jp: "ここは何のお店ですか？", romaji: "Koko wa nan no o-mise desu ka?", tr: "Burası ne tür bir mekân?", use: "Bilmediğin kapıdan içeri girmeden önce. Hostess club, snack, soapland, pink salon — hepsi farklı kurallar, fiyatlar, riskler.", tone: "Bilen sorgu. Tobita Shinchi (Osaka) tarihi 'restoran' sokağı — fotoğraf yasak, yabancı zor girer. Saygıyla geç." },
+      { jp: "写真、撮ってもいいですか？", romaji: "Shashin, totte mo ii desu ka?", tr: "Fotoğraf çekebilir miyim?", use: "Tobita Shinchi, Kabukicho ara sokakları, hostess club önleri — HAYIR demeden önce sor. Çoğu yer 'dame' (yasak) der.", tone: "Saygılı. Yasak yerde çekersen yakuza-tipi adam saniyede yanına gelir, telefonu siler." },
+      { jp: "コンドームはどこですか？", romaji: "Kondōmu wa doko desu ka?", tr: "Prezervatif nerede?", use: "Konbini'de (7-Eleven, FamilyMart) raf gizli olabilir — kasanın arkasında veya en üst raf. Drogeri'de açıkta. 'Sagami Original' yerli kalite marka.", tone: "Nötr — Japon kasiyer yüzünü hiç bozmaz, sen de bozma." },
+      { jp: "二日酔いに効く薬、ありますか？", romaji: "Futsukayoi ni kiku kusuri, arimasu ka?", tr: "Akşamdan kalmaya iyi gelen ilaç var mı?", use: "Drogeri sabah açılışı. 'Hepalyse' (kahverengi şişe), 'Ukon no Chikara' (zerdeçal shot, konbini'de) klasik. Sake öncesi de içilir, koruyucu.", tone: "Pratik. Eczacı ciddiye alır, üç tane uzatır." },
+      { jp: "終電は何時ですか？", romaji: "Shūden wa nan-ji desu ka?", tr: "Son tren saat kaç?", use: "Bartender'a 23:30 civarı sor. Tokyo metroları 00:00–00:30 arası kapanır. Kaçırırsan: taksi (¥5,000–15,000), kapsül otel (¥3,500), manga kafe (¥2,000, 05:00 ilk tren).", tone: "Hayat kurtaran cümle. Bu sorulmazsa ya cüzdan ölür ya bacaklar." },
+      { jp: "近くにカプセルホテルはありますか？", romaji: "Chikaku ni kapuseru hoteru wa arimasu ka?", tr: "Yakında kapsül otel var mı?", use: "Son tren gitti, otele dönmek pahalı. Shinjuku/Shibuya/Namba çevresinde 5 dk yürüme mesafesinde mutlaka var.", tone: "Pratik. Dövmen varsa onsen'li yerlere girme — '入れ墨お断り' (irezumi okotowari) tabelası." },
+      { jp: "タクシーで○○まで、いくらぐらいですか？", romaji: "Takushī de ○○ made, ikura gurai desu ka?", tr: "Taksiyle ○○'a yaklaşık ne kadar?", use: "Otele dönüş tahmini. Şofor metre üzerinden gider ama tahmin verir. Tokyo gece zammı 22:00 sonrası %20.", tone: "Pratik. Üç kişi bölüşürse tren kaçırma maliyeti telafi olur." },
+      { jp: "ホテルまで送ってください", romaji: "Hoteru made okutte kudasai", tr: "Beni otele götürün", use: "Adresi gösterirken. Sarhoşsan kart üzerine yazılı adresini hep yanında taşı.", tone: "Net. Şofor sessizdir, küçük konuşma beklemiyor." },
+      { jp: "あいつは飲み過ぎた", romaji: "Aitsu wa nomisugita", tr: "Bu çocuk çok içti", use: "Garson/şofor/dostlara — Ossan masaya yatınca. Bir bardak su iste: 'omizu, ippai onegaishimasu'.", tone: "Hafif komik, samimi. Japonlar 'sarhoş arkadaşı taşıyan grup'a sempatiyle bakar." },
+      { jp: "もう帰ろう", romaji: "Mō kaerō", tr: "Hadi artık dönelim", use: "Grup içi kapanış. Üç bekârdan birinin gece bitirme yetkisi.", tone: "Samimi, yumuşak komut. Saat 03:00'te söylenirse herkes nefes alır." },
+    ],
+  },
+  {
     id: "alisveris", num: "04", title: "Alışveriş & pazarlık",
     intro: "Pazarlık Japonya'da nadirdir — fiyat etiketi sabit. Ama Ameyoko (Tokyo), Kuromon (Osaka), antika pazarları, don muki (vergi-iade dükkânları) ve elektronik mağazalarda denenir. Anahtar: gülümse, ısrar etme, ilk 'hayır'da çekil.",
     phrases: [
@@ -152,7 +185,7 @@ const PHRASE_CATS: PhraseCategory[] = [
     ],
   },
   {
-    id: "acil", num: "06", title: "Acil & sağlık",
+    id: "acil", num: "07", title: "Acil & sağlık",
     intro: "Umarız hiç kullanmazsın. Polis 110, ambulans 119. Eczane = yakkyoku. Hastane = byōin. Pasaport kayıp olursa Türk Büyükelçiliği (Tokyo) +81 3 3470 0640 — Acil sekmesinde de var.",
     phrases: [
       { jp: "助けて！", romaji: "Tasukete!", tr: "İmdat!", use: "Acil — kalabalıkta sesle, sokakta tehlikede.", tone: "Aciliyet. Japonya genelde güvenli ama yine de bil." },
@@ -169,7 +202,7 @@ const PHRASE_CATS: PhraseCategory[] = [
     ],
   },
   {
-    id: "nezaket", num: "07", title: "Nezaket katmanları",
+    id: "nezaket", num: "08", title: "Nezaket katmanları",
     intro: "Japonca'da 'nasıl konuştuğun' 'ne dediğin' kadar önemli. Bu sekme cümle değil davranış rehberi — bilince mağaza/restoran çok daha yumuşak geçer.",
     phrases: [
       { jp: "〜さん", romaji: "-san", tr: "Bay/Bayan eki", use: "Her isimden sonra: Tanaka-san, Eren-san. Kendi ismine ASLA -san ekleme — kibirli kaçar.", tone: "Standard saygı. -sama daha yüksek (müşteri/tanrı), -kun erkek arkadaş, -chan kız/çocuk." },
@@ -187,7 +220,7 @@ const PHRASE_CATS: PhraseCategory[] = [
     ],
   },
   {
-    id: "sayilar", num: "08", title: "Sayılar, saat, sayaçlar",
+    id: "sayilar", num: "09", title: "Sayılar, saat, sayaçlar",
     intro: "Japonca'da 'iki bira' demek için bira'nın şekline göre farklı sayaç kullanılır. Acemiyi kıran kısım. Aşağıdakini bilmen yeter — gerisini parmakla göster.",
     phrases: [
       { jp: "1, 2, 3, 4, 5", romaji: "Ichi, ni, san, shi/yon, go", tr: "1, 2, 3, 4, 5", use: "Soyut sayma — fiyat, telefon, oda numarası. 4 için 'shi' uğursuz (= ölüm), 'yon' tercih.", tone: "Temel." },
@@ -207,9 +240,7 @@ const PHRASE_CATS: PhraseCategory[] = [
 
 
 // Docs we know SHOULD exist but haven't been ingested yet.
-const EXPECTED_DOCS: ExpectedDoc[] = [
-  { owner: "zenci", category: "visa-qr", title: "Visit Japan Web QR", reason: "Eren ve Ossan'da var, Zenci'de eksik." },
-];
+const EXPECTED_DOCS: ExpectedDoc[] = [];
 
 // ── ZERO-STATE CONSTANTS (seed when DB is empty) ───────────────────────────
 function uid() { return crypto.randomUUID(); }
