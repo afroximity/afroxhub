@@ -2,55 +2,135 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 const NAV_LINKS = [
+  { href: "/hub",   label: "Home" },
   { href: "/rooms", label: "Rooms" },
   { href: "/tools", label: "Tools" },
-  { href: "/", label: "Home" },
 ];
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.18),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(139,92,246,0.18),transparent_30%),radial-gradient(circle_at_30%_90%,rgba(34,197,94,0.16),transparent_32%)]" />
-      <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-6 pb-10 pt-8">
-        <header className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/5 px-5 py-4 shadow-lg backdrop-blur">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-400 to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/40 transition duration-300 group-hover:scale-105 group-hover:shadow-emerald-500/40" />
-              <div className="leading-tight">
-                <p className="text-sm uppercase tracking-[0.2em] text-cyan-200">
-                  Afrox Hub
-                </p>
-                <p className="text-lg font-semibold text-white">
-                  Experiments, Rooms & Tools
-                </p>
+    <div style={{
+      backgroundColor: "#0a0014",
+      backgroundImage: "url('https://file.garden/ZWlUCY4S7Xz2vypS/archived%20backgrounds/colours/purple/backg130.jpg')",
+      backgroundRepeat: "repeat",
+      /* To self-host later: save to public/gifs/bg/purple-lace.jpg and update url() */
+      minHeight: "100vh",
+      fontFamily: "'Courier New', monospace",
+      color: "#ccc",
+    }}>
+      <div style={{
+        width: "780px",
+        maxWidth: "100%",
+        margin: "0 auto",
+        border: "1px solid #9D00FF",
+        borderTop: "none",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+
+        {/* ── SITE HEADER ── */}
+        <header style={{
+          borderBottom: "2px solid #9D00FF",
+          background: "linear-gradient(180deg, #1a0033 0%, #0a0014 100%)",
+          padding: "0",
+        }}>
+          {/* Top banner row */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "10px 14px",
+            borderBottom: "1px dotted #3a0066",
+          }}>
+            <Link href="/hub" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+              {/* GIF: public/gifs/misc/site-logo.gif */}
+              <div style={{
+                width: 36,
+                height: 36,
+                background: "radial-gradient(circle, #9D00FF 0%, #0a0014 80%)",
+                border: "1px solid #9D00FF",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 18,
+                boxShadow: "0 0 10px rgba(157,0,255,0.5)",
+                animation: "gc-float 4s ease-in-out infinite",
+              }}>
+                ✦
+              </div>
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-vt323), Impact, 'Arial Black', sans-serif",
+                  fontSize: 28,
+                  letterSpacing: "0.15em",
+                  color: "#9D00FF",
+                  textShadow: "0 0 10px #9D00FF, 0 0 20px rgba(157,0,255,0.4)",
+                  textTransform: "uppercase",
+                }}>
+                  AFROXIMITY.COM
+                </div>
+                <div style={{ fontSize: 9, color: "#555", letterSpacing: "0.1em" }}>
+                  {/* COPY: site tagline — fill via enrich session */}
+                  Area51 / Vault / afroxhub
+                </div>
               </div>
             </Link>
-            <nav className="flex items-center gap-2 text-sm font-medium text-slate-200">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="rounded-full px-3 py-1 transition hover:bg-white/10"
-                >
-                  {link.label}
-                </Link>
+
+            <nav style={{ display: "flex", gap: 0 }}>
+              {NAV_LINKS.map((link, i) => (
+                <span key={link.href} style={{ display: "flex", alignItems: "center" }}>
+                  {i > 0 && <span style={{ color: "#3a0066", padding: "0 4px", fontSize: 12 }}>|</span>}
+                  <Link
+                    href={link.href}
+                    style={{
+                      fontFamily: "'Courier New', monospace",
+                      fontSize: 12,
+                      color: "#00FF00",
+                      textDecoration: "none",
+                      padding: "3px 8px",
+                      textShadow: "0 0 4px rgba(0,255,0,0.5)",
+                      letterSpacing: "0.05em",
+                      transition: "color 0.15s, text-shadow 0.15s",
+                    }}
+                  >
+                    [ {link.label} ]
+                  </Link>
+                </span>
               ))}
             </nav>
           </div>
-          <p className="max-w-3xl text-sm text-slate-300">
-            A modular playground for rooms and tools. Each experience lives in
-            its own sandboxed directory with its own assets, UI, and optional
-            backend logic.
-          </p>
+
+          {/* Animated divider */}
+          <div className="gc-divider" style={{ margin: 0 }} />
         </header>
-        <main className="mt-8 flex-1">{children}</main>
-        <footer className="mt-10 text-xs text-slate-400">
-          Ready to drop in new rooms and tools — just add a manifest under
-          <code className="ml-1 rounded bg-white/10 px-1 py-0.5 text-[0.8em] text-slate-200">
-            /content
-          </code>
-          .
+
+        {/* ── MAIN CONTENT ── */}
+        <main style={{ flex: 1, padding: "14px" }}>
+          {children}
+        </main>
+
+        {/* ── SITE FOOTER ── */}
+        <footer style={{
+          borderTop: "1px solid #3a0066",
+          padding: "10px 14px",
+          background: "rgba(0,0,0,0.6)",
+          textAlign: "center",
+        }}>
+          <div className="gc-divider" style={{ marginBottom: 8 }} />
+          <p style={{ fontSize: 9, color: "#333", letterSpacing: "0.05em" }}>
+            afroximity.com — best viewed in Netscape Navigator 4.0 at 800×600 — © 2026
+          </p>
+          <p style={{ fontSize: 9, color: "#222", marginTop: 3 }}>
+            <a href="/" style={{ color: "#444", textDecoration: "none" }}>SPLASH</a>
+            {" · "}
+            <a href="/rooms" style={{ color: "#444", textDecoration: "none" }}>ROOMS</a>
+            {" · "}
+            <a href="/tools" style={{ color: "#444", textDecoration: "none" }}>TOOLS</a>
+          </p>
         </footer>
+
       </div>
     </div>
   );

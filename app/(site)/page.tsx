@@ -1,108 +1,174 @@
-import Link from "next/link";
-import { listRooms } from "@/lib/rooms";
-import { listTools } from "@/lib/tools";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default async function HomePage() {
-  const [rooms, tools] = await Promise.all([listRooms(), listTools()]);
+export default function SplashGate() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") router.push("/hub");
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [router]);
 
   return (
-    <div className="space-y-10">
-      <section className="rounded-3xl border border-white/5 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-800/70 p-8 shadow-2xl shadow-cyan-500/10 backdrop-blur">
-        <p className="mb-3 inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
-          Modular playground
-        </p>
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-semibold text-white sm:text-5xl">
-              The hub for experiments, rooms, and tools.
-            </h1>
-            <p className="max-w-3xl text-lg text-slate-200">
-              Drop any experience into <code className="rounded bg-white/10 px-1">/content</code>{" "}
-              and it is instantly routable. Each room/tool is sandboxed with its
-              own UI, assets, and optional backend.
-            </p>
-          </div>
-          <div className="flex gap-3 text-sm font-medium">
-            <Link
-              href="/rooms"
-              className="rounded-full bg-cyan-400 px-4 py-2 text-slate-900 shadow-lg shadow-cyan-400/40 transition hover:-translate-y-0.5 hover:shadow-emerald-300/30"
-            >
-              Browse Rooms
-            </Link>
-            <Link
-              href="/tools"
-              className="rounded-full border border-white/20 px-4 py-2 text-white transition hover:bg-white/10"
-            >
-              Browse Tools
-            </Link>
-          </div>
-        </div>
-      </section>
+    /*
+     * position:fixed + z-index:9999 breaks out of the (site) layout visually.
+     * The geocities site chrome renders behind this — invisible to the user.
+     */
+    <div
+      onClick={() => router.push("/hub")}
+      style={{
+        position: "fixed",
+        backgroundImage: "url('https://file.garden/ZWlUCY4S7Xz2vypS/archived%20backgrounds/colours/purple/backg130.jpg')",
+        backgroundRepeat: "repeat",
+        inset: 0,
+        zIndex: 9999,
+        background: "#000000",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        userSelect: "none",
+        fontFamily: "'Courier New', monospace",
+        overflow: "hidden",
+      }}
+    >
+      {/* Animated neon corner borders — CSS placeholder until real flame border GIF */}
+      {/* GIF: public/gifs/flames/border-fire-top.gif */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        border: "3px solid transparent",
+        animation: "gc-pulse-border 2.5s ease-in-out infinite",
+        pointerEvents: "none",
+      }} />
 
-      <section className="grid gap-8 md:grid-cols-2">
-        <PreviewPanel
-          title="Rooms"
-          description="Fully isolated experiences that can be React components, iframes, games, or anything else."
-          items={rooms.slice(0, 3)}
-          moreHref="/rooms"
-        />
-        <PreviewPanel
-          title="Tools"
-          description="Utilities with persistence baked in. Each tool ships with its own manifest and assets."
-          items={tools.slice(0, 3)}
-          moreHref="/tools"
-        />
-      </section>
-    </div>
-  );
-}
+      {/* Top-left corner accent */}
+      <div style={{
+        position: "absolute",
+        top: 16,
+        left: 16,
+        width: 60,
+        height: 60,
+        borderTop: "2px solid #9D00FF",
+        borderLeft: "2px solid #9D00FF",
+        animation: "gc-pulse-border 2s ease-in-out infinite",
+      }} />
+      <div style={{
+        position: "absolute",
+        top: 16,
+        right: 16,
+        width: 60,
+        height: 60,
+        borderTop: "2px solid #9D00FF",
+        borderRight: "2px solid #9D00FF",
+        animation: "gc-pulse-border 2s ease-in-out infinite 0.5s",
+      }} />
+      <div style={{
+        position: "absolute",
+        bottom: 16,
+        left: 16,
+        width: 60,
+        height: 60,
+        borderBottom: "2px solid #9D00FF",
+        borderLeft: "2px solid #9D00FF",
+        animation: "gc-pulse-border 2s ease-in-out infinite 1s",
+      }} />
+      <div style={{
+        position: "absolute",
+        bottom: 16,
+        right: 16,
+        width: 60,
+        height: 60,
+        borderBottom: "2px solid #9D00FF",
+        borderRight: "2px solid #9D00FF",
+        animation: "gc-pulse-border 2s ease-in-out infinite 1.5s",
+      }} />
 
-type PreviewPanelProps = {
-  title: string;
-  description: string;
-  items: Array<{ slug: string; title: string; description?: string }> | [];
-  moreHref: string;
-};
-
-function PreviewPanel({ title, description, items, moreHref }: PreviewPanelProps) {
-  return (
-    <div className="flex h-full flex-col gap-4 rounded-2xl border border-white/5 bg-white/5 p-6 shadow-lg backdrop-blur">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold text-white">{title}</h2>
-          <p className="text-sm text-slate-300">{description}</p>
-        </div>
-        <Link
-          href={moreHref}
-          className="text-sm font-medium text-cyan-200 underline-offset-4 transition hover:text-white hover:underline"
-        >
-          View all →
-        </Link>
+      {/* GIF slot: skull or flame centerpiece */}
+      {/* GIF: public/gifs/skulls/burning-skull.gif */}
+      <div style={{
+        width: 100,
+        height: 100,
+        marginBottom: 32,
+        background: "radial-gradient(circle, #3a0066 0%, #000 70%)",
+        border: "1px solid #9D00FF",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 40,
+        animation: "gc-float 3s ease-in-out infinite",
+        boxShadow: "0 0 20px #9D00FF, 0 0 40px rgba(157,0,255,0.3)",
+      }}>
+        ☠
       </div>
-      <div className="grid gap-3">
-        {items.length === 0 && (
-          <p className="text-sm text-slate-400">No entries yet. Add a manifest under /content.</p>
-        )}
-        {items.map((item) => (
-          <Link
-            key={item.slug}
-            href={`${moreHref}/${item.slug}`}
-            className="group rounded-xl border border-white/5 bg-gradient-to-r from-white/5 to-white/0 px-4 py-3 transition hover:-translate-y-[2px] hover:border-cyan-400/50 hover:from-cyan-500/10"
-          >
-            <p className="text-sm uppercase tracking-[0.15em] text-cyan-200">
-              {item.slug}
-            </p>
-            <h3 className="text-lg font-semibold text-white group-hover:text-cyan-50">
-              {item.title}
-            </h3>
-            {item.description && (
-              <p className="text-sm text-slate-300">{item.description}</p>
-            )}
-          </Link>
-        ))}
+
+      {/* Main title */}
+      <h1
+        className="gc-blink"
+        style={{
+          fontFamily: "var(--font-vt323), Impact, 'Arial Black', sans-serif",
+          fontSize: "clamp(36px, 8vw, 80px)",
+          letterSpacing: "0.3em",
+          textTransform: "uppercase",
+          color: "#FF00FF",
+          textShadow: "0 0 10px #FF00FF, 0 0 30px rgba(255,0,255,0.5), 0 0 60px rgba(255,0,255,0.2), 3px 3px 0 #660033",
+          margin: 0,
+          textAlign: "center",
+          padding: "0 20px",
+        }}
+      >
+        ENTER AFROXIMITY.ZONE
+      </h1>
+
+      {/* Enter button */}
+      <div
+        style={{
+          marginTop: 32,
+          border: "2px solid #9D00FF",
+          padding: "10px 28px",
+          fontFamily: "Impact, sans-serif",
+          fontSize: 20,
+          letterSpacing: "0.25em",
+          color: "#9D00FF",
+          textShadow: "0 0 8px #9D00FF",
+          boxShadow: "0 0 12px rgba(157,0,255,0.4), inset 0 0 12px rgba(157,0,255,0.1)",
+          cursor: "pointer",
+          transition: "all 0.2s",
+          animation: "gc-pulse-border 3s ease-in-out infinite",
+        }}
+      >
+        [ ENTER ]
       </div>
+
+      {/* Subtext */}
+      <p style={{
+        marginTop: 40,
+        fontSize: 11,
+        color: "#555",
+        fontFamily: "'Courier New', monospace",
+        letterSpacing: "0.1em",
+      }}>
+        best viewed in Netscape Navigator 4.0 at 800×600
+      </p>
+
+      <p style={{
+        marginTop: 6,
+        fontSize: 10,
+        color: "#333",
+        fontFamily: "'Courier New', monospace",
+      }}>
+        press ENTER or click anywhere to proceed
+      </p>
+
+      {/* MIDI: public/midi/xfiles-theme.mid */}
+      {/* <audio autoPlay loop src="/midi/xfiles.mp3" /> */}
     </div>
   );
 }

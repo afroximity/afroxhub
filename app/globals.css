@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* ── existing design tokens (used by rooms) ── */
 :root {
   --background: #030712;
   --foreground: #e2e8f0;
+
+  /* ── GeoCities Area51 palette ── */
+  --gc-bg:      #0a0014;
+  --gc-purple:  #9D00FF;
+  --gc-green:   #00FF00;
+  --gc-magenta: #FF00FF;
+  --gc-cyan:    #00FFFF;
+  --gc-red:     #FF0000;
+  --gc-yellow:  #FFFF00;
+  --gc-dark:    #110022;
 }
 
 @theme inline {
@@ -10,6 +21,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-geocities: var(--font-vt323), 'Courier New', monospace;
+  --font-pixel: var(--font-press-start), monospace;
 }
 
 body {
@@ -21,17 +34,315 @@ a {
   text-decoration: none;
 }
 
+/* ── legacy cursor blink (kept for rooms) ── */
 @keyframes cursor-blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
-
 .cursor-blink {
   animation: cursor-blink 1s steps(2, end) infinite;
+}
+
+/* ════════════════════════════════════════
+   GeoCities Hub Animations
+   ════════════════════════════════════════ */
+
+@keyframes gc-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes gc-pulse-border {
+  0%   { box-shadow: 0 0 6px var(--gc-purple), inset 0 0 6px rgba(157,0,255,0.2); border-color: var(--gc-purple); }
+  25%  { box-shadow: 0 0 14px var(--gc-magenta), inset 0 0 10px rgba(255,0,255,0.15); border-color: var(--gc-magenta); }
+  50%  { box-shadow: 0 0 20px var(--gc-cyan), inset 0 0 14px rgba(0,255,255,0.12); border-color: var(--gc-cyan); }
+  75%  { box-shadow: 0 0 14px var(--gc-purple), inset 0 0 10px rgba(157,0,255,0.2); border-color: var(--gc-purple); }
+  100% { box-shadow: 0 0 6px var(--gc-purple), inset 0 0 6px rgba(157,0,255,0.2); border-color: var(--gc-purple); }
+}
+
+@keyframes gc-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes gc-marquee {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(-100%); }
+}
+
+@keyframes gc-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes gc-scanline {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 100px; }
+}
+
+/* ── glitch transition keyframes ── */
+@keyframes gc-glitch-shift {
+  0%   { clip-path: inset(0 0 95% 0); transform: translate(-3px, 0); }
+  10%  { clip-path: inset(15% 0 70% 0); transform: translate(2px, 0); }
+  20%  { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 0); }
+  30%  { clip-path: inset(70% 0 10% 0); transform: translate(3px, 0); }
+  40%  { clip-path: inset(30% 0 55% 0); transform: translate(-1px, 0); }
+  50%  { clip-path: inset(80% 0 5% 0);  transform: translate(2px, 0); }
+  60%  { clip-path: inset(10% 0 80% 0); transform: translate(-3px, 0); }
+  70%  { clip-path: inset(60% 0 25% 0); transform: translate(1px, 0); }
+  80%  { clip-path: inset(40% 0 45% 0); transform: translate(-2px, 0); }
+  90%  { clip-path: inset(5% 0 90% 0);  transform: translate(3px, 0); }
+  100% { clip-path: inset(0 0 95% 0);   transform: translate(-3px, 0); }
+}
+
+@keyframes gc-scanrip {
+  0%   { opacity: 1; transform: translateY(0);    }
+  100% { opacity: 0; transform: translateY(-80px); }
+}
+
+@keyframes gc-char-reveal {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes gc-flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.4; }
+  94%       { opacity: 1; }
+  96%       { opacity: 0.7; }
+  97%       { opacity: 1; }
+}
+
+/* ════════════════════════════════════════
+   GeoCities Utility Classes
+   ════════════════════════════════════════ */
+
+.gc-blink {
+  animation: gc-blink 1s steps(1, end) infinite;
+}
+
+.gc-fast-blink {
+  animation: gc-blink 0.5s steps(1, end) infinite;
+}
+
+.gc-pulse-border {
+  animation: gc-pulse-border 3s ease-in-out infinite;
+  border: 2px solid var(--gc-purple);
+}
+
+.gc-spin {
+  animation: gc-spin 2s linear infinite;
+  display: inline-block;
+}
+
+.gc-float {
+  animation: gc-float 3s ease-in-out infinite;
+}
+
+.gc-flicker {
+  animation: gc-flicker 4s ease-in-out infinite;
+}
+
+.gc-marquee-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.gc-marquee-text {
+  display: inline-block;
+  animation: gc-marquee 18s linear infinite;
+}
+
+/* screaming title — spaced impact caps */
+.gc-screaming {
+  font-family: Impact, 'Arial Black', sans-serif;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+/* terminal green text */
+.gc-terminal {
+  font-family: 'Courier New', Courier, monospace;
+  color: var(--gc-green);
+  text-shadow: 0 0 6px var(--gc-green);
+}
+
+/* neon text variants */
+.gc-text-purple  { color: var(--gc-purple);  text-shadow: 0 0 8px var(--gc-purple); }
+.gc-text-green   { color: var(--gc-green);   text-shadow: 0 0 8px var(--gc-green); }
+.gc-text-magenta { color: var(--gc-magenta); text-shadow: 0 0 8px var(--gc-magenta); }
+.gc-text-cyan    { color: var(--gc-cyan);    text-shadow: 0 0 8px var(--gc-cyan); }
+
+/* 88×31 button style */
+.gc-button-88 {
+  display: inline-block;
+  width: 88px;
+  height: 31px;
+  border: 1px solid var(--gc-purple);
+  font-family: 'Courier New', monospace;
+  font-size: 7px;
+  text-align: center;
+  line-height: 31px;
+  background: var(--gc-dark);
+  color: var(--gc-green);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.gc-button-88:hover {
+  border-color: var(--gc-magenta);
+  color: var(--gc-magenta);
+  box-shadow: 0 0 4px var(--gc-magenta);
+}
+
+/* visitor counter display */
+.gc-counter {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--gc-green);
+  background: #000;
+  border: 1px inset var(--gc-green);
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 4px var(--gc-green);
+}
+
+/* horizontal animated divider fallback (until real GIF sourced) */
+.gc-divider {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg,
+    var(--gc-purple) 0%,
+    var(--gc-magenta) 25%,
+    var(--gc-cyan) 50%,
+    var(--gc-magenta) 75%,
+    var(--gc-purple) 100%
+  );
+  background-size: 200% 100%;
+  animation: gc-marquee 3s linear infinite;
+  border: none;
+  margin: 8px 0;
+  /* GIF: public/gifs/dividers/lightning-divider.gif */
+}
+
+/* table-based layout helpers */
+.gc-table-layout {
+  width: 780px;
+  max-width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.gc-table-layout td {
+  vertical-align: top;
+  padding: 8px;
+}
+
+/* nav column */
+.gc-nav-col {
+  width: 140px;
+  border-right: 1px solid var(--gc-purple);
+  background: rgba(10, 0, 20, 0.8);
+}
+
+/* gifs sidebar column */
+.gc-sidebar-col {
+  width: 130px;
+  border-left: 1px solid var(--gc-purple);
+  background: rgba(10, 0, 20, 0.6);
+  text-align: center;
+}
+
+/* GIF placeholder block */
+.gc-gif-slot {
+  width: 80px;
+  height: 80px;
+  margin: 4px auto;
+  background: linear-gradient(135deg, #1a0033, #000033);
+  border: 1px solid var(--gc-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--gc-purple);
+  font-family: 'Courier New', monospace;
+  animation: gc-pulse-border 3s ease-in-out infinite;
+  /* replace with: background-image: url('/gifs/{category}/{name}.gif') */
+}
+
+/* webring nav */
+.gc-webring {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--gc-cyan);
+}
+
+.gc-webring a {
+  color: var(--gc-cyan);
+  text-decoration: none;
+  border: 1px solid var(--gc-cyan);
+  padding: 1px 4px;
+  font-size: 10px;
+}
+
+.gc-webring a:hover {
+  background: var(--gc-cyan);
+  color: #000;
+}
+
+/* nav link style */
+.gc-nav-link {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--gc-green);
+  text-decoration: none;
+  padding: 3px 0;
+  border-bottom: 1px dotted rgba(0, 255, 0, 0.2);
+  text-shadow: 0 0 4px rgba(0, 255, 0, 0.5);
+  transition: color 0.1s, text-shadow 0.1s;
+}
+
+.gc-nav-link:hover {
+  color: var(--gc-magenta);
+  text-shadow: 0 0 8px var(--gc-magenta);
+  animation: gc-blink 0.3s steps(1, end) 2;
+}
+
+/* room card in directory */
+.gc-room-card {
+  display: block;
+  border: 1px solid var(--gc-purple);
+  background: rgba(17, 0, 34, 0.9);
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'Courier New', monospace;
+}
+
+.gc-room-card:hover {
+  border-color: var(--gc-magenta);
+  box-shadow: 0 0 8px var(--gc-magenta), inset 0 0 8px rgba(255, 0, 255, 0.05);
+}
+
+/* CRT scanline overlay (apply to element with ::after) */
+.gc-crt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
 }
