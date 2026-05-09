@@ -35,16 +35,176 @@ const USERS: Record<UserName, { color: string; letter: string; avatar: string }>
 
 const DEPARTURE = new Date("2026-05-10T13:20:00");
 
-const TABS = [
+type TabDef = { id: string; num: string; label: string; special?: boolean };
+const TABS: TabDef[] = [
   { id: "ozet",      num: "01", label: "Özet" },
   { id: "gunler",    num: "02", label: "Günler" },
   { id: "ucuslar",   num: "03", label: "Uçuşlar" },
   { id: "oteller",   num: "04", label: "Oteller" },
   { id: "arac",      num: "05", label: "Araç" },
   { id: "checklist", num: "06", label: "Checklist" },
-  { id: "belgeler",  num: "07", label: "Belgeler" },
-  { id: "acil",      num: "08", label: "Acil" },
+  { id: "gelmisken", num: "07", label: "Gelmişken", special: true },
+  { id: "belgeler",  num: "08", label: "Belgeler" },
+  { id: "acil",      num: "09", label: "Acil" },
+  { id: "nihongo",   num: "10", label: "Cümleler" },
 ];
+
+const isGelmis = (s: ClSection) => s.title.startsWith("Gelmişken —");
+
+// ── PHRASEBOOK ─────────────────────────────────────────────────────────────
+type Phrase = {
+  jp: string;
+  romaji: string;
+  tr: string;
+  literal?: string;
+  use: string;
+  tone: string;
+};
+type PhraseCategory = {
+  id: string;
+  num: string;
+  title: string;
+  intro: string;
+  phrases: Phrase[];
+};
+
+const PHRASE_CATS: PhraseCategory[] = [
+  {
+    id: "survival", num: "01", title: "Hayatta kalma",
+    intro: "Bu altı tanesi her gün lazım olacak. Aksanı mükemmel olmasa da olur — eğilmek ve gülümsemek cümlenin yarısı.",
+    phrases: [
+      { jp: "こんにちは", romaji: "Konnichiwa", tr: "Merhaba (gündüz)", use: "Öğleden sonra · esnafa, garsona, otelci­ye girerken.", tone: "Nötr nazik. Sabah konnichiwa demek tuhaf — sabah ohayō gozaimasu." },
+      { jp: "おはようございます", romaji: "Ohayō gozaimasu", tr: "Günaydın", literal: "'erken-saygı'", use: "~10:30'a kadar. Kahvaltıda otel personeli, sabah taksici.", tone: "Saygılı tam form. Arkadaşa kısa 'ohayō' yeter." },
+      { jp: "こんばんは", romaji: "Konbanwa", tr: "İyi akşamlar", use: "Akşam karanlık çökünce — izakaya'ya girerken.", tone: "Nötr." },
+      { jp: "ありがとうございます", romaji: "Arigatō gozaimasu", tr: "Teşekkür ederim", literal: "'minnettarım-saygı'", use: "Her servisten sonra. Para üstünü alırken, çay konulurken.", tone: "Tam saygılı. Sadece 'arigatō' = arkadaş arası." },
+      { jp: "すみません", romaji: "Sumimasen", tr: "Pardon / affedersiniz / teşekkürler", literal: "'durmadı / bitmedi (içimde)'", use: "İsviçre çakısı. Garson çağır, geçmek iste, küçük teşekkür et.", tone: "Türkçedeki 'pardon'dan daha geniş — minnet de taşıyor. Günde 30 kez söyleyeceksin." },
+      { jp: "ごめんなさい", romaji: "Gomen nasai", tr: "Özür dilerim", use: "Gerçek bir hata — birine çarptın, geç kaldın.", tone: "Sumimasen'den daha ağır, samimi. İş ortamında değil, kişisel." },
+      { jp: "はい / いいえ", romaji: "Hai / Iie", tr: "Evet / Hayır", use: "Hai aynı zamanda 'seni dinliyorum' anlamı taşır — illa onay değil.", tone: "Iie sert kabul edilir; reddetmek için genelde 'chotto…' (zor biraz) kullanılır." },
+      { jp: "わかりません", romaji: "Wakarimasen", tr: "Anlamıyorum", use: "Hızlı Japonca'ya maruz kalınca. 'Nihongo wakarimasen' = Japonca bilmiyorum.", tone: "Nötr, kibar. Gülümseyerek söyle, panik yok." },
+      { jp: "英語、話せますか？", romaji: "Eigo, hanasemasu ka?", tr: "İngilizce konuşur musunuz?", use: "Bilet gişesi, otel resepsiyonu, restoran.", tone: "Çoğu insan utanarak 'sukoshi' (biraz) der — Google Translate'i çıkar." },
+      { jp: "大丈夫です", romaji: "Daijōbu desu", tr: "Sorun değil / iyiyim / gerek yok", use: "Çok yönlü — poşet teklif edildiğinde 'gerek yok', düşürdüğün şey için 'iyiyim'.", tone: "Yumuşak ret için altın kelime. Eli sallayarak söylenir." },
+    ],
+  },
+  {
+    id: "yemek", num: "02", title: "Yemek & restoran",
+    intro: "İzakaya'da, ramen tezgâhında, suşi barında. Garsonu çağırmak için elini kaldırıp 'sumimasen!' bağırmak ayıp değil — adetten.",
+    phrases: [
+      { jp: "メニューをお願いします", romaji: "Menyū o onegaishimasu", tr: "Menü lütfen", use: "Oturduktan sonra menü gelmediyse.", tone: "Nazik standard. Onegaishimasu = 'rica ederim'." },
+      { jp: "これをください", romaji: "Kore o kudasai", tr: "Bunu istiyorum / bundan rica ediyorum", literal: "'bunu lütfen-ver'", use: "Menüyü işaret et + söyle. Kelime bilmesen de iş görür.", tone: "Doğrudan ama nazik. Sipariş için golden phrase." },
+      { jp: "おすすめは何ですか？", romaji: "Osusume wa nan desu ka?", tr: "Tavsiyeniz ne?", use: "Küçük yerlerde şefe sor — genellikle gurur duyup en iyisini verir.", tone: "Samimi, ilgi gösteriyor. Şef seni sever." },
+      { jp: "アレルギーがあります", romaji: "Arerugī ga arimasu", tr: "Alerjim var", use: "Önüne ekle: 'Ebi (karides) arerugī ga arimasu'.", tone: "Ciddi — Japonlar alerjiyi çok ciddiye alır. Yazılı göstermek daha güvenli." },
+      { jp: "肉なしでお願いします", romaji: "Niku nashi de onegaishimasu", tr: "Etsiz lütfen", use: "Vejetaryen değilsin ama bir öğün hafif istiyorsun. Balık için 'sakana nashi'.", tone: "Net ama nazik. Dashi (balık suyu) çoğu yerde gizli — vegan zorsa söyle." },
+      { jp: "もう一つください", romaji: "Mō hitotsu kudasai", tr: "Bir tane daha", use: "İkinci bira, ekstra gyoza. Bira için: 'Bīru o mō ippai' (bir bardak daha).", tone: "Rahat. Eli kaldırıp 'sumimasen, mō hitotsu!' tipik izakaya hareketi." },
+      { jp: "お水をください", romaji: "Omizu o kudasai", tr: "Su lütfen", use: "Otomatik gelmediyse (gelir genelde, soğuk ve bedava).", tone: "Standard. Onsen suyu = 'oyu', yemekte istemezsin." },
+      { jp: "生ビール、一つ", romaji: "Nama bīru, hitotsu", tr: "Bir fıçı bira", literal: "'taze bira, bir tane'", use: "İzakaya açılış hamlesi. Üç kişiyseniz 'mittsu' (üç).", tone: "Rahat. 'Toriaezu nama!' = 'önce bir bira!' — klasik." },
+      { jp: "お会計、お願いします", romaji: "Okaikei, onegaishimasu", tr: "Hesap lütfen", use: "Çoğu yerde masada ödemek yok — kasada öderiz. Garsona söyle, fişi getirir veya kasaya yönlendirir.", tone: "Nazik standard. El havada × işareti yapmak da olur (jest)." },
+      { jp: "ごちそうさまでした", romaji: "Gochisōsama deshita", tr: "Ziyafet için teşekkürler", literal: "'şölen-saygı oldu'", use: "Çıkarken kasaya, şefe söyle. Bahşiş yok — bunu söylemek bahşişin yerini tutar.", tone: "Sıcak, minnettar. Bunu söylersen sahibinin yüzü güler." },
+      { jp: "美味しい！", romaji: "Oishii!", tr: "Çok güzel!", use: "İlk lokmadan sonra şefin gözüne bakarak.", tone: "Spontan, samimi. Yemek anında söylenir, şef için en güzel komplimandır." },
+    ],
+  },
+  {
+    id: "alisveris", num: "04", title: "Alışveriş & pazarlık",
+    intro: "Pazarlık Japonya'da nadirdir — fiyat etiketi sabit. Ama Ameyoko (Tokyo), Kuromon (Osaka), antika pazarları, don muki (vergi-iade dükkânları) ve elektronik mağazalarda denenir. Anahtar: gülümse, ısrar etme, ilk 'hayır'da çekil.",
+    phrases: [
+      { jp: "これはいくらですか？", romaji: "Kore wa ikura desu ka?", tr: "Bu ne kadar?", use: "Etiketi olmayan şey, antika, sokak tezgâhı.", tone: "Nötr nazik. Fiyat söylendikten sonra suskun kalmak = 'pahalı bul­dum' sinyali." },
+      { jp: "ちょっと高いですね…", romaji: "Chotto takai desu ne…", tr: "Biraz pahalıymış…", literal: "'azıcık pahalı, değil mi'", use: "Pazarlığın açılış hamlesi. Yüzünü bir tık ekşit, sözü yarım bırak.", tone: "Pasif-agresif değil — Japon nezaketi bu. 'Ne…' eki onu konuşmaya çekiyor." },
+      { jp: "もう少し安くなりませんか？", romaji: "Mō sukoshi yasuku narimasen ka?", tr: "Biraz daha ucuz olabilir mi?", literal: "'biraz daha ucuza dönüşmez mi?'", use: "Antika, ikinci el kimono, pazar tezgâhı. Elektronik mağazada (Bic Camera, Yodobashi) DENERSİN.", tone: "Çok nazik. Gülümseyerek. 'Hayır' alırsan ısrar etme — bir kez denemek edep, iki kez kabalık." },
+      { jp: "現金で払うので、割引できますか？", romaji: "Genkin de harau node, waribiki dekimasu ka?", tr: "Nakit ödüyorum, indirim mümkün mü?", use: "Küçük dükkân, antika, sokak satıcısı. Nakit Japonya'da hâlâ değerli — kart komisyonundan kurtulan satıcı %5–10 verebilir.", tone: "Akıllı kart. 'Genkin' (nakit) kelimesi pazarlığın gerçek anahtarı." },
+      { jp: "二つ買うので、まけてください", romaji: "Futatsu kau node, makete kudasai", tr: "İki tane alıyorum, indirim yapın", literal: "'iki alacağım için, yenil bana'", use: "Toplu alımda. Makeru = 'yenilmek/indirim yapmak' — pazar Japoncası.", tone: "Direkt ama dostça. Antika pazarında klasik hamle." },
+      { jp: "見ているだけです", romaji: "Mite iru dake desu", tr: "Sadece bakıyorum", use: "Mağazaya girer girmez 'irasshaimase!' bağırılır, satıcı yanaşır. Bu kibar 'rahat ol' cevabı.", tone: "Yumuşak. 'Daijōbu desu' da aynı işi görür." },
+      { jp: "免税できますか？", romaji: "Menzei dekimasu ka?", tr: "Vergi-iade var mı?", use: "¥5,500 üstü tek mağaza alımlarında. Pasaportunu yanına al — kasada işliyorlar.", tone: "Pratik. Don Quijote, Bic Camera, Uniqlo flagship'lerinde otomatik var. Küçük dükkânda sor." },
+      { jp: "カード使えますか？", romaji: "Kādo tsukaemasu ka?", tr: "Kart geçer mi?", use: "Küçük restoran, ramen tezgâhı, eski kahveci — yarısı sadece nakit.", tone: "Önceden sor, masaya oturmadan. Visa/Mastercard çoğunda var, AMEX nadir." },
+      { jp: "試着してもいいですか？", romaji: "Shichaku shite mo ii desu ka?", tr: "Deneyebilir miyim?", use: "Giysi, ayakkabı. Kabin önünde ayakkabı çıkarmak gerekebilir — yüzünü kapat­ma maskesi de verirler (makyajı koruma).", tone: "Nazik standard. Kabin perdesini sen kapatma — personel kapar." },
+      { jp: "サイズはありますか？", romaji: "Saizu wa arimasu ka?", tr: "Beden var mı?", use: "Ardından L, XL, etc. söyle. Japon bedeni Avrupa'dan bir tık küçük — XL ≈ L.", tone: "Nötr." },
+      { jp: "袋はいりません", romaji: "Fukuro wa irimasen", tr: "Poşet istemiyorum", use: "Nisan 2025'ten beri çoğu poşet ücretli — ¥3-5. Çevreci hareket.", tone: "Net ama nazik. 'Daijōbu desu' da yeter." },
+      { jp: "高すぎます。じゃあ、結構です", romaji: "Takasugimasu. Jā, kekkō desu", tr: "Çok pahalı. Neyse, almıyorum", use: "Pazarlık çıkmazda. 'Kekkō desu' = 'iyiyim, gerek yok' — kibar son söz.", tone: "Yüz kaybetmeden çekilme. Bazen satıcı arkandan koşup yeni fiyat verir — orada iş bağlanır." },
+    ],
+  },
+  {
+    id: "ulasim", num: "05", title: "Ulaşım & yön",
+    intro: "Tren ağı dünyada eşi görülmemiş yoğunlukta — ama tabelalar romaji'ye geçer geçmez kafa karışır. IC kart (Suica/PASMO/ICOCA) hayat kurtarır.",
+    phrases: [
+      { jp: "東京駅はどこですか？", romaji: "Tōkyō-eki wa doko desu ka?", tr: "Tokyo istasyonu nerede?", literal: "'X-eki = X istasyonu'", use: "Yerleşim yerini değiştir: Shinjuku-eki, Namba-eki, Hanabi Hotel.", tone: "Standard. Cevap karmaşıksa Google Maps'i aç, gösterip 'koko desu ka?' (burası mı?) sor." },
+      { jp: "この電車は新宿に行きますか？", romaji: "Kono densha wa Shinjuku ni ikimasu ka?", tr: "Bu tren Shinjuku'ya gidiyor mu?", use: "Peronda görevliye veya yan yolcuya. Tokyo'da aynı perondan farklı hatlar kalkar.", tone: "Pratik. Cevap 'hai' / 'iie' net olur." },
+      { jp: "次の駅は何ですか？", romaji: "Tsugi no eki wa nan desu ka?", tr: "Bir sonraki istasyon ne?", use: "Anonsları kaçırdığında.", tone: "Nötr." },
+      { jp: "切符はどこで買えますか？", romaji: "Kippu wa doko de kaemasu ka?", tr: "Bilet nereden alınır?", use: "JR bilet makinesi yoksa, Shinkansen gişesi için.", tone: "Standard." },
+      { jp: "ICカードをチャージしたいです", romaji: "IC kādo o chāji shitai desu", tr: "IC kartımı yüklemek istiyorum", use: "İstasyon makinesinde otomatik ama görevliden yardım istersen bu cümle.", tone: "Pratik." },
+      { jp: "タクシーを呼んでください", romaji: "Takushī o yonde kudasai", tr: "Taksi çağırın lütfen", use: "Otelde, restoranda. Sokakta el kaldırmak da işe yarar — kırmızı 空車 (kūsha = boş) yazısına bak.", tone: "Nazik." },
+      { jp: "この住所までお願いします", romaji: "Kono jūsho made onegaishimasu", tr: "Bu adrese lütfen", use: "Telefondaki adresi göster. Şofor adresi okur — 'hai' de.", tone: "Standard taksi açılış cümlesi. Japon şoförleri navigasyonu sever." },
+      { jp: "ここで止めてください", romaji: "Koko de tomete kudasai", tr: "Burada durun lütfen", use: "İndiğin nokta. Şofor kapıyı otomatik açar — sen dokunma.", tone: "Net ama nazik. Bahşiş yok, ödeme metre üzerinden." },
+      { jp: "道に迷いました", romaji: "Michi ni mayoimashita", tr: "Yolumu kaybettim", use: "Polis kutusu (kōban) — her köşede var, içerideki memur yardımcı olur.", tone: "Çaresiz ama sakin. Polis kibardır." },
+      { jp: "歩いてどのくらいですか？", romaji: "Aruite dono kurai desu ka?", tr: "Yürüyerek ne kadar sürer?", use: "Otelden istasyona, restorandan sonraki yere.", tone: "Nötr." },
+    ],
+  },
+  {
+    id: "otel", num: "06", title: "Otel & ryokan",
+    intro: "Hanabi (Tokyo) ve Hillarys (Osaka) modern business otel — İngilizce sorun olmaz. Ama bir gece bir ryokan'a girersen kuralları farklıdır: ayakkabı girişte çıkar, yukata içeride giyilir, banyo (onsen) çıplak.",
+    phrases: [
+      { jp: "チェックインお願いします", romaji: "Chekku-in onegaishimasu", tr: "Check-in yapacağım", use: "Resepsiyonda açılış. Pasaportunu hazırla — yasal olarak fotokopilemek zorundalar.", tone: "Standard." },
+      { jp: "予約しています。名前は…です", romaji: "Yoyaku shite imasu. Namae wa … desu", tr: "Rezervasyonum var. İsim …", use: "Soyadını romaji ile söyle, yazılı göstermek daha hızlı.", tone: "Pratik." },
+      { jp: "鍵をお願いします", romaji: "Kagi o onegaishimasu", tr: "Anahtarı alabilir miyim?", use: "Çıkıp dönünce — Japon otellerinde anahtar hâlâ verilir, kart değil bazen.", tone: "Nazik." },
+      { jp: "朝食は何時からですか？", romaji: "Chōshoku wa nan-ji kara desu ka?", tr: "Kahvaltı saat kaçtan başlıyor?", use: "Hanabi'de standart 07:00–09:30. Ryokan'da daha erken.", tone: "Nötr." },
+      { jp: "Wi-Fiのパスワードは？", romaji: "Wi-Fi no pasuwādo wa?", tr: "Wi-Fi şifresi nedir?", use: "Genelde kart üzerinde yazılı — bulamazsan sor.", tone: "Rahat." },
+      { jp: "荷物を預けられますか？", romaji: "Nimotsu o azukeraremasu ka?", tr: "Bagajımı bırakabilir miyim?", use: "Check-in öncesi (saat erken) veya check-out sonrası (uçağa kadar).", tone: "Standard. Hep 'hai' alırsın, ücretsiz." },
+      { jp: "もう一泊できますか？", romaji: "Mō ippaku dekimasu ka?", tr: "Bir gece daha kalabilir miyim?", use: "Plan değişti, uzatmak istiyorsun.", tone: "Pratik. Boşsa 'hai' der." },
+      { jp: "タオルをもう一枚ください", romaji: "Taoru o mō ichi-mai kudasai", tr: "Bir havlu daha", literal: "'havlu, bir adet daha lütfen' — '-mai' yassı şeyler için sayaç", use: "Yedek havlu. Nezaket için 'sumimasen' önüne ekle.", tone: "Nazik." },
+      { jp: "温泉は何時までですか？", romaji: "Onsen wa nan-ji made desu ka?", tr: "Onsen kaça kadar açık?", use: "Ryokan'da kaplıca. Genelde 23:00'a kadar, sabah 06:00'da yeniden.", tone: "Önemli — vücudunu yıkamadan önce duşta yıka, dövmen varsa giriş yasaklanabilir." },
+    ],
+  },
+  {
+    id: "acil", num: "06", title: "Acil & sağlık",
+    intro: "Umarız hiç kullanmazsın. Polis 110, ambulans 119. Eczane = yakkyoku. Hastane = byōin. Pasaport kayıp olursa Türk Büyükelçiliği (Tokyo) +81 3 3470 0640 — Acil sekmesinde de var.",
+    phrases: [
+      { jp: "助けて！", romaji: "Tasukete!", tr: "İmdat!", use: "Acil — kalabalıkta sesle, sokakta tehlikede.", tone: "Aciliyet. Japonya genelde güvenli ama yine de bil." },
+      { jp: "救急車を呼んでください", romaji: "Kyūkyūsha o yonde kudasai", tr: "Ambulans çağırın", use: "Birisi düştü, nefes alamıyor. Numara: 119.", tone: "Net, hızlı. Operatör İngilizce konuşmayabilir — adres ve 'kyūkyūsha' yeter." },
+      { jp: "警察を呼んでください", romaji: "Keisatsu o yonde kudasai", tr: "Polis çağırın", use: "Hırsızlık, kavga. Numara: 110. Köşedeki kōban da çalışır.", tone: "Net." },
+      { jp: "病院はどこですか？", romaji: "Byōin wa doko desu ka?", tr: "Hastane nerede?", use: "Acil değilse otele sor — yakın kliniği bilirler.", tone: "Pratik." },
+      { jp: "気分が悪いです", romaji: "Kibun ga warui desu", tr: "Kendimi iyi hissetmiyorum", literal: "'ruh hali kötü'", use: "Mide bozulması, baş dönmesi. Eczacıya başla.", tone: "Sakin, açıklayıcı." },
+      { jp: "お腹が痛いです / 頭が痛いです", romaji: "Onaka ga itai desu / Atama ga itai desu", tr: "Karnım ağrıyor / başım ağrıyor", use: "Itai = ağrıyor. Vücut bölgesini değiştir: ha (diş), nodo (boğaz), senaka (sırt).", tone: "Direkt. Eczacı ilaç önerir." },
+      { jp: "薬局はどこですか？", romaji: "Yakkyoku wa doko desu ka?", tr: "Eczane nerede?", use: "Genelde sarı/yeşil tabela. Drogeri (Matsumoto Kiyoshi) içinde de eczane var.", tone: "Standard." },
+      { jp: "アレルギーがあります", romaji: "Arerugī ga arimasu", tr: "Alerjim var", use: "Yanına ekle: 'penicillin arerugī ga arimasu'. Kart üzerinde Japonca yazılı taşımak en güvenli.", tone: "Ciddi." },
+      { jp: "パスポートをなくしました", romaji: "Pasupōto o nakushimashita", tr: "Pasaportumu kaybettim", use: "Kōban'a git, tutanak tut. Sonra Tokyo Türk Büyükelçiliği +81 3 3470 0640.", tone: "Sakin, panik yok. Tutanak (todoke) lazım — sigortaya da gerekecek." },
+      { jp: "財布を盗まれました", romaji: "Saifu o nusumaremashita", tr: "Cüzdanım çalındı", use: "Nadirdir Japonya'da ama olur. Kōban'a git.", tone: "Net. Polis ciddiye alır." },
+      { jp: "英語を話せる医者はいますか？", romaji: "Eigo o hanaseru isha wa imasu ka?", tr: "İngilizce konuşan doktor var mı?", use: "Hastanede kabul memuruna. Tokyo'da büyük hastanelerde genelde var.", tone: "Pratik." },
+    ],
+  },
+  {
+    id: "nezaket", num: "07", title: "Nezaket katmanları",
+    intro: "Japonca'da 'nasıl konuştuğun' 'ne dediğin' kadar önemli. Bu sekme cümle değil davranış rehberi — bilince mağaza/restoran çok daha yumuşak geçer.",
+    phrases: [
+      { jp: "〜さん", romaji: "-san", tr: "Bay/Bayan eki", use: "Her isimden sonra: Tanaka-san, Eren-san. Kendi ismine ASLA -san ekleme — kibirli kaçar.", tone: "Standard saygı. -sama daha yüksek (müşteri/tanrı), -kun erkek arkadaş, -chan kız/çocuk." },
+      { jp: "いらっしゃいませ", romaji: "Irasshaimase", tr: "Hoşgeldiniz (mağaza/restoran)", use: "Sana söylenir, sen söylemezsin. Cevap: hafif baş eğme, hiç değilse göz teması.", tone: "Tek yönlü kibarlık. Cevap vermek beklenmiyor — Türkçe'deki 'hoşgeldin'e cevap zorunlu değil burada." },
+      { jp: "お疲れ様です", romaji: "Otsukaresama desu", tr: "İyi iş çıkardınız / sağol emek için", literal: "'yorgunluğunuz-saygı'", use: "İş bitiminde, taksiden inerken şofora, sıkı bir aktivite sonrası.", tone: "Sıcak. Türkçe 'eline sağlık' / 'kolay gelsin' karışımı." },
+      { jp: "失礼します", romaji: "Shitsurei shimasu", tr: "İzninizle / kusura bakmayın", literal: "'kabalık ediyorum'", use: "Birinin önünden geçerken, kapıyı çalmadan oda­ya girerken, telefonu kapatırken.", tone: "Çok nazik tampon. Japon işyerlerinin temel cümlesi." },
+      { jp: "どうぞ", romaji: "Dōzo", tr: "Buyrun / lütfen alın", use: "Birine yer ver, kapı tut, çay sun. Eli açık jest ile.", tone: "Cömert, sıcak. 'Dōzo' der, karşıdan 'dōmo' (sağol) gelir — tipik ikili." },
+      { jp: "お先にどうぞ", romaji: "Osaki ni dōzo", tr: "Siz önce buyrun", use: "Asansör, dar kapı, sıra. Yaşlı/kadın varsa standart hareket.", tone: "Çok kibar. Reddedilebilir ('iie iie') — ısrar et bir kez." },
+      { jp: "ちょっと…", romaji: "Chotto…", tr: "Şey, biraz… (yumuşak ret)", use: "Direkt 'iie' yerine. 'Olur mu?' sorusuna 'chotto…' = 'zor olabilir', yani hayır.", tone: "Japon 'hayır'ının ana taşıyıcısı. Yüzünü hafif buruştur, sözü yarım bırak — anlaşılır." },
+      { jp: "結構です", romaji: "Kekkō desu", tr: "Yeterli / gerek yok / iyiyim", use: "Poşet, ekstra çay, satıcı ısrarı. 'Daijōbu desu' ile değişebilir.", tone: "Net, kibar ret. Sertçe söyleme — gülümseyerek." },
+      { jp: "お邪魔します", romaji: "Ojama shimasu", tr: "Rahatsız ediyorum", literal: "'engel oluyorum'", use: "Birinin evine, ofisine girerken eşikte. Ev sahibi 'dōzo!' der, sen 'ojama shimasu' deyip girersin.", tone: "Çok nazik. Çıkarken: 'ojama shimashita' (rahatsız ettim, geçmiş zaman)." },
+      { jp: "Eğilme (ojigi)", romaji: "—", tr: "Vücut dili", use: "15° = günlük selam, 30° = teşekkür/özür, 45° = derin saygı/ciddi özür. El cebe değil — yan dururken erkek elleri yan, kadın elleri önde.", tone: "El sıkma yerine eğilme — temas yok. Tokalaşma uzatılırsa karşılık ver, ama önce sen başlatma." },
+      { jp: "Sessizlik kuralı (trende)", romaji: "—", tr: "Trende telefon konuşması yok", use: "Trende, otobüste konuşmak ayıp — telefonu sessize al ('manā mōdo'). Mesajlaş, konuşma.", tone: "Kural değil ama herkes uyar — sen de uy." },
+      { jp: "Ayakkabı kuralı", romaji: "—", tr: "Genkan'da çıkar", use: "Eve, ryokan'a, bazı restoranlara, tatami odaya girerken — ayakkabıyı çıkar, tabanı dışa dönük yerleştir. İçerideki terliği giy. Tatami'ye terlikle de basma.", tone: "Atlatılırsa unutulmaz hata. Çıkmak hep önce." },
+    ],
+  },
+  {
+    id: "sayilar", num: "08", title: "Sayılar, saat, sayaçlar",
+    intro: "Japonca'da 'iki bira' demek için bira'nın şekline göre farklı sayaç kullanılır. Acemiyi kıran kısım. Aşağıdakini bilmen yeter — gerisini parmakla göster.",
+    phrases: [
+      { jp: "1, 2, 3, 4, 5", romaji: "Ichi, ni, san, shi/yon, go", tr: "1, 2, 3, 4, 5", use: "Soyut sayma — fiyat, telefon, oda numarası. 4 için 'shi' uğursuz (= ölüm), 'yon' tercih.", tone: "Temel." },
+      { jp: "6, 7, 8, 9, 10", romaji: "Roku, shichi/nana, hachi, kyū, jū", tr: "6, 7, 8, 9, 10", use: "7 için 'nana' daha güvenli — 'shichi' karışabilir.", tone: "Temel." },
+      { jp: "100, 1000, 10000", romaji: "Hyaku, sen, man", tr: "100, 1000, 10000", use: "¥10,000 = 'ichi-man en'. ¥100,000 = 'jū-man en'. Yen büyük rakamla iş görür.", tone: "Önemli — Japonca 10,000'de bir basamak değiştirir, kafan karışır." },
+      { jp: "一つ、二つ、三つ", romaji: "Hitotsu, futatsu, mittsu", tr: "1 tane, 2 tane, 3 tane (genel)", use: "Genel sayaç — sayaç bilmiyorsan bu daima iş görür. 'Bīru, futatsu' (iki bira) yanlış değil.", tone: "Acil çıkış. 1–10 arası: hitotsu, futatsu, mittsu, yottsu, itsutsu, muttsu, nanatsu, yattsu, kokonotsu, tō." },
+      { jp: "一人、二人、三人", romaji: "Hitori, futari, san-nin", tr: "1 kişi, 2 kişi, 3 kişi", use: "Restoranda '3 kişiyiz' = 'san-nin desu'. 1 ve 2 düzensiz, 3'ten sonra -nin.", tone: "Çok lazım — restoran girişinde ilk soru bu." },
+      { jp: "一枚、二枚", romaji: "Ichi-mai, ni-mai", tr: "1 yassı, 2 yassı", use: "Bilet, kâğıt, havlu, pul. 'Kippu, ni-mai onegaishimasu' (iki bilet).", tone: "Yassı şeyler için." },
+      { jp: "一本、二本", romaji: "Ippon, ni-hon", tr: "1 ince/uzun, 2 ince/uzun", use: "Şişe, kalem, çubuk, ağaç. 'Bīru, ippon' (bir şişe bira).", tone: "Sayım değişir: ippon, ni-hon, san-bon, yon-hon." },
+      { jp: "今、何時ですか？", romaji: "Ima, nan-ji desu ka?", tr: "Şu an saat kaç?", use: "Saatler: ichi-ji (1), ni-ji (2)... shi-ji DEĞİL, 'yo-ji' (4). Dakika: -fun/-pun.", tone: "Standard." },
+      { jp: "午前 / 午後", romaji: "Gozen / Gogo", tr: "AM / PM", use: "Gozen-ku-ji = 09:00, gogo-san-ji = 15:00.", tone: "Resmi yazışmada lazım." },
+      { jp: "今日 / 明日 / 昨日", romaji: "Kyō / Ashita / Kinō", tr: "Bugün / Yarın / Dün", use: "Plan değişikliği, rezervasyon konuşması.", tone: "Temel zaman ekseni." },
+    ],
+  },
+];
+
+
 
 // Docs we know SHOULD exist but haven't been ingested yet.
 const EXPECTED_DOCS: ExpectedDoc[] = [
@@ -198,77 +358,81 @@ const ZERO_CHECKLIST: ClSection[] = [
       { id: uid(), label: "Powerbank dolu mu?" },
     ]},
 
-  // ── GELMİŞKEN — fun "while we're here" lists ───────────────────────────
+];
+
+// ── GELMİŞKEN — its own tab. Region-keyed "while we're here" memorables ──
+const ZERO_GELMISKEN: ClSection[] = [
   { id: uid(), title: "Gelmişken — JAPONYA",
     items: [
-      { id: uid(), label: "Kombini tamago sando dene (7-Eleven en iyisi)" },
-      { id: uid(), label: "Counter ramen — vending makinesinden ticket al" },
-      { id: uid(), label: "Kaiten sushi (kayan tabakla) en az bir kez" },
-      { id: uid(), label: "Vending machine'den BOSS kahvesi" },
-      { id: uid(), label: "Vending machine'den weird bir şey dene (Pocari Sweat / corn soup / weird Pepsi)" },
-      { id: uid(), label: "Suica/PASMO Apple Wallet'a ekle, kullan" },
-      { id: uid(), label: "Kombini onigiri en az 3 farklı dolgu" },
-      { id: uid(), label: "Karaoke bir gece (özel oda, sake/highball)" },
-      { id: uid(), label: "Onsen ya da sentō (dövme şartı kontrol)" },
-      { id: uid(), label: "İzakaya ya da yatay (street food alley) bir akşam" },
-      { id: uid(), label: "Don Quijote (Donki) gece keşfi" },
-      { id: uid(), label: "Pachinko parlor önünden geç ve ses banyosu yap" },
-      { id: uid(), label: "Train station'da ekiben (boxed lunch) bir kez" },
-      { id: uid(), label: "100-yen shop / Daiso turu" },
+      { id: uid(), label: "Kombini tamago sando (yumurta salatalı sandviç) dene — 7-Eleven en iyisi" },
+      { id: uid(), label: "Counter ramen — vending makinesinden ticket al, otur, ramen önüne gelsin" },
+      { id: uid(), label: "Kaiten sushi (kayan tabakla suşi) en az bir kez" },
+      { id: uid(), label: "Vending makinesinden BOSS kahvesi (Suntory'nin kanned kahvesi)" },
+      { id: uid(), label: "Vending makinesinden tuhaf bir şey: Pocari Sweat (spor içeceği) / mısır çorbası / garip Pepsi" },
+      { id: uid(), label: "Suica / PASMO (toplu taşıma kartı) Apple Wallet'a ekle, kullan" },
+      { id: uid(), label: "Kombini onigiri (üçgen pirinç top) en az 3 farklı dolgu" },
+      { id: uid(), label: "Karaoke bir gece — özel oda, sake / highball" },
+      { id: uid(), label: "Onsen / sentō (geleneksel kaplıca / mahalle hamamı) — dövme şartı kontrol" },
+      { id: uid(), label: "İzakaya (Japon meyhanesi) ya da yatay (sokak yemek geçidi) bir akşam" },
+      { id: uid(), label: "Don Quijote — \"Donki\" (her şey satan kaotik 24/7 mağaza) gece keşfi" },
+      { id: uid(), label: "Pachinko (kumar makineli salon) önünden geç ve ses banyosu yap" },
+      { id: uid(), label: "Tren istasyonunda ekiben (tren-için boxed yemek) bir kez" },
+      { id: uid(), label: "Daiso / 100-yen shop (her şey 100 yen mağazası) turu" },
+      { id: uid(), label: "Yakitori (közlenmiş tavuk şiş) dumanlı bir sokakta" },
     ]},
 
   { id: uid(), title: "Gelmişken — Tokyo",
     items: [
-      { id: uid(), label: "Shibuya Scramble Crossing — kalabalıkken geç + Hachiko Bridge'den izle" },
-      { id: uid(), label: "Hachiko heykeli (Shibuya Station)" },
-      { id: uid(), label: "Akihabara — elektronik & manga & retro arcade" },
-      { id: uid(), label: "Senso-ji & Nakamise yolu (Asakusa)" },
-      { id: uid(), label: "Meiji Jingu Shrine (Harajuku)" },
-      { id: uid(), label: "Harajuku Takeshita-dori — kötü tatlar, gençlik" },
-      { id: uid(), label: "Tsukiji Outer Market kahvaltı (sashimi & tamago skewer)" },
-      { id: uid(), label: "Tokyo Tower ya da Skytree — gece ışığında" },
-      { id: uid(), label: "Shinjuku Golden Gai — bir kuytu bar" },
-      { id: uid(), label: "Omoide Yokocho — duman içinde yakitori" },
-      { id: uid(), label: "Yoyogi Park yürüyüş" },
-      { id: uid(), label: "Roppongi Hills observation deck (gün batımı)" },
-      { id: uid(), label: "Don Quijote Shibuya 24h" },
-      { id: uid(), label: "teamLab Planets Toyosu (online bilet)" },
-      { id: uid(), label: "Yanaka Ginza — eski Tokyo sokakları" },
-      { id: uid(), label: "Kichijoji + Inokashira Park" },
-      { id: uid(), label: "Ueno Park & Ameyoko market" },
-      { id: uid(), label: "Game center — UFO catcher dene" },
-      { id: uid(), label: "Kabukicho gece yürüyüşü (Robot Restaurant kapısı)" },
+      { id: uid(), label: "Shibuya Scramble Crossing (dünyanın en yoğun yaya geçidi) — kalabalıkken geç + Hachiko Bridge'den izle" },
+      { id: uid(), label: "Hachiko heykeli (sahibini her gün bekleyen sadık köpek) — Shibuya Station çıkışı" },
+      { id: uid(), label: "Akihabara (elektronik & anime & retro oyun mahallesi)" },
+      { id: uid(), label: "Senso-ji (Tokyo'nun en eski tapınağı) ve Nakamise (alışveriş yolu) — Asakusa" },
+      { id: uid(), label: "Meiji Jingu (İmparator Meiji'nin orman içindeki tapınağı) — Harajuku yanı" },
+      { id: uid(), label: "Harajuku Takeshita-dori (gençlik & garip moda sokağı)" },
+      { id: uid(), label: "Tsukiji Outer Market (eski balık pazarının yemek caddesi) kahvaltısı — sashimi & tamago çubuk" },
+      { id: uid(), label: "Tokyo Tower (Eyfel benzeri kırmızı kule) ya da Skytree (dünyanın en yüksek 2. kulesi) — gece" },
+      { id: uid(), label: "Shinjuku Golden Gai (200 küçük bar barındıran 6 dar sokak) — bir kuytu barda" },
+      { id: uid(), label: "Omoide Yokocho — \"Piss Alley\" (yakitili dumanlı dar sokak), Shinjuku" },
+      { id: uid(), label: "Yoyogi Park (Tokyo merkezindeki büyük park) yürüyüşü" },
+      { id: uid(), label: "Roppongi Hills observation deck (Tokyo manzaralı kompleks) — gün batımı" },
+      { id: uid(), label: "Don Quijote Shibuya — 24 saat açık, kaotik" },
+      { id: uid(), label: "teamLab Planets Toyosu (interaktif dijital sanat müzesi) — bilet önceden online" },
+      { id: uid(), label: "Yanaka Ginza (eski Tokyo karakteri taşıyan mahalle sokağı)" },
+      { id: uid(), label: "Kichijoji + Inokashira Park (batı Tokyo bohem mahalle + park gölü)" },
+      { id: uid(), label: "Ueno Park ve Ameyoko (parkın altındaki canlı pazar)" },
+      { id: uid(), label: "Game center (oyun salonu) — UFO catcher / purikura (sticker fotoğraf) dene" },
+      { id: uid(), label: "Kabukicho (Shinjuku gece eğlence mahallesi) yürüyüşü — sadece gözlem" },
     ]},
 
   { id: uid(), title: "Gelmişken — Osaka",
     items: [
-      { id: uid(), label: "Dotonbori canal · Glico Man fotoğrafı" },
-      { id: uid(), label: "Kuromon Ichiba Market — taze sashimi & ikayaki (mürekkep balığı çubukta)" },
-      { id: uid(), label: "Takoyaki en az 3 farklı yerde dene" },
-      { id: uid(), label: "Osaka Castle (Osaka-jo)" },
-      { id: uid(), label: "Shinsaibashi-suji shopping street yürüyüş" },
-      { id: uid(), label: "Hozenji Yokocho — moss-covered Buddha, dar sokak" },
-      { id: uid(), label: "Amerikamura (Ame-mura) — youth district" },
-      { id: uid(), label: "Umeda Sky Building — Floating Garden manzara" },
+      { id: uid(), label: "Dotonbori canal (Osaka'nın canlı kanal bölgesi) ve Glico Man (ikonik koşan adam tabelası) fotoğrafı" },
+      { id: uid(), label: "Kuromon Ichiba (Osaka'nın taze deniz ürünleri çarşısı) — ikayaki (mürekkep balığı çubukta)" },
+      { id: uid(), label: "Takoyaki (oktopus topları) en az 3 farklı sokak tezgahında" },
+      { id: uid(), label: "Osaka Castle / Osaka-jo (samuray dönemi kale)" },
+      { id: uid(), label: "Shinsaibashi-suji (Osaka'nın merkezi alışveriş caddesi) yürüyüşü" },
+      { id: uid(), label: "Hozenji Yokocho (moss-covered Buddha'lı dar lantern sokağı)" },
+      { id: uid(), label: "Amerikamura — \"Ame-mura\" (Osaka'nın gençlik & vintage mahallesi)" },
+      { id: uid(), label: "Umeda Sky Building / Floating Garden (boşlukta köprülü gözlem kulesi)" },
       { id: uid(), label: "Namba'da bir gece izakaya" },
-      { id: uid(), label: "Ichiran ramen ya da Kinryu Ramen (golden dragon)" },
-      { id: uid(), label: "Shinsekai · Tsutenkaku Tower bölgesi · kushikatsu" },
+      { id: uid(), label: "Ichiran (counter ramen zinciri) ya da Kinryu Ramen — \"Golden Dragon\" (Dotonbori ikonu)" },
+      { id: uid(), label: "Shinsekai (Osaka'nın eski neonlu mahallesi) ve Tsutenkaku Tower (simge kule) — kushikatsu (panelenmiş çubuk kızartmaları)" },
     ]},
 
   { id: uid(), title: "Gelmişken — Kyoto",
     items: [
-      { id: uid(), label: "Fushimi Inari Taisha — sabah erken, üst kısma çık" },
-      { id: uid(), label: "Kinkaku-ji — Altın Pavyon" },
-      { id: uid(), label: "Arashiyama Bamboo Grove (sabah)" },
-      { id: uid(), label: "Tenryu-ji — bambu yakını, zen bahçesi" },
-      { id: uid(), label: "Kiyomizu-dera Temple — sunset" },
-      { id: uid(), label: "Gion district akşam yürüyüş — maiko/geiko gör (rahatsız etme)" },
-      { id: uid(), label: "Nishiki Market — food stalls" },
-      { id: uid(), label: "Pontocho alley — geceleyin lanternlerin altı" },
-      { id: uid(), label: "Philosopher's Path" },
-      { id: uid(), label: "Sanjusangendo — 1001 buddha" },
-      { id: uid(), label: "Bir tea house'da matcha + wagashi" },
-      { id: uid(), label: "Yatsuhashi (Kyoto'ya özgü cinnamon mochi) dene" },
+      { id: uid(), label: "Fushimi Inari Taisha (binlerce kırmızı torii kapısı) — sabah erken, üst kısma çık" },
+      { id: uid(), label: "Kinkaku-ji (Altın Pavyon — gölün üstündeki yaldızlı tapınak)" },
+      { id: uid(), label: "Arashiyama Bamboo Grove (göğe yükselen bambu ormanı) — sabah erken" },
+      { id: uid(), label: "Tenryu-ji (Arashiyama'da zen tapınağı, bambunun yanında)" },
+      { id: uid(), label: "Kiyomizu-dera (uçurum kenarındaki büyük ahşap tapınak) — gün batımı" },
+      { id: uid(), label: "Gion (Kyoto'nun geyşa mahallesi) akşam yürüyüş — maiko / geiko (çırak / usta geyşa) gör (rahatsız etme)" },
+      { id: uid(), label: "Nishiki Market (Kyoto'nun yemek caddesi) — sokak tezgahları" },
+      { id: uid(), label: "Pontocho (lanternli dar dinner sokağı) — gece" },
+      { id: uid(), label: "Philosopher's Path (kanal kenarı meditatif yürüyüş)" },
+      { id: uid(), label: "Sanjusangendo (1001 Buddha heykelli ahşap salon)" },
+      { id: uid(), label: "Bir tea house'da matcha (toz yeşil çay) + wagashi (geleneksel Japon şekerlemesi)" },
+      { id: uid(), label: "Yatsuhashi (Kyoto'ya özgü tarçınlı mochi) dene" },
     ]},
 ];
 
@@ -316,6 +480,7 @@ function debounce<T extends unknown[]>(fn: (...args: T) => void, ms: number) {
 export default function Japan2026Room() {
   const [user, setUser]           = useState<UserName | null>(null);
   const [activeTab, setActiveTab] = useState("ozet");
+  const [phraseCat, setPhraseCat] = useState<string>(PHRASE_CATS[0].id);
   const [clState, setClState]     = useState<CheckState>({});
   const [activity, setActivity]   = useState<ActivityEntry[]>([]);
   const [notes, setNotes]         = useState<Record<number, string>>({});
@@ -381,9 +546,26 @@ export default function Japan2026Room() {
       setClState(cl as CheckState);
       setActivity(act as ActivityEntry[]);
       setDocs((documents as DocEntry[]) ?? []);
-      const loadedSchema = schema ?? ZERO_CHECKLIST;
-      setClSchema(loadedSchema as ClSection[]);
-      setOpenSecs(new Set((loadedSchema as ClSection[]).filter((_, i) => i === loadedSchema.length - 1).map((s: ClSection) => s.id)));
+      // Merge: ensure Gelmişken sections always present (idempotent migration on load)
+      const fromDb = schema as ClSection[] | null;
+      let mergedSchema: ClSection[];
+      if (!fromDb || fromDb.length === 0) {
+        mergedSchema = [...ZERO_CHECKLIST, ...ZERO_GELMISKEN];
+      } else {
+        const haveTitles = new Set(fromDb.map(s => s.title));
+        const missingGelmis = ZERO_GELMISKEN.filter(s => !haveTitles.has(s.title));
+        mergedSchema = missingGelmis.length > 0 ? [...fromDb, ...missingGelmis] : fromDb;
+        if (missingGelmis.length > 0) {
+          // Persist the merged schema so subsequent loads see it directly.
+          fetch("/api/japan2026", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "checklist_schema", schema: mergedSchema }),
+          }).catch(console.error);
+        }
+      }
+      setClSchema(mergedSchema);
+      setOpenSecs(new Set(mergedSchema.filter((_, i) => i === mergedSchema.length - 1).map((s: ClSection) => s.id)));
       const loadedDays = itinerary ?? ZERO_DAYS;
       setDays(loadedDays as DayEntry[]);
       // load notes for each day
@@ -527,8 +709,13 @@ export default function Japan2026Room() {
     setClSchema(prev => { const next = prev.map(s => s.id === secId ? { ...s, items: s.items.filter(it => it.id !== itemId) } : s); saveSchema(next); return next; });
   }, [saveSchema]);
 
-  const clTotal = clSchema.reduce((a, s) => a + s.items.length, 0);
-  const clDone  = clSchema.reduce((a, s) => a + s.items.filter(it => clState[it.id]?.v).length, 0);
+  // Checklist counts (excluding Gelmişken sections — those have their own tab)
+  const checklistSchema = clSchema.filter(s => !isGelmis(s));
+  const gelmisSchema    = clSchema.filter(s => isGelmis(s));
+  const clTotal = checklistSchema.reduce((a, s) => a + s.items.length, 0);
+  const clDone  = checklistSchema.reduce((a, s) => a + s.items.filter(it => clState[it.id]?.v).length, 0);
+  const gelmisTotal = gelmisSchema.reduce((a, s) => a + s.items.length, 0);
+  const gelmisDone  = gelmisSchema.reduce((a, s) => a + s.items.filter(it => clState[it.id]?.v).length, 0);
   const clPct   = clTotal ? Math.round((clDone / clTotal) * 100) : 0;
 
   if (!hydrated) return null;
@@ -653,13 +840,31 @@ export default function Japan2026Room() {
       {/* TABS */}
       <nav style={{ position: "sticky", top: "69px", zIndex: 49, background: "rgba(250,250,248,.88)", backdropFilter: "saturate(180%) blur(14px)", borderBottom: `1px solid ${C.line}`, overflowX: "auto", scrollbarWidth: "none" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", gap: "4px", padding: "0 40px" }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
-              style={{ padding: "18px 18px 16px", fontSize: "12px", fontWeight: 500, letterSpacing: ".18em", textTransform: "uppercase", color: activeTab === t.id ? C.ink : C.muted, borderBottom: `1px solid ${activeTab === t.id ? C.red : "transparent"}`, marginBottom: "-1px", whiteSpace: "nowrap", transition: "color .15s, border-color .15s" }}>
-              <span style={{ fontSize: "9px", color: activeTab === t.id ? C.red : C.muted, marginRight: "6px", letterSpacing: ".05em", fontVariantNumeric: "tabular-nums" }}>{t.num}</span>
-              {t.label}
-            </button>
-          ))}
+          {TABS.map(t => {
+            const active = activeTab === t.id;
+            const special = t.special;
+            return (
+              <button key={t.id} onClick={() => setActiveTab(t.id)}
+                style={{
+                  padding: "18px 18px 16px",
+                  fontSize: "12px",
+                  fontWeight: special ? 600 : 500,
+                  fontStyle: special ? "italic" : "normal",
+                  letterSpacing: ".18em",
+                  textTransform: "uppercase",
+                  color: active ? (special ? C.red : C.ink) : (special ? C.red : C.muted),
+                  borderBottom: `${special ? 2 : 1}px solid ${active ? C.red : (special ? C.red : "transparent")}`,
+                  marginBottom: "-1px",
+                  whiteSpace: "nowrap",
+                  transition: "color .15s, border-color .15s",
+                  position: "relative",
+                }}>
+                <span style={{ fontSize: "9px", color: active ? C.red : (special ? C.red : C.muted), marginRight: "6px", letterSpacing: ".05em", fontVariantNumeric: "tabular-nums" }}>{t.num}</span>
+                {special && <span style={{ marginRight: "5px" }}>★</span>}
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </nav>
 
@@ -933,9 +1138,9 @@ export default function Japan2026Room() {
               <DetSection title="Yolcu PNR'ları" titleEm="·" sub="Herkes hepsini görüyor. Kendi PNR'ın yıldızlı.">
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginTop: "8px" }}>
                   {([
-                    { who: "eren" as UserName, pnr: "9OY2JB", note: "ESKİ TARİFELİ — gerçek kalkış 13:20", warn: true },
-                    { who: "zenci" as UserName, pnr: "HAIWZK / 9NVSB3", note: "MIAT canlı tarife", warn: false },
-                    { who: "ossan" as UserName, pnr: "—", note: "PNR henüz dijital değil", warn: false, missing: true },
+                    { who: "eren" as UserName, pnr: "9OY2JB", note: "", warn: false },
+                    { who: "zenci" as UserName, pnr: "9NVSB3", note: "MIAT", warn: false },
+                    { who: "ossan" as UserName, pnr: "ZIUSXR", note: "PNR henüz dijital değil", warn: false },
                   ] as const).map(card => {
                     const isMe = user === card.who;
                     const u2 = USERS[card.who];
@@ -1439,7 +1644,7 @@ export default function Japan2026Room() {
               {editingCl ? (
                 /* ── EDIT MODE ── */
                 <div>
-                  {clSchema.map((sec, si) => (
+                  {checklistSchema.map((sec, si) => (
                     <div key={sec.id} style={{ borderBottom: `1px solid ${C.line}`, padding: "28px 0" }}>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "16px", alignItems: "center", marginBottom: "20px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1450,8 +1655,8 @@ export default function Japan2026Room() {
                         <div style={{ display: "flex", gap: "8px", alignItems: "center", flexShrink: 0 }}>
                           <button onClick={() => moveSection(sec.id, -1)} disabled={si === 0}
                             style={{ fontSize: "14px", color: si === 0 ? C.line : C.muted, cursor: si === 0 ? "default" : "pointer", padding: "4px 6px", transition: "color .15s" }}>↑</button>
-                          <button onClick={() => moveSection(sec.id, 1)} disabled={si === clSchema.length - 1}
-                            style={{ fontSize: "14px", color: si === clSchema.length - 1 ? C.line : C.muted, cursor: si === clSchema.length - 1 ? "default" : "pointer", padding: "4px 6px", transition: "color .15s" }}>↓</button>
+                          <button onClick={() => moveSection(sec.id, 1)} disabled={si === checklistSchema.length - 1}
+                            style={{ fontSize: "14px", color: si === checklistSchema.length - 1 ? C.line : C.muted, cursor: si === checklistSchema.length - 1 ? "default" : "pointer", padding: "4px 6px", transition: "color .15s" }}>↓</button>
                           <button onClick={() => removeSection(sec.id)}
                             style={{ fontSize: "16px", color: C.muted, padding: "4px 8px", transition: "color .15s" }}
                             onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
@@ -1486,7 +1691,7 @@ export default function Japan2026Room() {
                 </div>
               ) : (
                 /* ── VIEW MODE ── */
-                clSchema.map((sec, si) => {
+                checklistSchema.map((sec, si) => {
                   const filtered = clSearch ? sec.items.filter(it => it.label.toLocaleLowerCase("tr-TR").includes(clSearch.toLocaleLowerCase("tr-TR"))) : sec.items;
                   const titleMatch = !clSearch || sec.title.toLocaleLowerCase("tr-TR").includes(clSearch.toLocaleLowerCase("tr-TR"));
                   if (clSearch && filtered.length === 0 && !titleMatch) return null;
@@ -1548,6 +1753,111 @@ export default function Japan2026Room() {
                   );
                 })
               )}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ GELMİŞKEN ═══ */}
+        {activeTab === "gelmisken" && (
+          <div>
+            <style>{`
+              @keyframes gelmisGlow { 0%, 100% { opacity: .04 } 50% { opacity: .08 } }
+            `}</style>
+            <div style={{ position: "relative", padding: "100px 0 60px", overflow: "hidden", borderBottom: `1px solid ${C.line}` }}>
+              <div style={{ position: "absolute", top: "-120px", right: "-200px", width: "640px", height: "640px", borderRadius: "50%", background: C.red, animation: "gelmisGlow 6s ease-in-out infinite", zIndex: 0 }} />
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ fontSize: "11px", letterSpacing: ".32em", textTransform: "uppercase", color: C.red, fontWeight: 600, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ display: "inline-block", width: "32px", height: "1px", background: C.red }} />
+                  ★ Memorable
+                </div>
+                <h1 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(56px,8vw,120px)", letterSpacing: "-.05em", lineHeight: .92, marginBottom: "20px" }}>
+                  <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>Gelmişken</em><span style={{ color: C.red }}>.</span>
+                </h1>
+                <p style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, fontSize: "22px", color: C.ink2, maxWidth: "640px", lineHeight: 1.45, letterSpacing: "-.01em" }}>
+                  Bir kez gelinen yer. İşaretledikçe Japonya'yı kazıyorsun.
+                </p>
+                <div style={{ marginTop: "44px", display: "flex", alignItems: "baseline", gap: "20px" }}>
+                  <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "72px", letterSpacing: "-.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                    <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{gelmisDone}</em>
+                    <span style={{ color: C.muted, fontSize: "32px", marginLeft: "10px" }}>/ {gelmisTotal}</span>
+                  </div>
+                  <div style={{ fontFamily: C.sans, fontSize: "11px", letterSpacing: ".24em", textTransform: "uppercase", color: C.muted, fontWeight: 500, paddingBottom: "10px" }}>
+                    {gelmisTotal === 0 ? "henüz boş" : gelmisDone === gelmisTotal ? "tam dolu — efsane" : `${Math.round(gelmisDone / Math.max(gelmisTotal, 1) * 100)}% kazındı`}
+                  </div>
+                </div>
+                <div style={{ marginTop: "20px", height: "2px", background: C.line2, position: "relative", overflow: "hidden", maxWidth: "560px" }}>
+                  <div style={{ position: "absolute", left: 0, top: 0, height: "100%", background: C.red, width: `${gelmisTotal ? Math.round(gelmisDone / gelmisTotal * 100) : 0}%`, transition: "width .6s" }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Region tiles — one per Gelmişken section */}
+            <div style={{ paddingBottom: "120px" }}>
+              {gelmisSchema.map((sec) => {
+                const region = sec.title.replace(/^Gelmişken — /, "");
+                const isOpen = openSecs.has(sec.id);
+                const secDone = sec.items.filter(it => clState[it.id]?.v).length;
+                const secPct = sec.items.length ? Math.round(secDone / sec.items.length * 100) : 0;
+                return (
+                  <div key={sec.id} style={{ borderBottom: `1px solid ${C.line}` }}>
+                    <div onClick={() => setOpenSecs(prev => { const s = new Set(prev); s.has(sec.id) ? s.delete(sec.id) : s.add(sec.id); return s; })}
+                      style={{ display: "grid", gridTemplateColumns: "auto 1fr auto auto", gap: "32px", alignItems: "baseline", cursor: "pointer", userSelect: "none", padding: "44px 0 20px", position: "relative" }}>
+                      <span style={{ fontFamily: C.sans, fontSize: "11px", letterSpacing: ".28em", textTransform: "uppercase", fontWeight: 600, color: C.red, paddingTop: "8px" }}>★ Bölge</span>
+                      <h2 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(40px,5vw,68px)", letterSpacing: "-.04em", lineHeight: 1, fontStyle: region === "JAPONYA" ? "normal" : "italic" }}>
+                        {region === "JAPONYA"
+                          ? <span>{region}<span style={{ color: C.red }}>.</span></span>
+                          : <em style={{ fontWeight: 400 }}>{region}<span style={{ color: C.red, fontStyle: "normal" }}>.</span></em>}
+                      </h2>
+                      <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "32px", fontVariantNumeric: "tabular-nums", color: C.ink2, letterSpacing: "-.02em" }}>
+                        <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{secDone}</em>
+                        <span style={{ color: C.muted, fontSize: "18px", marginLeft: "4px" }}>/ {sec.items.length}</span>
+                      </div>
+                      <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "28px", color: isOpen ? C.red : C.muted, transform: isOpen ? "rotate(45deg)" : "none", transition: "transform .25s", lineHeight: 1, paddingTop: "8px" }}>+</div>
+                    </div>
+
+                    <div style={{ height: "2px", background: C.line2, position: "relative", overflow: "hidden", marginBottom: isOpen ? "8px" : "32px" }}>
+                      <div style={{ position: "absolute", left: 0, top: 0, height: "100%", background: C.red, width: `${secPct}%`, transition: "width .5s" }} />
+                    </div>
+
+                    {isOpen && (
+                      <div style={{ padding: "8px 0 48px", background: `linear-gradient(180deg, ${C.redSoft} 0%, transparent 50%)` }}>
+                        {sec.items.map((item, li) => {
+                          const st = clState[item.id];
+                          const eu = st?.u ? USERS[st.u as UserName] : null;
+                          return (
+                            <label key={item.id} style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "20px", padding: "18px 8px", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "center", cursor: "pointer", transition: "background .15s" }}
+                              onMouseEnter={e => (e.currentTarget.style.background = "rgba(188,0,45,.04)")}
+                              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                              <input type="checkbox" checked={!!st?.v} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
+                                style={{ width: "22px", height: "22px", appearance: "none", border: `1.5px solid ${st?.v ? C.red : C.ink}`, background: st?.v ? C.red : "transparent", cursor: "pointer", flexShrink: 0, borderRadius: "2px", display: "grid", placeItems: "center" }} />
+                              <div style={{ fontFamily: C.serif, fontStyle: st?.v ? "italic" : "normal", fontWeight: 400, fontSize: "17px", lineHeight: 1.5, color: st?.v ? C.muted : C.ink, letterSpacing: "-.005em", textDecoration: st?.v ? "line-through" : "none", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>
+                                {item.label}
+                              </div>
+                              {st?.v && eu && (
+                                <div style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4 }}>
+                                  <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: eu.color, marginRight: "8px", verticalAlign: "middle" }} />
+                                  {st.u} · {st.t}
+                                </div>
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {gelmisSchema.length === 0 && (
+                <div style={{ padding: "80px 0", textAlign: "center", fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, fontSize: "20px", color: C.muted }}>
+                  Liste seni bekliyor — sayfayı yenile, seed'lensin.
+                </div>
+              )}
+
+              <div style={{ paddingTop: "80px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+                <span>Gelmişken — anılar için</span>
+                <span style={{ color: C.red }}>★ tek seferlik gelinecek bir yer ★</span>
+              </div>
             </div>
           </div>
         )}
@@ -1682,6 +1992,69 @@ export default function Japan2026Room() {
             </div>
           </div>
         )}
+
+        {/* ═══ CÜMLELER ═══ */}
+        {activeTab === "nihongo" && (() => {
+          const cat = PHRASE_CATS.find(c => c.id === phraseCat) ?? PHRASE_CATS[0];
+          return (
+            <div>
+              <TabHead title="Cümleler" lede="Pazarlık, sipariş, özür, eğilme. Aksan değil ton önemli — gülümseyerek söylenen kötü Japonca, soğuk söylenen iyi Japonca'yı her zaman yener." />
+              <div style={{ paddingBottom: "120px" }}>
+
+                {/* Category pills */}
+                <div style={{ padding: "32px 0 8px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {PHRASE_CATS.map(c => {
+                    const active = c.id === phraseCat;
+                    return (
+                      <button key={c.id} onClick={() => setPhraseCat(c.id)}
+                        style={{ padding: "8px 16px", border: `1px solid ${active ? C.ink : C.line}`, background: active ? C.ink : "transparent", color: active ? "#fff" : C.ink, fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", fontWeight: 500, transition: "all .18s", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ opacity: active ? 0.65 : 0.5, fontVariantNumeric: "tabular-nums" }}>{c.num}</span>
+                        {c.title}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Active category */}
+                <div style={{ padding: "40px 0 0" }}>
+                  <Eyebrow num={cat.num}>{cat.title}</Eyebrow>
+                  <p style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, color: C.muted, fontSize: "16px", marginBottom: "36px", maxWidth: "640px", lineHeight: 1.55 }}>{cat.intro}</p>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+                    {cat.phrases.map((p, i) => (
+                      <div key={i} style={{ border: `1px solid ${C.line}`, padding: "22px 22px 20px", background: "#fff", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        <div>
+                          <div style={{ fontFamily: C.serif, fontWeight: 400, fontSize: "22px", lineHeight: 1.2, color: C.ink, letterSpacing: "-.01em" }}>{p.jp}</div>
+                          <div style={{ fontFamily: C.sans, fontSize: "13px", fontStyle: "italic", color: C.ink2, marginTop: "4px", letterSpacing: ".01em" }}>{p.romaji}</div>
+                        </div>
+                        <div style={{ height: "1px", background: C.line2 }} />
+                        <div style={{ fontFamily: C.sans, fontSize: "14px", color: C.ink, lineHeight: 1.45 }}>{p.tr}</div>
+                        {p.literal && (
+                          <div style={{ fontFamily: C.serif, fontStyle: "italic", fontSize: "11px", color: C.muted, lineHeight: 1.45 }}>
+                            <span style={{ letterSpacing: ".18em", textTransform: "uppercase", fontFamily: C.sans, fontStyle: "normal", fontWeight: 500, marginRight: "6px" }}>Lafzen</span>
+                            {p.literal}
+                          </div>
+                        )}
+                        <div>
+                          <div style={{ fontSize: "10px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "4px" }}>Kullanım</div>
+                          <div style={{ fontFamily: C.sans, fontSize: "12.5px", color: C.ink2, lineHeight: 1.5 }}>{p.use}</div>
+                        </div>
+                        <div style={{ marginTop: "auto" }}>
+                          <span style={{ display: "inline-block", padding: "4px 10px", background: C.redSoft, color: C.red, fontSize: "10.5px", letterSpacing: ".18em", textTransform: "uppercase", fontWeight: 600, lineHeight: 1.4 }}>Ton</span>
+                          <div style={{ fontFamily: C.serif, fontStyle: "italic", fontSize: "13px", color: C.ink2, marginTop: "8px", lineHeight: 1.5 }}>{p.tone}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: "48px", padding: "20px 24px", border: `1px dashed ${C.line}`, fontFamily: C.serif, fontStyle: "italic", fontSize: "13px", color: C.muted, lineHeight: 1.6 }}>
+                    Aksan kaygılanmayın — Japonlar yabancının Japonca denemesini içtenlikle takdir eder. Kötü telaffuz + samimi gülümseme &gt; mükemmel İngilizce + soğuk yüz.
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
       </div>
 

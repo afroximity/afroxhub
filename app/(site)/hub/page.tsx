@@ -9,7 +9,7 @@ export default async function HubPage() {
   const [rooms, tools] = await Promise.all([listRooms(), listTools()]);
 
   return (
-    <div style={{ fontFamily: "'Courier New', monospace", color: "#ccc" }}>
+    <div style={{ fontFamily: "var(--gc-font-body)", fontSize: 15, lineHeight: 1.55, color: "#ccc" }}>
 
       {/* ── PAGE HEADER ── */}
       <div style={{
@@ -19,8 +19,8 @@ export default async function HubPage() {
         marginBottom: 16,
       }}>
         <h1 style={{
-          fontFamily: "var(--font-vt323), Impact, 'Arial Black', sans-serif",
-          fontSize: "clamp(36px, 6vw, 64px)",
+          fontFamily: "var(--gc-font-scream)",
+          fontSize: "clamp(48px, 7vw, 84px)",
           letterSpacing: "0.25em",
           color: "#FF00FF",
           textShadow: "0 0 10px #FF00FF, 0 0 30px rgba(255,0,255,0.4), 2px 2px 0 #660033",
@@ -42,8 +42,8 @@ export default async function HubPage() {
             {/* ── LEFT: NAV ── */}
             <td className="gc-nav-col" style={{ padding: "12px 10px" }}>
               <p style={{
-                fontFamily: "Impact, sans-serif",
-                fontSize: 13,
+                fontFamily: "var(--gc-font-scream)",
+                fontSize: 17,
                 letterSpacing: "0.2em",
                 color: "#9D00FF",
                 textShadow: "0 0 6px #9D00FF",
@@ -54,7 +54,7 @@ export default async function HubPage() {
                 ══ NAVIGATE ══
               </p>
 
-              <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <nav style={{ display: "flex", flexDirection: "column", gap: 4, fontFamily: "var(--gc-font-display)", fontSize: 15 }}>
                 <Link href="/hub" className="gc-nav-link">⌂ Home</Link>
                 <Link href="/rooms" className="gc-nav-link">▸ Rooms</Link>
                 <Link href="/tools" className="gc-nav-link">▸ Tools</Link>
@@ -111,16 +111,16 @@ export default async function HubPage() {
                 marginBottom: 14,
               }}>
                 <p style={{
-                  fontFamily: "Impact, sans-serif",
-                  fontSize: 16,
+                  fontFamily: "var(--gc-font-scream)",
+                  fontSize: 22,
                   color: "#9D00FF",
                   letterSpacing: "0.1em",
-                  marginBottom: 8,
+                  marginBottom: 10,
                 }}>
                   ▌ ABOUT THIS PAGE
                 </p>
                 {/* COPY: welcome manifesto — fill via enrich session */}
-                <p style={{ fontSize: 12, lineHeight: 1.7, color: "#888", fontStyle: "italic" }}>
+                <p style={{ fontFamily: "var(--gc-font-body)", fontSize: 16, lineHeight: 1.7, color: "#aaa", fontStyle: "italic" }}>
                   [ This page is under construction. Check back soon. ]
                 </p>
               </div>
@@ -148,8 +148,8 @@ export default async function HubPage() {
               {rooms.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
                   <p style={{
-                    fontFamily: "Impact, sans-serif",
-                    fontSize: 14,
+                    fontFamily: "var(--gc-font-scream)",
+                    fontSize: 20,
                     letterSpacing: "0.15em",
                     color: "#00FFFF",
                     textShadow: "0 0 6px #00FFFF",
@@ -161,11 +161,11 @@ export default async function HubPage() {
                   </p>
                   {rooms.slice(0, 3).map((room) => (
                     <RoomLink key={room.slug} href={`/rooms/${room.slug}`} className="gc-room-card" style={{ display: "block" }}>
-                      <span style={{ fontSize: 9, color: "#9D00FF", letterSpacing: "0.1em" }}>
+                      <span style={{ fontFamily: "var(--gc-font-code)", fontSize: 11, color: "#9D00FF", letterSpacing: "0.1em" }}>
                         Area51/{room.slug.toUpperCase()}/
                       </span>
                       <br />
-                      <span style={{ fontSize: 13, color: "#fff", fontFamily: "Impact, sans-serif" }}>
+                      <span style={{ fontFamily: "var(--gc-font-scream)", fontSize: 18, color: "#fff", letterSpacing: "0.05em" }}>
                         {room.title}
                       </span>
                     </RoomLink>

@@ -11,15 +11,15 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div style={{
       backgroundColor: "#0a0014",
-      backgroundImage: "url('https://file.garden/ZWlUCY4S7Xz2vypS/archived%20backgrounds/colours/purple/backg130.jpg')",
+      backgroundImage: "url('/gifs/bg/purple-lace.jpg')",
       backgroundRepeat: "repeat",
-      /* To self-host later: save to public/gifs/bg/purple-lace.jpg and update url() */
       minHeight: "100vh",
-      fontFamily: "'Courier New', monospace",
+      fontFamily: "var(--gc-font-ui)",
+      fontSize: 15,
       color: "#ccc",
     }}>
       <div style={{
-        width: "780px",
+        width: "1024px",
         maxWidth: "100%",
         margin: "0 auto",
         border: "1px solid #9D00FF",
@@ -62,16 +62,16 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
               </div>
               <div>
                 <div style={{
-                  fontFamily: "var(--font-vt323), Impact, 'Arial Black', sans-serif",
-                  fontSize: 28,
-                  letterSpacing: "0.15em",
+                  fontFamily: "var(--gc-font-scream)",
+                  fontSize: 38,
+                  letterSpacing: "0.18em",
                   color: "#9D00FF",
                   textShadow: "0 0 10px #9D00FF, 0 0 20px rgba(157,0,255,0.4)",
                   textTransform: "uppercase",
                 }}>
                   AFROXIMITY.COM
                 </div>
-                <div style={{ fontSize: 9, color: "#555", letterSpacing: "0.1em" }}>
+                <div style={{ fontFamily: "var(--gc-font-display)", fontSize: 12, color: "#888", letterSpacing: "0.05em", marginTop: 2 }}>
                   {/* COPY: site tagline — fill via enrich session */}
                   Area51 / Vault / afroxhub
                 </div>
@@ -85,13 +85,13 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
                   <Link
                     href={link.href}
                     style={{
-                      fontFamily: "'Courier New', monospace",
-                      fontSize: 12,
+                      fontFamily: "var(--gc-font-display)",
+                      fontSize: 16,
                       color: "#00FF00",
                       textDecoration: "none",
-                      padding: "3px 8px",
+                      padding: "3px 10px",
                       textShadow: "0 0 4px rgba(0,255,0,0.5)",
-                      letterSpacing: "0.05em",
+                      letterSpacing: "0.04em",
                       transition: "color 0.15s, text-shadow 0.15s",
                     }}
                   >
@@ -119,10 +119,10 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
           textAlign: "center",
         }}>
           <div className="gc-divider" style={{ marginBottom: 8 }} />
-          <p style={{ fontSize: 9, color: "#333", letterSpacing: "0.05em" }}>
-            afroximity.com — best viewed in Netscape Navigator 4.0 at 800×600 — © 2026
+          <p style={{ fontFamily: "var(--gc-font-body)", fontStyle: "italic", fontSize: 12, color: "#555", letterSpacing: "0.03em" }}>
+            afroximity.com — best viewed in Netscape Navigator 4.0 at 1024×768 — © 2026
           </p>
-          <p style={{ fontSize: 9, color: "#222", marginTop: 3 }}>
+          <p style={{ fontFamily: "var(--gc-font-display)", fontSize: 11, color: "#444", marginTop: 4 }}>
             <a href="/" style={{ color: "#444", textDecoration: "none" }}>SPLASH</a>
             {" · "}
             <a href="/rooms" style={{ color: "#444", textDecoration: "none" }}>ROOMS</a>

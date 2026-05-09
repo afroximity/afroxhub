@@ -14,6 +14,17 @@
   --gc-red:     #FF0000;
   --gc-yellow:  #FFFF00;
   --gc-dark:    #110022;
+
+  /* ── Authentic 1998 personal-page font stack ──
+     Body, headings, screams use system fonts every late-90s machine actually had.
+     VT323 / Press Start 2P are demoted to badges, counters, "NEW!" stickers only. */
+  --gc-font-body:    "Times New Roman", Times, Georgia, serif;
+  --gc-font-ui:      "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, sans-serif;
+  --gc-font-display: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+  --gc-font-scream:  Impact, "Haettenschweiler", "Arial Narrow Bold", sans-serif;
+  --gc-font-code:    "Courier New", Courier, monospace;
+  --gc-font-pixel:       var(--font-vt323), "Courier New", monospace;
+  --gc-font-pixel-tight: var(--font-press-start), monospace;
 }
 
 @theme inline {
@@ -156,17 +167,25 @@ a {
 
 /* screaming title — spaced impact caps */
 .gc-screaming {
-  font-family: Impact, 'Arial Black', sans-serif;
+  font-family: var(--gc-font-scream);
   letter-spacing: 0.25em;
   text-transform: uppercase;
 }
 
 /* terminal green text */
 .gc-terminal {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--gc-font-code);
   color: var(--gc-green);
   text-shadow: 0 0 6px var(--gc-green);
 }
+
+/* font helper utilities for inline use in the (site) shell */
+.gc-font-body    { font-family: var(--gc-font-body); }
+.gc-font-ui      { font-family: var(--gc-font-ui); }
+.gc-font-display { font-family: var(--gc-font-display); }
+.gc-font-scream  { font-family: var(--gc-font-scream); }
+.gc-font-code    { font-family: var(--gc-font-code); }
+.gc-font-pixel   { font-family: var(--gc-font-pixel); }
 
 /* neon text variants */
 .gc-text-purple  { color: var(--gc-purple);  text-shadow: 0 0 8px var(--gc-purple); }
@@ -180,7 +199,7 @@ a {
   width: 88px;
   height: 31px;
   border: 1px solid var(--gc-purple);
-  font-family: 'Courier New', monospace;
+  font-family: var(--gc-font-pixel-tight);
   font-size: 7px;
   text-align: center;
   line-height: 31px;
@@ -198,7 +217,7 @@ a {
 
 /* visitor counter display */
 .gc-counter {
-  font-family: 'Courier New', monospace;
+  font-family: var(--gc-font-code);
   font-size: 13px;
   color: var(--gc-green);
   background: #000;
@@ -226,9 +245,9 @@ a {
   /* GIF: public/gifs/dividers/lightning-divider.gif */
 }
 
-/* table-based layout helpers */
+/* table-based layout helpers — 1024px stage, period-correct 1024×768 monitor feel */
 .gc-table-layout {
-  width: 780px;
+  width: 1024px;
   max-width: 100%;
   margin: 0 auto;
   border-collapse: collapse;
@@ -236,19 +255,19 @@ a {
 
 .gc-table-layout td {
   vertical-align: top;
-  padding: 8px;
+  padding: 10px;
 }
 
 /* nav column */
 .gc-nav-col {
-  width: 140px;
+  width: 190px;
   border-right: 1px solid var(--gc-purple);
   background: rgba(10, 0, 20, 0.8);
 }
 
 /* gifs sidebar column */
 .gc-sidebar-col {
-  width: 130px;
+  width: 200px;
   border-left: 1px solid var(--gc-purple);
   background: rgba(10, 0, 20, 0.6);
   text-align: center;
@@ -266,7 +285,7 @@ a {
   justify-content: center;
   font-size: 8px;
   color: var(--gc-purple);
-  font-family: 'Courier New', monospace;
+  font-family: var(--gc-font-code);
   animation: gc-pulse-border 3s ease-in-out infinite;
   /* replace with: background-image: url('/gifs/{category}/{name}.gif') */
 }
@@ -277,7 +296,7 @@ a {
   gap: 4px;
   justify-content: center;
   align-items: center;
-  font-family: 'Courier New', monospace;
+  font-family: var(--gc-font-code);
   font-size: 11px;
   color: var(--gc-cyan);
 }
@@ -298,7 +317,7 @@ a {
 /* nav link style */
 .gc-nav-link {
   display: block;
-  font-family: 'Courier New', monospace;
+  font-family: var(--gc-font-code);
   font-size: 12px;
   color: var(--gc-green);
   text-decoration: none;
@@ -323,7 +342,7 @@ a {
   margin-bottom: 6px;
   text-decoration: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-  font-family: 'Courier New', monospace;
+  font-family: var(--gc-font-code);
 }
 
 .gc-room-card:hover {

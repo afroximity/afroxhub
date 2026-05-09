@@ -99,65 +99,52 @@ Finally, avoid shipping every toy on first load. Heavy gifs, autoplaying media, 
 
 You do **not** need to switch away from Next.js to get this done. In the App Router, layouts and pages are Server Components by default, while Client Components are the intended place for state, browser APIs, effects, and interaction. That maps cleanly onto your use case: the shell, room content, and route structure can stay server-rendered, while the sound gate, cursor manager, guestbook interactions, counter, and glitch transitions live in small client islands. If a widget causes hydration problems, Next explicitly supports disabling prerendering for that component with `dynamic(..., { ssr: false })`. Lazy loading is also first-class for Client Components and third-party libraries. citeturn18view0turn18view1turn18view2turn18view3
 
-A sturdy architecture would look like this:
+This repo is already organized around three App Router **route groups** that enforce the GeoCities-vs-rooms boundary, plus a **manifest + registry** pattern so each room is its own self-contained world. Do not invent parallel structures — extend these:
 
 ```text
 app/
-  page.tsx                  // hub
-  rooms/
-    [slug]/
-      page.tsx              // room renderer
-      opengraph-image.tsx   // per-room share card
-  guestbook/
-    page.tsx
-  links/
-    page.tsx
-  about/
-    page.tsx
+  (splash)/
+    page.tsx                  // splash gate at /  — full-screen, no chrome
+  (site)/                     // the GeoCities hub world (1998–2003 Area51)
+    layout.tsx                // hub shell: 1024px stage, 3-col table, GeoCities chrome
+    hub/page.tsx              // /hub
+    rooms/page.tsx            // /rooms directory
+    tools/page.tsx
+    tools/[slug]/page.tsx
+  (rooms)/                    // isolated room experiences
+    layout.tsx                // passthrough — no hub chrome leaks in
+    GlitchTransition.tsx      // world-shift animation between hub and rooms
+    rooms/[slug]/
+      page.tsx
+      RoomRenderer.tsx        // next/dynamic + ssr: false per room
 
-components/
-  shell/
-    HubFrame.tsx
-    LeftRail.tsx
-    RightRail.tsx
-    FooterBadges.tsx
-  retro/
-    SoundGate.tsx
-    VisitorCounter.tsx
-    LinkMeButton.tsx
-    UnderConstruction.tsx
-    MarqueeSafe.tsx
-    BlinkSafe.tsx
-    CursorManager.tsx
-    StickerCloud.tsx
-    BadgeGarden.tsx
-    RoomTransitionLayer.tsx
-  rooms/
-    RoomHeader.tsx
-    RoomMeta.tsx
-    RoomNav.tsx
-    RoomAssets.tsx
+content/rooms/{slug}/
+  index.ts                    // manifest: slug, title, description, component loader
+  Room.tsx                    // the room itself — TSX client component, full visual isolation
+content/rooms/registry.ts     // central registration of room components
+content/rooms/manifestRegistry.ts
 
-content/
-  rooms/
-    cat-memorial.mdx
-    feed-pixel.mdx
-    scania-shrine.mdx
-    jokes-museum.mdx
-    lab-index.mdx
+public/gifs/                  // hub-shared decorative pool
+  skulls/  flames/  globes/  construction/
+  bullets/  dividers/  buttons/  badges/
+  bg/  misc/
+  asset-manifest.yaml         // provenance for every sourced gif/button (see §Preservation)
+public/{room-slug}/           // each room owns its own assets under its slug
+  e.g. public/japan2026/{avatars,hotels,nissan,source}/
 
-public/
-  gfx/
-    badges/
-    stickers/
-    dividers/
-    wallpapers/
-  cursors/
-  audio/
-  video/
-  scans/
-  buttons/
+scripts/
+  assets/
+    gifcities.ts              // batch GIF downloader → public/gifs/<category>/
+    buttons.ts                // batch 88×31 button downloader
+  japan2026/ingest-docs.ts    // example of the per-room ingestion pattern
 ```
+
+Key rules this layout encodes:
+
+- **Rooms are TSX, not MDX.** Each room is a client component registered through `content/rooms/registry.ts` + `manifestRegistry.ts`, then mounted by `app/(rooms)/rooms/[slug]/RoomRenderer.tsx` via `next/dynamic` with `ssr: false`. This is what lets a room own 100% of its visual world (own fonts, own palette, own cursor) without leaking into the hub.
+- **Room-owned assets live under `public/{slug}/`.** The shared `public/gifs/` pool is for hub chrome and cross-room decoration only. Do not dump room-specific imagery into it.
+- **The world-shift between hub and rooms is `app/(rooms)/GlitchTransition.tsx`** — there is no separate `RoomTransitionLayer`. Replace the generic loading state in `RoomRenderer.tsx` with this component (Tenet D in `CLAUDE.md`).
+- **Guestbook, links, about, sound gate, visitor counter, link-me button, sticker cloud, badge garden** — none of these exist as components yet. When you build them, place them under `app/(site)/` (route pages) or as small client islands colocated with `app/(site)/layout.tsx`. Do not create a `components/retro/` or `components/shell/` directory unless three or more pages share a piece — colocate first, extract on the third use.
 
 This keeps the hub and rooms legible as content neighborhoods while isolating browser-only weirdness into deliberate modules. It also means future sessions can iterate room by room instead of rewriting the whole shell.
 
