@@ -523,7 +523,8 @@ export default function Japan2026Room() {
   const [docFilter, setDocFilter] = useState<"all" | UserName | "shared">("all");
   const [araçNissanOpen, setAraçNissanOpen] = useState<Set<string>>(new Set());
   const [clSchema, setClSchema]   = useState<ClSection[]>([]);
-  const [openDays, setOpenDays]   = useState<Set<number>>(new Set([0]));
+  const [openDays, setOpenDays]   = useState<Set<number>>(new Set());
+  const daysSeededRef = useRef(false);
   const [openSecs, setOpenSecs]   = useState<Set<string>>(new Set());
   const [clSearch, setClSearch]   = useState("");
   const [copied, setCopied]       = useState<string | null>(null);
@@ -535,9 +536,22 @@ export default function Japan2026Room() {
   const [switchOpen, setSwitchOpen] = useState(false);
   const [editingDays, setEditingDays] = useState(false);
   const [editingCl, setEditingCl]     = useState(false);
+  const [editingGelmis, setEditingGelmis] = useState(false);
   const [dragEv, setDragEv]           = useState<{ dayId: string; eventId: string } | null>(null);
   const [dragOverEv, setDragOverEv]   = useState<string | null>(null);
+  const [dragSec, setDragSec]         = useState<string | null>(null);
+  const [dragOverSec, setDragOverSec] = useState<string | null>(null);
+  const [dragItem, setDragItem]       = useState<{ secId: string; itemId: string } | null>(null);
+  const [dragOverItem, setDragOverItem] = useState<string | null>(null);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Default-open all itinerary days on first load. After seeding, respect
+  // whatever the user collapses/expands manually.
+  useEffect(() => {
+    if (daysSeededRef.current || days.length === 0) return;
+    daysSeededRef.current = true;
+    setOpenDays(new Set(days.map((_, i) => i)));
+  }, [days]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const saveDays   = useCallback(debounce((d: DayEntry[]) => {
@@ -586,8 +600,10 @@ export default function Japan2026Room() {
       if (!fromDb || fromDb.length === 0) {
         mergedSchema = [...ZERO_CHECKLIST, ...ZERO_GELMISKEN];
       } else {
-        const haveTitles = new Set(fromDb.map(s => s.title));
-        const missingGelmis = ZERO_GELMISKEN.filter(s => !haveTitles.has(s.title));
+        // Seed Gelmişken defaults only if NONE exist — once the user has touched
+        // any Gelmişken section (added / renamed / deleted), respect their state.
+        const hasGelmis = fromDb.some(isGelmis);
+        const missingGelmis = hasGelmis ? [] : ZERO_GELMISKEN;
         mergedSchema = missingGelmis.length > 0 ? [...fromDb, ...missingGelmis] : fromDb;
         if (missingGelmis.length > 0) {
           // Persist the merged schema so subsequent loads see it directly.
@@ -731,6 +747,26 @@ export default function Japan2026Room() {
     setClSchema(prev => { const next = [...prev, { id: uid(), title: "Yeni kategori", items: [] }]; saveSchema(next); return next; });
   }, [saveSchema]);
 
+  const addGelmisSection = useCallback(() => {
+    setClSchema(prev => { const next = [...prev, { id: uid(), title: "Gelmişken — Yeni bölge", items: [] }]; saveSchema(next); return next; });
+  }, [saveSchema]);
+
+  // Drag-reorder a Gelmişken section to land before/after another Gelmişken section
+  // (operates on the full clSchema while preserving non-Gelmişken positions relative to themselves).
+  const moveSectionToBefore = useCallback((srcId: string, destId: string) => {
+    if (srcId === destId) return;
+    setClSchema(prev => {
+      const srcIdx = prev.findIndex(s => s.id === srcId);
+      const destIdx = prev.findIndex(s => s.id === destId);
+      if (srcIdx < 0 || destIdx < 0) return prev;
+      const next = [...prev];
+      const [moved] = next.splice(srcIdx, 1);
+      const adjusted = destIdx > srcIdx ? destIdx - 1 : destIdx;
+      next.splice(adjusted, 0, moved);
+      saveSchema(next); return next;
+    });
+  }, [saveSchema]);
+
   const updateItem = useCallback((secId: string, itemId: string, label: string) => {
     setClSchema(prev => { const next = prev.map(s => s.id === secId ? { ...s, items: s.items.map(it => it.id === itemId ? { ...it, label } : it) } : s); saveSchema(next); return next; });
   }, [saveSchema]);
@@ -741,6 +777,25 @@ export default function Japan2026Room() {
 
   const removeItem = useCallback((secId: string, itemId: string) => {
     setClSchema(prev => { const next = prev.map(s => s.id === secId ? { ...s, items: s.items.filter(it => it.id !== itemId) } : s); saveSchema(next); return next; });
+  }, [saveSchema]);
+
+  // Reorder an item within a section: place srcItemId at destItemId's slot.
+  const moveItemToBefore = useCallback((secId: string, srcId: string, destId: string) => {
+    if (srcId === destId) return;
+    setClSchema(prev => {
+      const next = prev.map(s => {
+        if (s.id !== secId) return s;
+        const srcIdx = s.items.findIndex(it => it.id === srcId);
+        const destIdx = s.items.findIndex(it => it.id === destId);
+        if (srcIdx < 0 || destIdx < 0) return s;
+        const items = [...s.items];
+        const [moved] = items.splice(srcIdx, 1);
+        const adjusted = destIdx > srcIdx ? destIdx - 1 : destIdx;
+        items.splice(adjusted, 0, moved);
+        return { ...s, items };
+      });
+      saveSchema(next); return next;
+    });
   }, [saveSchema]);
 
   // Checklist counts (excluding Gelmişken sections — those have their own tab)
@@ -887,7 +942,7 @@ export default function Japan2026Room() {
                   letterSpacing: ".18em",
                   textTransform: "uppercase",
                   color: active ? (special ? C.red : C.ink) : (special ? C.red : C.muted),
-                  borderBottom: `${special ? 2 : 1}px solid ${active ? C.red : (special ? C.red : "transparent")}`,
+                  borderBottom: `${active ? 2 : 1}px solid ${active ? C.red : "transparent"}`,
                   marginBottom: "-1px",
                   whiteSpace: "nowrap",
                   transition: "color .15s, border-color .15s",
@@ -1698,15 +1753,27 @@ export default function Japan2026Room() {
                       </div>
 
                       <div style={{ marginLeft: "24px", paddingLeft: "24px", borderLeft: `1px solid ${C.line2}` }}>
-                        {sec.items.map((item) => (
-                          <div key={item.id} style={{ display: "grid", gridTemplateColumns: "1fr 28px", gap: "12px", padding: "8px 0", borderTop: `1px solid ${C.line2}`, alignItems: "center" }}>
-                            <input value={item.label} onChange={e => updateItem(sec.id, item.id, e.target.value)}
-                              style={{ fontSize: "14px", color: C.ink, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%", lineHeight: 1.6 }} />
-                            <button onClick={() => removeItem(sec.id, item.id)}
-                              style={{ fontSize: "16px", color: C.muted, transition: "color .15s", flexShrink: 0 }}
-                              onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
-                          </div>
-                        ))}
+                        {sec.items.map((item) => {
+                          const isDragOver = dragOverItem === item.id && dragItem?.secId === sec.id && dragItem?.itemId !== item.id;
+                          const isDragging = dragItem?.itemId === item.id;
+                          return (
+                            <div key={item.id}
+                              draggable
+                              onDragStart={e => { setDragItem({ secId: sec.id, itemId: item.id }); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", item.id); }}
+                              onDragOver={e => { if (dragItem?.secId === sec.id && dragItem.itemId !== item.id) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverItem(item.id); } }}
+                              onDragLeave={() => setDragOverItem(prev => prev === item.id ? null : prev)}
+                              onDrop={e => { e.preventDefault(); if (dragItem?.secId === sec.id && dragItem.itemId !== item.id) moveItemToBefore(sec.id, dragItem.itemId, item.id); setDragItem(null); setDragOverItem(null); }}
+                              onDragEnd={() => { setDragItem(null); setDragOverItem(null); }}
+                              style={{ display: "grid", gridTemplateColumns: "16px 1fr 28px", gap: "12px", padding: "8px 0", borderTop: isDragOver ? `2px solid ${C.red}` : `1px solid ${C.line2}`, alignItems: "center", opacity: isDragging ? 0.4 : 1, background: isDragging ? C.line2 : "transparent", transition: "background .15s" }}>
+                              <span title="Sürükle" style={{ cursor: "grab", color: C.muted, fontSize: "12px", textAlign: "center", userSelect: "none" }}>⋮⋮</span>
+                              <input value={item.label} onChange={e => updateItem(sec.id, item.id, e.target.value)}
+                                style={{ fontSize: "14px", color: C.ink, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%", lineHeight: 1.6 }} />
+                              <button onClick={() => removeItem(sec.id, item.id)}
+                                style={{ fontSize: "16px", color: C.muted, transition: "color .15s", flexShrink: 0 }}
+                                onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
+                            </div>
+                          );
+                        })}
                         <button onClick={() => addItem(sec.id)}
                           style={{ marginTop: "12px", fontSize: "11px", letterSpacing: ".2em", textTransform: "uppercase", color: C.muted, fontWeight: 500, transition: "color .15s" }}
                           onMouseEnter={e => (e.currentTarget.style.color = C.ink)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>
@@ -1799,6 +1866,10 @@ export default function Japan2026Room() {
             `}</style>
             <div style={{ position: "relative", padding: "100px 0 60px", overflow: "hidden", borderBottom: `1px solid ${C.line}` }}>
               <div style={{ position: "absolute", top: "-120px", right: "-200px", width: "640px", height: "640px", borderRadius: "50%", background: C.red, animation: "gelmisGlow 6s ease-in-out infinite", zIndex: 0 }} />
+              <button onClick={() => setEditingGelmis(e => !e)}
+                style={{ position: "absolute", top: "32px", right: "0", zIndex: 2, padding: "8px 16px", border: `1px solid ${editingGelmis ? C.red : C.line}`, fontSize: "11px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", color: editingGelmis ? C.red : C.muted, background: "rgba(250,250,248,.85)", backdropFilter: "saturate(180%) blur(6px)", transition: "all .18s" }}>
+                {editingGelmis ? "Bitti ✓" : "Düzenle"}
+              </button>
               <div style={{ position: "relative", zIndex: 1 }}>
                 <div style={{ fontSize: "11px", letterSpacing: ".32em", textTransform: "uppercase", color: C.red, fontWeight: 600, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
                   <span style={{ display: "inline-block", width: "32px", height: "1px", background: C.red }} />
@@ -1827,6 +1898,84 @@ export default function Japan2026Room() {
 
             {/* Region tiles — one per Gelmişken section */}
             <div style={{ paddingBottom: "120px" }}>
+              {editingGelmis ? (
+                /* ── EDIT MODE ── */
+                <div>
+                  {gelmisSchema.map((sec, gi) => {
+                    const region = sec.title.replace(/^Gelmişken — /, "");
+                    const isDragOver = dragOverSec === sec.id && dragSec !== sec.id;
+                    return (
+                      <div key={sec.id}
+                        draggable
+                        onDragStart={() => setDragSec(sec.id)}
+                        onDragOver={e => { e.preventDefault(); if (dragSec && dragSec !== sec.id) setDragOverSec(sec.id); }}
+                        onDragLeave={() => setDragOverSec(prev => prev === sec.id ? null : prev)}
+                        onDrop={e => { e.preventDefault(); if (dragSec) moveSectionToBefore(dragSec, sec.id); setDragSec(null); setDragOverSec(null); }}
+                        onDragEnd={() => { setDragSec(null); setDragOverSec(null); }}
+                        style={{ borderBottom: `1px solid ${C.line}`, padding: "28px 0", opacity: dragSec === sec.id ? 0.4 : 1, borderTop: isDragOver ? `2px solid ${C.red}` : "2px solid transparent", transition: "opacity .15s" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "16px", alignItems: "center", marginBottom: "20px" }}>
+                          <span title="Sürükle ve bırak" style={{ cursor: "grab", color: C.muted, fontSize: "16px", padding: "0 4px", userSelect: "none" }}>⋮⋮</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                            <span style={{ fontFamily: C.sans, fontSize: "10px", letterSpacing: ".24em", textTransform: "uppercase", fontWeight: 600, color: C.red, flexShrink: 0 }}>★</span>
+                            <span style={{ color: C.muted, fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase" }}>Gelmişken —</span>
+                            <input value={region} onChange={e => updateSection(sec.id, { title: `Gelmişken — ${e.target.value}` })}
+                              placeholder="Bölge adı"
+                              style={{ fontFamily: C.serif, fontWeight: 400, fontStyle: "italic", fontSize: "22px", letterSpacing: "-.02em", border: "none", borderBottom: `1px solid ${C.line}`, background: "transparent", outline: "none", color: C.ink, width: "100%" }} />
+                          </div>
+                          <div style={{ display: "flex", gap: "8px", alignItems: "center", flexShrink: 0 }}>
+                            <button onClick={() => { const prev = gelmisSchema[gi - 1]; if (prev) moveSectionToBefore(sec.id, prev.id); }} disabled={gi === 0}
+                              style={{ fontSize: "14px", color: gi === 0 ? C.line : C.muted, cursor: gi === 0 ? "default" : "pointer", padding: "4px 6px", transition: "color .15s" }}>↑</button>
+                            <button onClick={() => { const nxt = gelmisSchema[gi + 2]; if (nxt) moveSectionToBefore(sec.id, nxt.id); else { const last = gelmisSchema[gelmisSchema.length - 1]; if (last && last.id !== sec.id) moveSectionToBefore(sec.id, last.id); } }} disabled={gi === gelmisSchema.length - 1}
+                              style={{ fontSize: "14px", color: gi === gelmisSchema.length - 1 ? C.line : C.muted, cursor: gi === gelmisSchema.length - 1 ? "default" : "pointer", padding: "4px 6px", transition: "color .15s" }}>↓</button>
+                            <button onClick={() => { if (confirm(`"${region}" bölgesini sil?`)) removeSection(sec.id); }}
+                              style={{ fontSize: "16px", color: C.muted, padding: "4px 8px", transition: "color .15s" }}
+                              onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
+                          </div>
+                        </div>
+
+                        <div style={{ marginLeft: "24px", paddingLeft: "24px", borderLeft: `1px solid ${C.line2}` }}>
+                          {sec.items.map((item) => {
+                            const isDragOver = dragOverItem === item.id && dragItem?.secId === sec.id && dragItem?.itemId !== item.id;
+                            const isDragging = dragItem?.itemId === item.id;
+                            return (
+                              <div key={item.id}
+                                draggable
+                                onDragStart={e => { setDragItem({ secId: sec.id, itemId: item.id }); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", item.id); }}
+                                onDragOver={e => { if (dragItem?.secId === sec.id && dragItem.itemId !== item.id) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverItem(item.id); } }}
+                                onDragLeave={() => setDragOverItem(prev => prev === item.id ? null : prev)}
+                                onDrop={e => { e.preventDefault(); if (dragItem?.secId === sec.id && dragItem.itemId !== item.id) moveItemToBefore(sec.id, dragItem.itemId, item.id); setDragItem(null); setDragOverItem(null); }}
+                                onDragEnd={() => { setDragItem(null); setDragOverItem(null); }}
+                                style={{ display: "grid", gridTemplateColumns: "16px 1fr 28px", gap: "12px", padding: "8px 0", borderTop: isDragOver ? `2px solid ${C.red}` : `1px solid ${C.line2}`, alignItems: "center", opacity: isDragging ? 0.4 : 1, background: isDragging ? C.line2 : "transparent", transition: "background .15s" }}>
+                                <span title="Sürükle" style={{ cursor: "grab", color: C.muted, fontSize: "12px", textAlign: "center", userSelect: "none" }}>⋮⋮</span>
+                                <input value={item.label} onChange={e => updateItem(sec.id, item.id, e.target.value)}
+                                  placeholder="Anı / yer / yapılacak"
+                                  style={{ fontSize: "14px", color: C.ink, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%", lineHeight: 1.6 }} />
+                                <button onClick={() => removeItem(sec.id, item.id)}
+                                  style={{ fontSize: "16px", color: C.muted, transition: "color .15s", flexShrink: 0 }}
+                                  onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
+                              </div>
+                            );
+                          })}
+                          <button onClick={() => addItem(sec.id)}
+                            style={{ marginTop: "12px", fontSize: "11px", letterSpacing: ".2em", textTransform: "uppercase", color: C.muted, fontWeight: 500, transition: "color .15s" }}
+                            onMouseEnter={e => (e.currentTarget.style.color = C.ink)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>
+                            + Madde ekle
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div style={{ padding: "32px 0" }}>
+                    <button onClick={addGelmisSection}
+                      style={{ fontSize: "13px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, display: "flex", alignItems: "center", gap: "12px", transition: "color .18s" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = C.ink)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>
+                      <span style={{ fontSize: "20px", lineHeight: 1, fontWeight: 300, fontFamily: C.serif }}>+</span> Bölge ekle
+                    </button>
+                  </div>
+                </div>
+              ) : (
+              /* ── VIEW MODE ── */
+              <>
               {gelmisSchema.map((sec) => {
                 const region = sec.title.replace(/^Gelmişken — /, "");
                 const isOpen = openSecs.has(sec.id);
@@ -1884,7 +2033,7 @@ export default function Japan2026Room() {
 
               {gelmisSchema.length === 0 && (
                 <div style={{ padding: "80px 0", textAlign: "center", fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, fontSize: "20px", color: C.muted }}>
-                  Liste seni bekliyor — sayfayı yenile, seed'lensin.
+                  Liste seni bekliyor — Düzenle &rsaquo; Bölge ekle ile başla.
                 </div>
               )}
 
@@ -1892,6 +2041,8 @@ export default function Japan2026Room() {
                 <span>Gelmişken — anılar için</span>
                 <span style={{ color: C.red }}>★ tek seferlik gelinecek bir yer ★</span>
               </div>
+              </>
+              )}
             </div>
           </div>
         )}
