@@ -1,214 +1,305 @@
-# Building an Authentic GeoCities-Era Hacker Zone Homepage: A Field Guide for afroximity.com
+# A Soulful GeoCities-Style Personal Museum for 2026
 
-This is a practical research report covering the six requested topics, oriented toward building a chaotic, dark/purple-neon, table-laid-out personal page that feels like 1998–2003 — passionate, noisy, hand-built — rather than algorithmically polished.
+The target is not “make it look old.” The target is “make it feel authored.” The archival and scholarly record around GeoCities points to a web culture built from neighborhoods, guest books, web rings, diaries, visible incompletion, background sound, and shameless element-combining. Later preservation work frames that culture as expressive, decentralized, sincere, and neighborly rather than merely “bad design.” When entity["company","Yahoo!","internet portal"] shut the service in 2009, what preservation groups rushed to save was precisely that messy personal culture, and today it survives through work by the entity["organization","Internet Archive","web archive org"], entity["organization","Archive Team","digital preservation group"], and entity["organization","Restorativland","geocities mirror project"]. citeturn1view0turn14view3turn15view0turn15view1
 
----
+## What your screenshots already say
 
-## 1. Cameron's World (cameronsworld.net) — What It Actually Is and How to Mine It
+Your reference screenshot succeeds because it is not just decorative. It is socially chunked. “Link me,” “Vote me,” “Post me,” “Welcome,” “Updates,” and navigation are all separate little booths in the fairground. The page feels alive because every box suggests a different verb: link, vote, sign, browse, return, collect.
 
-Cameron's World is **not a clip-art repository**; it is a curated net-art collage by Cameron Askin (a Berlin-based New Zealander, born 1987) launched in 2015 and revised in 2017. It is a tribute/love letter built from thousands of archived GeoCities pages. Important characteristics relevant to your build:
+Your current hub is already closer to the real target than you think. It has the right macro instincts: a fixed central stage instead of endless scroll, side rails, a visible visitor counter, footer buttons, and a room-based spatial model. Those are all stronger foundations for a GeoCities-inspired project than a sleek responsive portfolio or a single infinite feed.
 
-**Structure.** The site is a single, very tall vertical scrolling page composed of roughly **700 hand-positioned interactive GIFs, text snippets, and hyperlinks**, arranged into thematic rows or "regions." Cameron describes the GIFs as having been "excavated" from GeoCities directories — he screenshotted, downloaded, and noted URLs by hand. Elements were grouped in Photoshop, then absolutely positioned with CSS. Anthony Hughes built the JS/server, and Robin Hughes composed the looping MIDI-style soundtrack.
+What still reads as too AI-clean is the uniformity. The current hub feels tightly art-directed, almost like one coherent cyberpunk poster. GeoCities soul usually came from friction between modules, not perfect harmony: too many boxes, too many assets, too many niche declarations, too many tiny invitations, and a visible sense that the author kept adding things over time. Your hub needs more residue, more thematic contamination, more asymmetry, more “this page accumulated a life.”
 
-**Categories of GIFs you can observe on the site (useful as a category vocabulary for your own page):**
-- Welcome banners, "enter," and animated "click here" arrows
-- Under-construction / digger / barricade GIFs
-- Spinning globes, spinning @ signs, spinning emails and skulls
-- Animated cursors, sparkles, fairies, glitter, rainbows
-- Pixel-art browsers, computers, dial-up modems, floppy disks
-- Flame and fire borders, lightning, explosions
-- Religious/angelic imagery (crosses, praying hands)
-- Fan-art GIFs (X-Files, Star Trek, Buffy, Mortal Kombat, Pokémon, anime, music acts)
-- Coffee cups, smoking cigarettes, biker/skull clip-art
-- Visitor counters, web-ring badges, "Best viewed in Netscape" badges, W3C and HTML 4.0 compliance buttons
-- Clickable thumbnails that pop up a fake "Catscape Navigator 2.0" browser window (a parody of Netscape Navigator 2.0) showing the Wayback-archived original page
+The most important design move from here is not to abandon your existing cyber aesthetic. It is to let that aesthetic get invaded by fandom, jokes, grief, cats, favorite machines, unfinished experiments, and page furniture that looks like it was added because you loved it, not because a design system demanded it.
 
-**URL structure / hotlinking.** Cameron's World hosts its assets on its own server at `cameronsworld.net/` and the GIFs are served from internal asset folders (publicly fetching the index page is currently blocked by the site's permissions). Crucially: **it is a single self-contained art project, not a CDN, and the explicit ethic in the broader Neocities/old-web community is "don't hotlink."** Multiple primary GIF archives say so plainly: cyber.dabamos.de says "Feel free to copy buttons to your website, but avoid hot-linking if possible," and 88x31.nl writes "It's advised to first download the pictures to be sure you won't lose the pictures and create a dead link." Treat Cameron's World as **inspiration and a category index** — open dev tools, identify GIFs you like, then download or find equivalents on GifCities (see §5) and self-host. Hotlinking from cameronsworld.net is rude, fragile, and not how the project was intended to be used.
+## What made the old web feel human
 
-**Practical takeaway:** Use Cameron's World as a *layout reference* (dense vertical bands, GIFs touching each other with no breathing room, mismatched sizes, mid-1990s "Catscape" pop-up framing) rather than as an asset host.
+GeoCities mattered because it lowered the barrier to publishing and wrapped people into thematic “neighborhoods.” Ian Milligan’s historical account describes a web where ordinary users could publish without dealing with intimidating tooling, then become part of communities held together by volunteer neighborhood watches, web rings, and guest books. The Web Design Museum’s neighborhood archive still shows how strongly the service organized itself as a themed city rather than a feed: Area51, Hollywood, Heartland, MotorCity, SiliconValley, EnchantedForest, and many more. citeturn14view0turn14view3
 
----
+Just as important, the era was emotionally direct. James Baker’s study of GeoCities diaries describes users experimenting with the boundary between public and private life, using personal pages to stage identity, memory, confession, and everyday writing in public. That matters for your project because a dead-cat shrine, a jokes museum, a truck-devotion page, and a lab of strange UI experiments are not eccentric extras; they are exactly the sort of intimate-public hybrids that gave personal sites their pulse. citeturn14view4turn27view0
 
-## 2. The Restorativland GeoCities Archive (geocities.restorativland.org) — The Truth About the "Hacker Zone"
+The visual language was not simply “ugly.” One of the best modern readings of the archive, through entity["organization","Rhizome","digital art org"] and the *One Terabyte of Kilobyte Age* project, argues that what made these pages distinctive was the absence of a fixed standard for self-expression. Users often could not produce polished original graphics, so they built pages by combining found elements, circulating motifs, and attaching meaning through arrangement. That is why the right goal is not a single perfectly art-directed retro page. It is a page ecology of combinations, borrowings, badges, stickers, dividers, gifs, and tiny rituals that reveal taste and obsession. citeturn15view0turn15view1
 
-**There was no GeoCities neighborhood literally called "Hacker Zone."** This is the most important finding for your project: GeoCities was organized around 41 themed neighborhoods, each with sub-neighborhoods (Shire, Lair, Vault, Zone, Nebula, Realm, etc.) and numbered "addresses." When people say "hacker zone aesthetic" they are conflating several real GeoCities locations whose vibes overlap:
+The characteristic surface features were real, and they mattered. Research describing GeoCities-era design explicitly points to “under construction” notices, blinking or marquee text, visitor counters, and background music as characteristic of the period. Restorativland’s reconstructed gallery also notes that some archived pages contain embedded MIDI or WAV audio, marked with a sound icon, and require a click to begin playback. In other words, the old web felt alive not only because it was visually busy, but because it exposed status, incompletion, repetition, and ambience on the page itself. citeturn14view1turn27view0
 
-- **Area51** — the canonical home of sci-fi, UFOs, X-Files, conspiracy theory, fantasy, horror, hackers, and dark/edgy fan culture. Sub-neighborhoods include `/Shire`, `/Lair`, `/Vault`, `/Zone`, `/Nebula`, `/Realm`. Restorativland's Area51 index actually contains literal pages with names like "Rogue Hacker's Hacks Homepage" (`Area51/Nebula/5910`) and "Damage, INc. Group" (`Area51/Zone/1968`). This is the closest thing to the "hacker zone."
-- **CapeCanaveral / SiliconValley** — the sci/tech/programming neighborhoods (computers, programming, gadgets).
-- **SoHo** — art and creative work.
-- **HotSprings, Heartland, Athens, Colosseum** — health, family/blogs, education, sports respectively.
+The shortest useful summary is this: the soul came from self-categorization, public traces of visitors, visible incompletion, obsessive collections, and personal writing that sat in plain sight. If your site accumulates those traits, it will feel right even if some of the exact visuals are contemporary reconstructions. citeturn14view3turn15view0turn27view0
 
-What made Area51 visually distinct (according to Fanlore, SyFy Wire's coverage of Restorativland, the Restorativland index pages themselves, and contemporary documentation):
+## The site architecture you actually want
 
-- **Black or near-black tiled backgrounds** (often a dark starfield, a tessellated metal-grid pattern, or repeating skull/flame tile)
-- **Neon/saturated foreground colors against the dark BG** — acid green (#00FF00), hot pink/magenta, electric cyan, and especially **purple** and dark red for goth/X-Files-coded pages
-- **Heavy use of fire, skulls, lightning, "Enter at your own risk" splash gates** as opening pages; clicking a flame GIF or skull would actually enter the site
-- **Sub-neighborhood naming was explicitly fantasy/horror-coded** (Shire, Vault, Lair, Realm, Dungeon, Portal, Labyrinth) — this is the verbal vocabulary you should mirror with section headers like "THE LAIR," "THE VAULT," "ENTER THE ZONE"
-- **Title typography**: spaced-out caps (`W E L C O M E`), backwards/zalgo characters, ASCII rules made of `=-=-=-=`, and the trademark pseudo-leet ("Welcome to my dom4!n," "h4x0r")
-- **Sound icons (🔊 in the Restorativland index) are extremely common** — Area51 pages auto-played MIDI files of TV theme songs (X-Files theme is the canonical example), industrial/metal MIDI loops, or droning ambient
-- **Frame-based or table-based layouts** with a dark left-hand nav of links written in blinking acid-green text
-- **Visitor counter, last-updated date, webmaster email, and a webring badge at the bottom** — non-negotiable furniture
-- **Long manifesto/welcome paragraphs** ("This page is dedicated to…", "If you study the material on this website you will hopefully understand what our purpose here on Earth has been")
-- **Splash/index pages that announce "Best viewed in Netscape Navigator at 800×600"**
+### User-facing brief
 
-Practical mapping for afroximity.com: think of your site as a fictional `Area51/Vault/[number]` page. A dark-purple variant of this is fully canonical — purple was used heavily for goth, vampire, and "mystic hacker" pages within Area51/Realm and Area51/Lair.
+Treat the hub as a city map or station concourse, not as an about-me landing page. It should be the switchboard that tells a stranger what worlds exist, what has changed recently, what is unfinished, and where the weirdness lives. That is historically closer to GeoCities’ neighborhood logic than a modern homepage hero. citeturn14view0turn14view3
 
----
+The fixed-width central stage is the correct choice. Keep it. On modern wide screens, the wallpaper should absorb the surplus space while the main stage stays intentionally bounded and legible. Use oversized headers, thick borders, obvious modules, and multiple “zones” rather than a long narrative scroll. The stage should feel like it was designed for a smaller monitor and then lovingly preserved, not stretched to fill a cinema display.
 
-## 3. Make Frontend Shit Again (makefrontendshitagain.party) — The Specific Techniques It Showcases
+The `rooms` idea is your strongest concept. Lean into it harder. Each room should behave like its own neighborhood with its own local customs, background, cursor, mini-heading treatment, badge cluster, and optional soundtrack. The hub should not try to contain everything; it should advertise the worlds.
 
-This site was built by Sara Vieira in an afternoon hackathon (her GitHub: `SaraVieira/make-frontend-shit-again`) as a parody/manifesto. It is implemented with Nuxt/Vue under the hood (ironic, given the message), and what it actually displays is a curated catalogue of authentically bad/fun techniques:
+A strong user-facing room taxonomy for your project would look like this:
 
-**HTML elements it deliberately uses or recommends:**
-- `<marquee>` — horizontal scrolling text; still natively supported in most browsers as of 2025 although deprecated. The full attribute set (`direction`, `scrollamount`, `behavior="alternate"` for bouncing, `loop`, `width`, `height`) is part of the period correctness.
-- `<blink>` — dead in modern browsers, but the canonical 1990s pattern was wrapping `<blink>` inside `<marquee>` so Netscape users got blink and IE users got scroll. Today you replicate it with CSS: `@keyframes blink { 50% { opacity: 0; } } .blink { animation: blink 1s steps(1,end) infinite; }`.
-- `<bgsound>` and `<embed>` autoplaying MIDI — period correct. (Modern browsers block autoplay; provide a play button or use a user-gesture gate.)
-- `<center>`, `<font color>`, `<font face="Comic Sans MS">`, `<table border>` for layout — deliberately non-semantic.
-- `<frameset>` / `<frame>` — true period layout; you can polyfill with a flex container styled to look like frames.
-- W3C validation badges, "Best viewed in Netscape" 88×31 buttons, hit counters at the bottom.
-- Animated cursors via the (non-standard, IE-only) `cursor: url(...)` trick.
-- Tiled background images set on `<body>` with `bgcolor` fallback.
+- **Hub**: map, updates, featured room, sound toggle, counter, guestbook link, “link me” button, “best viewed with curiosity” line.
+- **Rooms index**: a thumbnail atlas or directory page, not just a card grid. Each room gets a mood line, status, and last-updated stamp.
+- **Memorial room for your cat**: candle gifs, a quieter palette, photos, favorite habits, text fragments, a condolence corner in the guestbook, maybe one restrained song choice.
+- **New cat page with a Feed Pixel button**: a little creature toy, feeding state, nameplate, toys, “today’s mood,” perhaps an adoption certificate or sticker shelf.
+- **Scania shrine**: effectively your own MotorCity annex. Favorite models, engine love notes, wallpapers, found imagery, truck facts that matter to *you*, “why I love this machine” writing, maybe route cards or faux spec sheets.
+- **Lab and tools**: your artistic UI/UX rooms, room-switch glitches, unfinished experiments, interface artifacts, downloadable toys.
+- **Jokes and cursed relics**: fake awards, cursed screenshots, one-liners, tiny strange pages you only find by clicking around.
+- **Diary and obituaries**: a dated log of life, creations, losses, updates, and dead-end notes.
+- **Links and neighbors**: outbound links, buttons, maybe a ring slot, recommended personal sites, and things you want people to discover next.
 
-**CSS / visual techniques it leans on:**
-- Comic Sans, Impact, and Courier New as primary typefaces
-- Rainbow gradient text (via `background-clip: text` today; via colored `<font>` segments back then)
-- Tiled, repeating, busy backgrounds (often a tiny GIF set to repeat)
-- Drop-shadow text in saturated colors
-- "Garnet meditating in the middle of the page" type centerpiece — a single absurdly large animated GIF as a feature element
-- Inline styles everywhere, intentionally inconsistent
+Every room should answer a different human question: what do you love, what do you mourn, what do you collect, what do you make, what do you find funny, what are you still building. That is how a “mental museum” becomes legible.
 
-**Related / sibling resources commenters consistently recommend:**
-- **geo-bootstrap** (`code.divshot.com/geo-bootstrap`) — a Bootstrap theme that re-skins all components in GeoCities style. Useful as a CSS reference even if you're hand-rolling.
+The home page should also include visible incompletion. You should have pages that are intentionally half-built, marked as under construction, but already decorated and named. This is not failure. It is period-correct life. A room called “future truck wallpapers,” “pixel mausoleum,” or “cursed tools archive” can exist before it is full, as long as it already has a mood and an invitation. citeturn27view0
 
-The *spirit* the site advocates: every personal page should be "intentionally annoying or hostile," scatological, expressive, and not optimized for SEO or ad readability — it is a play space, the antithesis of the marketing-uniform Web 2.0/3.0.
+A practical rule: no major topic should live only as a box on the hub. If a box is important enough to be teased on the home page, it deserves its own room. That one structural decision alone will keep the project from collapsing into a one-page retro skin.
 
----
+## The decorative and interactive grammar
 
-## 4. The Canonical Hacker-Zone Aesthetic Element Checklist
+The easiest way to avoid AI-slop retro is to make decoration specific. Old-web surfaces were crowded, but they were crowded *about something*. If you love animals, then a title followed by 30 small animal gifs is not noise; it is evidence. If you love trucks, a border row of chrome, road, diesel, and warning-sign stickers is better than a generic neon divider because it belongs to your obsession. The same principle applies to cat pages, joke pages, memorial pages, and lab pages. citeturn15view0turn27view0
 
-Cross-referencing the Aesthetics Wiki "Old Web" entry, the Neocities `raleigh` GeoCities history paper, the Vapor95 history, and the Restorativland Area51 indices, here are the design elements that recur on every authentic 1998–2003 dark/hacker personal page:
+A good decorative grammar for this project includes tiled wallpapers, transparent gif stickers, divider bars, “link me” buttons, under-construction strips, 88x31 button gardens, counter badges, last-updated labels, “best viewed in…” jokes, shrine candles, favorite-things collages, sidebars full of tiny utilities, and small downloadable artifacts like wallpapers or icons. Collections of 88x31 buttons remain widely archived today, and contemporary button archives explicitly advise downloading rather than hot-linking. citeturn22search1turn22search4
 
-**Colors and background**
-- Body `bgcolor="#000000"` or `#0a0014` (near-black with a purple bias)
-- Tiled background GIF — starfield, circuit board, "Matrix" cascading green characters, hex-grid, or dripping-blood
-- Foreground neon palette: `#00FF00` (acid green), `#FF00FF` (magenta), `#9D00FF` (purple), `#00FFFF` (cyan), `#FF0000` for warning/blink elements
-- Underlined blue `#0000FF` or violet `#EE82EE` hyperlinks; visited links a different garish color
+You should actively research from living and archived sources when you do not know what comes next. The 2025 version of GifCities added semantic search, size filtering, pagination, and links back to the original archived pages each gif came from, which makes it a very strong scavenging tool. Neocities remains useful not just as hosting culture but as a living inspiration field: its official browse pages expose tags, popularity, recent updates, and niche collections such as blinkies. Restorativland gives you neighborhood-based browsing of reconstructed GeoCities pages, and OldWeb.Today exists specifically to let people browse older sites through emulated browsers and archived contexts. citeturn1view4turn14view1turn23search0turn23search1turn23search2turn0search9
 
-**Typography**
-- Headers in Impact, Courier New, or a pixel font like "MS Sans Serif," "Fixedsys," or modern "VT323"/"Press Start 2P"
-- Body text often `<font face="Verdana" size="2">` or Courier
-- Ample use of `<h1>` for screaming titles, `<marquee>` for news/announcements, and `<blink>` for "NEW!"
-- ASCII art banners and `=-=-=-=` separators
+For audio, use an opt-in ritual rather than fighting the browser. MDN and Chrome’s autoplay guidance are clear: audible autoplay is commonly blocked, while muted autoplay is broadly permitted. That means the period-correct move in 2026 is not “music starts instantly no matter what,” but “Enter site with sound?” or a visible sound toggle that arms the page after user interaction. If you want a glorious optional player, Webamp is a strong late-90s/early-2000s companion: it is a Winamp reimplementation with full skin support, a modern browser compatibility target, examples for multiple skins and tracks, and even HTML playlist export in the classic style. citeturn16view1turn16view2turn19view0turn19view1turn19view2
 
-**Layout primitives**
-- A `<table border="1" cellpadding="5" cellspacing="0">` master layout, often with a fixed pixel width (`width="780"`) centered with `<center>`
-- Left sidebar nav, right column content, optional right sidebar of GIFs
-- Splash/enter page with one big GIF and the words "ENTER" or "CLICK HERE" linking to index.html
-- `<hr>` bars frequently replaced by an animated divider GIF
+For custom cursors, stay grounded in browser reality. MDN notes that browsers commonly restrict cursor images to 128×128 pixels and recommend 32×32 pixels; oversize images are often ignored. Static `.cur` files are broadly workable. If you want truly animated cursors in the old Windows spirit, Jordan Eldredge’s work on `ani-cursor` is relevant: modern browsers do not support `.ani` files natively, and they also do not support animated image formats such as GIF or APNG as cursors, so animation requires a JavaScript/CSS workaround. The safest design choice is to reserve animated cursors for hover-specific flourishes, secret pages, or shrine zones, not for the entire site shell. citeturn17view1turn28view0
 
-**Required furniture (the things every real page had)**
-- "Under Construction" GIF (digger man, sawhorse, or hard hat) somewhere — non-negotiable
-- Visitor counter (e.g., "You are visitor #00472")
-- "Last updated: October 14, 2001" timestamp
-- Webmaster email with a spinning `@` GIF
-- Guestbook link (Sign / View)
-- Webring navigator (Prev | Random | Next | List)
-- A row of 88×31 buttons: "Best viewed in Netscape," "HTML 4.0 Compliant," "Powered by Notepad," fan webrings, pet causes
-- Awards: "Cool Site of the Day," "Webmaster's Pick," gold trophy GIFs
-- A "links" page with at least 30 outgoing personal-page links
+For marquee and blink effects, recreate the *effect*, not the obsolete tag. The `<marquee>` element is deprecated, and `<blink>` is obsolete. MDN explicitly recommends CSS animations instead of `<marquee>` and also recommends pairing the effect with `prefers-reduced-motion`. That is exactly how you should handle scrolling headlines, warning strips, and “new!” blinkies: build them as CSS components with an escape hatch, not as unbounded chaos. citeturn5search2turn5search3turn16view3
 
-**Animated GIF inventory you'll want**
-- Spinning globes, spinning `@`, spinning skulls, spinning CDs
-- Flame borders (horizontal strips of fire)
-- Lightning bolts
-- Animated "NEW!" and "HOT!" badges
-- Animated `<hr>` dividers (lightning lines, scrolling stars, marching ants, glitter, barbed wire)
-- Bullet points: pulsing dots, blinking stars, tiny skulls, Pokeballs
-- A spinning `@`-sign or animated mailbox for the email link
-- Construction barricades, hard-hat diggers
-- Scrolling Matrix-rain or cascading binary background
+Large decorative animations also need performance discipline. web.dev and MDN both note that animated GIFs can become huge and that video equivalents are often far more efficient. That does **not** mean “ban gifs” — gifs are part of the language — but it does mean you should reserve actual GIFs for small, iconic stickers and badges, and convert large ambient loops to muted WebM/MP4 video where needed. citeturn29view0turn29view1turn29view2
 
-**Sound**
-- A muted-by-default MIDI player, with a "Play soundtrack" toggle (autoplay is blocked in modern browsers; mimic with a hand-built `<audio>` controller styled like a Winamp window)
+A useful rule of thumb is this:
+- **Small symbolic motion**: GIF, APNG, or tiny sprite.
+- **Large decorative loop**: muted video.
+- **Text motion**: CSS component with reduced-motion fallback.
+- **Rare special cursor**: `.cur` or JS-based `.ani` workaround.
+- **Room transition**: view-transition enhancement, not a full-site animation storm.
 
----
+## What to avoid if you want soul rather than parody
 
-## 5. Free / Reusable Animated GIF Sources
+Do not treat the old web as a punchline. Preservation scholarship and restoration projects consistently present GeoCities as digital folklore, a site of early self-publishing, and a “network of care,” not just an archive of embarrassing glitter. If your project only ironizes the era, it will feel hollow. The site should be strange, but the strangeness has to protect sincerity rather than flatten it. citeturn15view0turn15view1
 
-These are the canonical hubs the Neocities/old-web revival community uses. **Hotlinking is generally discouraged everywhere; the social norm is download-and-host-on-your-own-domain.** Build an `/img/gifs/` directory of your own.
+Avoid the following failure modes:
 
-**General-purpose archives**
-- **GifCities (gifcities.org)** — Internet Archive's GeoCities GIF search engine, originally launched 2016 for IA's 20th anniversary, and **substantially upgraded in June 2025** with semantic CLIP-based search ("nearest neighbors" on visual content), size filters (e.g., search only 88×31 or 150×20 blinkies), pagination, and "GifGrams" sharing. Indexes ~4.5M GIFs (~1.6M unique) from the IA's GeoCities Closing Crawl. Each result links back to the archived page where it was found. **This is your single best source.** Search for "skull," "flame border," "purple," "hacker," "matrix," "under construction," "visitor counter," "spinning email," "scania," "football," "cat," etc.
-- **Internet Archive's GeoCities collection** itself (`archive.org/details/geocities`) — raw archive if you need provenance.
-- **Cameron's World (cameronsworld.net)** — visual reference; do not hotlink.
+- one giant homepage with every idea crammed into an endless scroll;
+- one immaculate palette and one immaculate grid used for every room;
+- generic retro copy like “welcome to my world” without actual personal specifics;
+- decorative clutter that is not tied to a topic or emotion;
+- fake brokenness that makes the site annoying rather than haunted;
+- a “museum” that contains no dated entries, no updates, no links out, and no visitor traces;
+- retro Chrome wrapped around writing that could have been generated for any portfolio on earth.
 
-**88×31 button collections**
-- `cyber.dabamos.de/88x31/` — ~4,540 classic buttons in five paginated parts; explicit "avoid hot-linking if possible" notice; download and self-host.
-- `textfiles.com/underconstruction/88x31/` — a 27,720-button mirror combining DABAMOS, hellnet.work/8831/, and `discmaster.textfiles.com`.
-- `88x31.nl` — over 6,500 GIFs/PNGs in 88×31; same advice: download.
-- `wizmax11/88x31-Animated-GIF-Button-Maker` (GitHub) — Python/Tkinter generator if you want to make your own custom buttons (e.g., "Powered by Beşiktaş," "afroximity.com [88×31]", "Pixel ♥ approved").
+Also avoid unsafe or joyless implementations. W3C’s flashing guidance says content should not flash more than three times per second, and MDN warns that flicker, blink, stripes, and motion can trigger seizures or other physical reactions. Respect `prefers-reduced-motion`, keep a visible sound toggle, and let users pause nonessential movement. Soul is not worth making someone nauseous. citeturn16view3turn16view4turn16view5
 
-**Curated retro-graphics / Neocities ecosystem**
-- **sadgrl.online/resources/** and `learn.sadgrl.online` — Mariah's Layout Builder (responsive table-style retro layouts), graphics, blinkies, dividers, stamps, Found Fonts page (free pixel fonts), and webmaster utilities. The Layout Builder generates a working HTML/CSS retro layout in one click.
-- **pixelsafari.neocities.org/dividers** — large themed pixel-divider library (hearts, stars, ribbons, plants, music).
-- **y2k.neocities.org** — 2000s transparent PNGs, buttons, banners.
-- **fructisfans.neocities.org/Links** — a hub directory of retro web resources.
-- **oldwebstuff.tumblr.com**, **luigraphics.tumblr.com**, **sweetparty.tumblr.com**, **vaniillamyk.tumblr.com** — Tumblr graphics blogs that post fresh pixel dividers and decorations regularly.
-- **Neocities tag pages** (`neocities.org/browse?tag=hacker`, `…tag=hackers`, `…tag=hacking`) — to scrape contemporary peer pages for graphics ideas (and to link back from your future webring).
+Finally, avoid shipping every toy on first load. Heavy gifs, autoplaying media, and too many client-only effects will punish the exact density you want. Delayed loading and progressive enhancement let the page feel fuller *and* more stable. citeturn18view1turn29view0turn29view2
 
-**Stock/vector backups (modern, free-license)**
-- Vecteezy, FreeVector, Freepik — for skull/flame/divider vectors if a GIF doesn't exist; convert in Photoshop/GIMP to a 256-color GIF for period authenticity.
+## How to build it in Next.js
 
-**Process suggestion:** sit with GifCities for 30 minutes, right-click-save 80–120 GIFs into `/img/gifs/{construction,skulls,flames,dividers,buttons,bullets,globes,counters,misc}/`, optimize them with `gifsicle -O3`, and serve from your own `afroximity.com` domain. This guarantees stability and matches community norms.
+### AI coding agent brief
 
----
+You do **not** need to switch away from Next.js to get this done. In the App Router, layouts and pages are Server Components by default, while Client Components are the intended place for state, browser APIs, effects, and interaction. That maps cleanly onto your use case: the shell, room content, and route structure can stay server-rendered, while the sound gate, cursor manager, guestbook interactions, counter, and glitch transitions live in small client islands. If a widget causes hydration problems, Next explicitly supports disabling prerendering for that component with `dynamic(..., { ssr: false })`. Lazy loading is also first-class for Client Components and third-party libraries. citeturn18view0turn18view1turn18view2turn18view3
 
-## 6. Scania Trucks: Imagery and Fan-Culture Notes
+A sturdy architecture would look like this:
 
-Scania is a niche but visually rich subculture for an old-web personal page. The honest finding: **there is essentially no large pre-2009 GeoCities-archive collection of Scania-specific GIFs in the same way there are for, say, Pokémon or X-Files** — Scania fan pages absolutely existed (especially in the Netherlands, Sweden, Brazil, Turkey, and Eastern Europe) but they aren't a heavily preserved corner of the GeoCities crawl. What does exist:
+```text
+app/
+  page.tsx                  // hub
+  rooms/
+    [slug]/
+      page.tsx              // room renderer
+      opengraph-image.tsx   // per-room share card
+  guestbook/
+    page.tsx
+  links/
+    page.tsx
+  about/
+    page.tsx
 
-**Modern animated GIF sources (re-skinnable for your purposes):**
-- **Tenor** has dozens of Scania GIFs tagged with the recurring fandom keywords: `#Scania`, `#scania-love`, `#V8`, `#Scania-Top`, `#laranja` (orange), `#Scania-Baú3Eixos` (3-axle box truck — Brazilian), `#tır` (Turkish for big rig), `#pavyon` (Turkish nightclub — a specific Turkish trucker meme aesthetic), `#trucker`, `#drifting`, `#Simon-Loos` (a famous Dutch fleet), `#Martijn-Kuipers` (Dutch trucker influencer), `#Andreas-Schubert` (German driver), `#truckercassie`, `#truckergirl`. Searches like "scania v8", "scania top", "scania drift" return strong results.
-- **Giphy** (`giphy.com/explore/scania-trucks`, `giphy.com/scaniatr`) and **Gfycat archives** with tags like Scania R500, R620, S730, FH16, V8, Mammoet, LKAB.
-- **Pixabay** — 10+ free, royalty-free, no-attribution Scania truck animations, suitable for direct embedding or download.
+components/
+  shell/
+    HubFrame.tsx
+    LeftRail.tsx
+    RightRail.tsx
+    FooterBadges.tsx
+  retro/
+    SoundGate.tsx
+    VisitorCounter.tsx
+    LinkMeButton.tsx
+    UnderConstruction.tsx
+    MarqueeSafe.tsx
+    BlinkSafe.tsx
+    CursorManager.tsx
+    StickerCloud.tsx
+    BadgeGarden.tsx
+    RoomTransitionLayer.tsx
+  rooms/
+    RoomHeader.tsx
+    RoomMeta.tsx
+    RoomNav.tsx
+    RoomAssets.tsx
 
-**Visual / cultural vocabulary of the Scania fan internet** (gathered from the Tenor/Gfycat tag clusters and the broader European trucker scene):
-- **The V8 cult**: Scania's V8 engine is the obsession — chrome V8 badges, "TOP POWER SCANIA" lettering, the iconic griffin/crown logo (Scania's emblem is a crowned griffin from the coat of arms of Skåne).
-- **Color identity**: deep red, "Scania Blue," pearl white; Brazilian fans love `laranja` (orange) Scania-Top trims; Dutch fleets often run in custom airbrushed liveries with chrome bullbars.
-- **The "trucker disco" subculture** — particularly Turkish (`tır`/`pavyon` GIFs of trucks pulsing to music) and Dutch (Simon Loos / Martijn Kuipers fleet cinematics) — is the closest thing to a native online "Scania aesthetic": night-time photos of chromed cabs lit up with rows of LEDs, animated headlight flares, drift/skid GIFs.
-- **National pride angle**: Sweden (Scania is Swedish — Södertälje), Netherlands (huge Simon Loos following), Turkey (the "tır kralı" truck-king meme culture), and Brazil (Scania-Top, V8 cult).
-- **Cross-pollination with ETS2 (Euro Truck Simulator 2)**: many GIFs are tagged `#ets2`, `#scs`, `#scssoftware`, `#reshade` — game screenshots are a major part of online Scania content, which actually fits the "gaming + trucks" intersection of your page.
+content/
+  rooms/
+    cat-memorial.mdx
+    feed-pixel.mdx
+    scania-shrine.mdx
+    jokes-museum.mdx
+    lab-index.mdx
 
-**Recommended approach for the Scania section of afroximity.com:**
-1. Build a small `<table>` shrine titled "THE V8 SHRINE" or "SCANIA GRIFFINS" with: the Scania griffin logo (download from Wikimedia), 2–4 looping GIFs (chrome V8 cab at night, a drifting tır, a Simon Loos line-up), a blinking marquee "POWER. PERFORMANCE. PURE V8.", and links to fan resources.
-2. Self-host the GIFs (download from Tenor/Giphy/Pixabay; convert to GIF if they're MP4) — they don't exist as period-correct 1998 artifacts, so the trick is to *frame* them with period-correct chrome borders, scrolling marquees, and a tiled "diamond plate" background to make the section feel native.
-3. Pair with a "Best of ETS2" screenshot row using the `crt` filter and CRT scanline overlay to bridge gaming and truck identity.
+public/
+  gfx/
+    badges/
+    stickers/
+    dividers/
+    wallpapers/
+  cursors/
+  audio/
+  video/
+  scans/
+  buttons/
+```
 
----
+This keeps the hub and rooms legible as content neighborhoods while isolating browser-only weirdness into deliberate modules. It also means future sessions can iterate room by room instead of rewriting the whole shell.
 
-## Putting It Together: Concrete Recipe for afroximity.com
+Use `next/image` for static PNG/JPG/WebP/AVIF artwork, and use the `unoptimized` prop for animated GIFs that should be served as-is. For large decorative motion, switch to `<video autoplay muted loop playsInline>` with lazy-loading discipline. Next also supports route-segment Open Graph and Twitter images out of the box, which is perfect for making each room look like its own collectible postcard when shared. citeturn21view1turn21view2turn18view5turn29view0turn29view1
 
-**Suggested structure (single long-scroll page, table-based, ~6 sections):**
+For your existing “hub to rooms” time-travel/glitch move, keep it and formalize it. The View Transition API is now baseline across all three major browser engines for same-document transitions, and MDN describes it as a way to animate transitions between UI states and page views while reducing cognitive load and perceived latency. In practice, that means you can give room navigation a stylized flicker or ghost-image transition as a progressive enhancement, with an instant navigation fallback where the API is unavailable or when reduced motion is requested. citeturn20view0turn20view1
 
-1. **Splash gate**: black BG, centered animated skull/flame GIF, "ENTER AFROXIMITY.ZONE" in pulsing magenta `<blink>`/CSS, MIDI play toggle.
-2. **Index / Welcome** (`THE LAB`): purple neon `#9D00FF` `<h1>`, marquee greeting in acid green, three-column table: left = nav (Home, Trucks, Beşiktaş, Pixel, Gaming, Dev, Guestbook); center = welcome manifesto, last-updated, visitor counter; right = column of animated GIFs (spinning email, "NEW!" badge, webring buttons).
-3. **THE V8 SHRINE** (Scania): diamond-plate tiled BG, griffin logo, looping V8 GIFs, fan-link table.
-4. **KARTAL YUVASI / EAGLE'S NEST** (Beşiktaş): black-and-white tiled BG (the club's colors), `<marquee>` of match results, eagle GIF, link table to fan sites, "ŞAMPİYON BJK" blinking.
-5. **PIXEL.EXE** (your cat): a pop-up "Catscape Navigator"-style frame (homage to Cameron's World) with a tiled paw-print BG, photos of Pixel, animated cat GIFs, a "feed Pixel" guestbook bit.
-6. **2XKO // CS2 // GAMER ZONE**: CRT-scanline filter, animated controller GIFs, screenshot table with broken-thumbnail aesthetic, K/D stat marquee.
-7. **DEV LOGS** (`/.dev` or "THE TERMINAL"): green-on-black Courier monospace table, ASCII-bordered code snippets, "Powered by Notepad" badge, GitHub link with a spinning floppy.
-8. **Footer**: visitor counter, last-updated, webring nav, 88×31 button row, webmaster `@` GIF, "Best viewed in Netscape Navigator 4.0 at 1024×768."
+If you want optional room music with skins and a delightfully excessive UI, Webamp is the best “big toy” to lazy-load after user consent. It already documents minimal script integration, multiple tracks, multiple skins, and Milkdrop examples, and it fits the late-90s/early-2000s aesthetic without requiring you to hand-roll an entire desktop music player from scratch. citeturn19view0turn19view2
 
-**Asset pipeline:**
-- Spend an hour on **gifcities.org** with semantic-search queries: "purple skull," "flame divider," "spinning at sign," "construction," "matrix," "scania," "cat," "soccer," "controller," "v8 engine." Save 80–120 GIFs to `/img/gifs/{theme}/`.
-- Pull 6–10 buttons from `cyber.dabamos.de/88x31` and make 2–3 custom ones (afroximity.com, Pixel, Beşiktaş) with the `wizmax11` generator.
-- Grab a Scania-griffin SVG from Wikimedia, three Scania motion GIFs from Tenor/Pixabay, and a Beşiktaş eagle from a fan archive.
-- Use **Sadgrl's Layout Builder** as a starting HTML/CSS skeleton; rip out anything too modern, add `<table>` and `<center>` aggressively, drop the responsive media query if you want full period accuracy (or keep it, since "real" personal pages are still personal).
+## Preservation and maintenance
 
-**The cardinal rule, repeated by every primary source above (cyber.dabamos, 88x31.nl, sadgrl, the Neocities community):** **download, don't hotlink.** It's faster, it never breaks, and it's the actual ethic of the old web — the chaos was personal because every webmaster *owned their pile of GIFs.*
+The maintenance lesson from GeoCities is brutal and simple: build your museum as if it might disappear tomorrow. Bril calls GeoCities a warning about what happens when commercial platforms no longer find user content valuable, and the whole preservation ecosystem around the service exists because people acted before shutdown erased too much. If this project matters to you emotionally, its maintenance plan is part of its design. citeturn15view1turn1view0
 
-That ownership is the difference between AI slop and a real 1998 page. Build the pile.
+Do not hot-link decorative assets. Download them, rename them sanely, store them in your repo, and keep provenance. Button archives still explicitly advise avoiding hot-linking, and preservation history is full of vanished sources. citeturn22search1turn22search4
 
----
+A minimal asset manifest should exist from the first serious iteration:
 
-**Caveats and honest notes on source quality.** GeoCities-era documentation is largely retrospective — much of the "neighborhood aesthetic" framing comes from 2010s–2020s historical writing (Aesthetics Wiki, neocities essays, SyFy Wire, Vapor95 blog), not contemporaneous 1998 sources. The Restorativland project itself is a Jacques Mattheij effort that surfaces Internet Archive crawl data; specific page contents come from the actual crawl. The "no neighborhood literally called Hacker Zone" finding is based on the canonical neighborhood list (Area51, CapeCanaveral, Heartland, SiliconValley, Athens, Colosseum, SoHo, etc.) referenced consistently across sources. The Scania-and-old-web finding — that Scania fan culture is much more present on modern platforms (Tenor, Giphy, Pixabay) than on archived GeoCities — should be read as a practical research note, not an absolute proof of absence; small Dutch/Swedish/Brazilian fan pages from that era likely existed and survive only in fragments on the Internet Archive. For the Cameron's World GIF count (~700) and IA GifCities count (~4.5M GIFs, ~1.6M unique), figures come from the project's own documentation and the June 2025 Internet Archive blog announcement respectively.
+```yaml
+id: badge_scaniashrine_01
+file: /public/buttons/scania-love-01.gif
+source_page: "archived source or artist page"
+source_type: archived_gif | self_made | commissioned | licensed
+captured_on: 2026-05-04
+used_in:
+  - /rooms/scania-shrine
+mood_tags:
+  - chrome
+  - truck
+  - devotion
+license_note: "status known / unknown / personal use only"
+alt: "animated 88x31 button celebrating a truck shrine"
+```
+
+That manifest does three jobs at once: it preserves memory, it makes future cleanup possible, and it gives an AI helper factual context about what assets belong where.
+
+You should also keep a public changelog culture. Old personal sites felt alive because they showed when things changed, what was new, and what was still being built. Add visible “last updated” lines to the hub and rooms, keep old entries rather than deleting them, and let some dead pages remain online with a tombstone note instead of disappearing quietly. That is not only historically resonant; it strengthens the museum quality of the project itself. citeturn14view3turn27view0
+
+A low-drama preservation routine would be enough:
+- keep the full site in Git;
+- export a static snapshot or deployment artifact after major milestones;
+- save a screenshot pack of the hub plus key rooms after each session;
+- back up `public/` assets separately;
+- maintain the asset manifest and room metadata;
+- never “clean up” old room names without leaving redirects or tombstones.
+
+## The iteration harness you can actually use
+
+This project should be judged by a rubric that rewards authorship, intimacy, and accumulation rather than polish alone. That is the best defense against AI people-pleasing: the machine should be asked to detect missing life, not just presentational flaws. The rubric below is derived from the historical traits that repeatedly show up in accounts of GeoCities culture: neighborhoods, guest books, public-private writing, visible status, combinatory graphics, and community traces. citeturn14view3turn15view0turn27view0
+
+### Definition of done
+
+A page or milestone is “getting there” when a stranger can tell, within about twenty seconds:
+
+- who made this;
+- what they love;
+- what they mourn;
+- what is unfinished;
+- where to go next;
+- and why the page could not belong to anyone else.
+
+If the site looks retro but those answers are still vague, you are not there.
+
+### Soul rubric
+
+Score each category from 0 to 5.
+
+- **Authorship trace**: Could this only belong to you, or could it belong to any retro template pack?
+- **Room identity**: Do rooms genuinely differ in mood, furniture, and content logic?
+- **Emotional specificity**: Are grief, jokes, obsessions, tastes, and ordinary life plainly visible?
+- **Social affordances**: Are there counters, guestbook links, buttons, outbound links, invitation points, or neighbor logic?
+- **Decorative meaning**: Are gifs, badges, stickers, and backgrounds topic-specific rather than generic filler?
+- **Temporal sediment**: Can I see updates, last-modified traces, under-construction zones, old layers, or a history of additions?
+- **Spatial navigation**: Does the site feel like a place with rooms, rails, exits, indexes, and returns rather than a feed?
+- **Performance and safety**: Are motion, sound, and heavy media optional or responsibly controlled?
+
+A strong milestone is usually **32/40 or higher**, with no category below **3**. A weak “retro skin only” build almost always fails on authorship trace, emotional specificity, and temporal sediment.
+
+### Hard fail conditions
+
+If any of these are true, the build should be treated as not-there-yet regardless of score:
+
+- the home page still reads as a portfolio landing page;
+- the rooms still feel like cards in one design system rather than neighborhoods;
+- there is no public trace of visitors or returnability;
+- there is no page that reveals love, grief, or fixation in concrete terms;
+- the decorations could be swapped with any other gif pack and nothing essential would change;
+- audio or motion feels forced instead of invited.
+
+### AI coding agent prompt
+
+Use this prompt in future sessions when you paste a screenshot and want critique instead of flattery:
+
+```text
+You are reviewing a personal website that aims for a GeoCities-inspired, room-based, emotionally specific, pre-platform-web feeling.
+
+Your job is not to be nice. Your job is to be accurate.
+
+Inputs I will provide:
+- one or more screenshots
+- optional notes about what changed
+- optional route/file names
+
+Evaluate the site against these categories from 0 to 5:
+1. authorship trace
+2. room identity
+3. emotional specificity
+4. social affordances
+5. decorative meaning
+6. temporal sediment
+7. spatial navigation
+8. performance and safety
+
+Rules:
+- Do not compliment anything unless you can point to visible evidence in the screenshot.
+- If something looks like AI slop, say so plainly and explain why.
+- Prefer additive changes over full redesigns.
+- Never recommend infinite scroll as the primary solution.
+- Preserve strange ideas if they increase authorship, even if they reduce polish.
+- Distinguish between “too clean,” “too empty,” “too generic,” and “too chaotic.”
+- Call out what is missing, not only what is broken.
+
+Output format:
+- overall verdict in 3 sentences
+- category scores with one-sentence justification each
+- the single most AI-looking area
+- the single most soulful area
+- 3 highest-leverage improvements:
+  - one content addition
+  - one layout/navigation change
+  - one decorative or interactive toy
+- any SSR / hydration / performance / accessibility warnings relevant to implementation
+```
+
+### Session cadence
+
+Do not one-shot the whole museum. A better rhythm is to move in layers:
+
+- **Session one**: make the hub feel like a switchboard, not a shell.
+- **Session two**: build your badge garden, sticker language, and utility sidebars.
+- **Session three**: add guestbook, counter, and sound gate.
+- **Session four**: build the cat memorial and the Feed Pixel page.
+- **Session five**: build the Scania shrine and truck-specific decorative vocabulary.
+- **Session six**: run the screenshot critic, then add one new room and one new toy instead of “polishing” everything.
+
+That cadence keeps the project alive in the same way old personal sites stayed alive: by accreting worlds, not by waiting for one perfect launch.

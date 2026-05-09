@@ -70,22 +70,31 @@ const ZERO_DAYS: DayEntry[] = [
     { id: uid(), time: "Akşam", text: "Shinjuku'da içki & dolaş · Kabukicho ya da Shin-Okubo" },
     { id: uid(), time: "Gece", text: "Hanabi'ye dön · erken yat — sabah 06:00 kalkış" },
   ]},
-  { id: uid(), date: "12 Mayıs", day: "Salı", label: "Osaka yolculuğu", events: [
+  { id: uid(), date: "12 Mayıs", day: "Salı", label: "Osaka yolculuğu · Tokyo'da son detour", events: [
     { id: uid(), time: "06:00", text: "Kalk · hızlı kahvaltı · taksiyle Takadanobaba" },
     { id: uid(), time: "07:00", text: "Nissan teslim alma · Takadanobaba 1-35-3 · NOTE e-POWER · araç fotoğrafı çek" },
     { id: uid(), time: "07:30", text: "Yakıt full kontrol · ETC kart · navigasyonu İngilizce'ye al" },
-    { id: uid(), time: "08:00", text: "Tokyo → Osaka · Tomei/Meishin Expressway · ~6 saat · ~¥6,000 geçiş" },
-    { id: uid(), time: "14:00–15:00", text: "Osaka varış · Hotel Hillarys'e direkt git" },
-    { id: uid(), time: "Park", text: "Otelle önceden konuşuldu — geç check-in olsa da arabayı erken bırakabiliyoruz" },
-    { id: uid(), time: "Öğleden sonra", text: "Dotonbori, Glico Man, Shinsaibashi · street food, takılma" },
-    { id: uid(), time: "20:00+", text: "Hotel Hillarys resmi check-in · valizleri yerleştir" },
+    { id: uid(), time: "07:45", text: "Shibuya Scramble Crossing detour · arabayla geç (Han'ın öldüğü yer) · Hachiko Bridge'den fotoğraf" },
+    { id: uid(), time: "08:30", text: "Tokyo → Osaka · Tomei/Meishin Expressway · ~6 saat · ~¥6,000 geçiş" },
+    { id: uid(), time: "14:30–15:30", text: "Osaka varış · Hotel Hillarys'e direkt git" },
+    { id: uid(), time: "Park", text: "Otelle anlaşıldı — arabayı erken bırakabiliyoruz, valizleri otele teslim et" },
+    { id: uid(), time: "Öğleden sonra", text: "Dotonbori, Glico Man, Shinsaibashi · Kuromon Ichiba street food" },
+    { id: uid(), time: "20:00+", text: "Hotel Hillarys resmi check-in · erken yat (sabah 06:00 Kyoto kalkış)" },
   ]},
-  { id: uid(), date: "13 Mayıs", day: "Çarşamba", label: "TBD — narrative pending", events: [
-    { id: uid(), time: "—", text: "—" },
+  { id: uid(), date: "13 Mayıs", day: "Çarşamba", label: "Kyoto sabahı · Tokyo'ya geri dönüş", events: [
+    { id: uid(), time: "06:00", text: "Kalk · check-out · arabayı al" },
+    { id: uid(), time: "07:00", text: "Osaka → Kyoto · ~1 saat" },
+    { id: uid(), time: "08:00", text: "Fushimi Inari Taisha · torii gates · sabah erken, kalabalık öncesi" },
+    { id: uid(), time: "Geç sabah", text: "Kinkaku-ji · Altın Pavyon" },
+    { id: uid(), time: "Öğle", text: "Arashiyama · bambu ormanı · Tenryu-ji" },
+    { id: uid(), time: "Öğleden sonra", text: "Hızlı yemek · Nishiki Market ya da yatay yemek" },
+    { id: uid(), time: "15:00–16:00", text: "Kyoto → Tokyo · ~6 saat · gece otoyolu" },
+    { id: uid(), time: "Gece", text: "Tokyo Hanabi · arabayı sabaha hazır park et" },
   ]},
-  { id: uid(), date: "14 Mayıs", day: "Perşembe", label: "Araç iade günü", events: [
-    { id: uid(), time: "07:00", text: "Nissan iade · Takadanobaba · yakıt full · hasar kontrolü (PLAN: önceki gece Tokyo'ya dönmüş ol)" },
-    { id: uid(), time: "—", text: "Gün planı TBD" },
+  { id: uid(), date: "14 Mayıs", day: "Perşembe", label: "Araç iade · Tokyo serbest", events: [
+    { id: uid(), time: "06:00", text: "Kalk · arabayı kontrol · yakıt full" },
+    { id: uid(), time: "07:00", text: "Nissan iade · Takadanobaba · hasar kontrolü" },
+    { id: uid(), time: "—", text: "Tokyo serbest gün — narrative pending" },
   ]},
   { id: uid(), date: "15 Mayıs", day: "Cuma", label: "TBD — narrative pending", events: [
     { id: uid(), time: "—", text: "—" },
@@ -188,6 +197,79 @@ const ZERO_CHECKLIST: ClSection[] = [
       { id: uid(), label: "Kartların yurt dışı kullanımı açık mı?" },
       { id: uid(), label: "Powerbank dolu mu?" },
     ]},
+
+  // ── GELMİŞKEN — fun "while we're here" lists ───────────────────────────
+  { id: uid(), title: "Gelmişken — JAPONYA",
+    items: [
+      { id: uid(), label: "Kombini tamago sando dene (7-Eleven en iyisi)" },
+      { id: uid(), label: "Counter ramen — vending makinesinden ticket al" },
+      { id: uid(), label: "Kaiten sushi (kayan tabakla) en az bir kez" },
+      { id: uid(), label: "Vending machine'den BOSS kahvesi" },
+      { id: uid(), label: "Vending machine'den weird bir şey dene (Pocari Sweat / corn soup / weird Pepsi)" },
+      { id: uid(), label: "Suica/PASMO Apple Wallet'a ekle, kullan" },
+      { id: uid(), label: "Kombini onigiri en az 3 farklı dolgu" },
+      { id: uid(), label: "Karaoke bir gece (özel oda, sake/highball)" },
+      { id: uid(), label: "Onsen ya da sentō (dövme şartı kontrol)" },
+      { id: uid(), label: "İzakaya ya da yatay (street food alley) bir akşam" },
+      { id: uid(), label: "Don Quijote (Donki) gece keşfi" },
+      { id: uid(), label: "Pachinko parlor önünden geç ve ses banyosu yap" },
+      { id: uid(), label: "Train station'da ekiben (boxed lunch) bir kez" },
+      { id: uid(), label: "100-yen shop / Daiso turu" },
+    ]},
+
+  { id: uid(), title: "Gelmişken — Tokyo",
+    items: [
+      { id: uid(), label: "Shibuya Scramble Crossing — kalabalıkken geç + Hachiko Bridge'den izle" },
+      { id: uid(), label: "Hachiko heykeli (Shibuya Station)" },
+      { id: uid(), label: "Akihabara — elektronik & manga & retro arcade" },
+      { id: uid(), label: "Senso-ji & Nakamise yolu (Asakusa)" },
+      { id: uid(), label: "Meiji Jingu Shrine (Harajuku)" },
+      { id: uid(), label: "Harajuku Takeshita-dori — kötü tatlar, gençlik" },
+      { id: uid(), label: "Tsukiji Outer Market kahvaltı (sashimi & tamago skewer)" },
+      { id: uid(), label: "Tokyo Tower ya da Skytree — gece ışığında" },
+      { id: uid(), label: "Shinjuku Golden Gai — bir kuytu bar" },
+      { id: uid(), label: "Omoide Yokocho — duman içinde yakitori" },
+      { id: uid(), label: "Yoyogi Park yürüyüş" },
+      { id: uid(), label: "Roppongi Hills observation deck (gün batımı)" },
+      { id: uid(), label: "Don Quijote Shibuya 24h" },
+      { id: uid(), label: "teamLab Planets Toyosu (online bilet)" },
+      { id: uid(), label: "Yanaka Ginza — eski Tokyo sokakları" },
+      { id: uid(), label: "Kichijoji + Inokashira Park" },
+      { id: uid(), label: "Ueno Park & Ameyoko market" },
+      { id: uid(), label: "Game center — UFO catcher dene" },
+      { id: uid(), label: "Kabukicho gece yürüyüşü (Robot Restaurant kapısı)" },
+    ]},
+
+  { id: uid(), title: "Gelmişken — Osaka",
+    items: [
+      { id: uid(), label: "Dotonbori canal · Glico Man fotoğrafı" },
+      { id: uid(), label: "Kuromon Ichiba Market — taze sashimi & ikayaki (mürekkep balığı çubukta)" },
+      { id: uid(), label: "Takoyaki en az 3 farklı yerde dene" },
+      { id: uid(), label: "Osaka Castle (Osaka-jo)" },
+      { id: uid(), label: "Shinsaibashi-suji shopping street yürüyüş" },
+      { id: uid(), label: "Hozenji Yokocho — moss-covered Buddha, dar sokak" },
+      { id: uid(), label: "Amerikamura (Ame-mura) — youth district" },
+      { id: uid(), label: "Umeda Sky Building — Floating Garden manzara" },
+      { id: uid(), label: "Namba'da bir gece izakaya" },
+      { id: uid(), label: "Ichiran ramen ya da Kinryu Ramen (golden dragon)" },
+      { id: uid(), label: "Shinsekai · Tsutenkaku Tower bölgesi · kushikatsu" },
+    ]},
+
+  { id: uid(), title: "Gelmişken — Kyoto",
+    items: [
+      { id: uid(), label: "Fushimi Inari Taisha — sabah erken, üst kısma çık" },
+      { id: uid(), label: "Kinkaku-ji — Altın Pavyon" },
+      { id: uid(), label: "Arashiyama Bamboo Grove (sabah)" },
+      { id: uid(), label: "Tenryu-ji — bambu yakını, zen bahçesi" },
+      { id: uid(), label: "Kiyomizu-dera Temple — sunset" },
+      { id: uid(), label: "Gion district akşam yürüyüş — maiko/geiko gör (rahatsız etme)" },
+      { id: uid(), label: "Nishiki Market — food stalls" },
+      { id: uid(), label: "Pontocho alley — geceleyin lanternlerin altı" },
+      { id: uid(), label: "Philosopher's Path" },
+      { id: uid(), label: "Sanjusangendo — 1001 buddha" },
+      { id: uid(), label: "Bir tea house'da matcha + wagashi" },
+      { id: uid(), label: "Yatsuhashi (Kyoto'ya özgü cinnamon mochi) dene" },
+    ]},
 ];
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
@@ -254,6 +336,8 @@ export default function Japan2026Room() {
   const [switchOpen, setSwitchOpen] = useState(false);
   const [editingDays, setEditingDays] = useState(false);
   const [editingCl, setEditingCl]     = useState(false);
+  const [dragEv, setDragEv]           = useState<{ dayId: string; eventId: string } | null>(null);
+  const [dragOverEv, setDragOverEv]   = useState<string | null>(null);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -380,6 +464,24 @@ export default function Japan2026Room() {
 
   const removeEvent = useCallback((dayId: string, evId: string) => {
     setDays(prev => { const next = prev.map(d => d.id === dayId ? { ...d, events: d.events.filter(e => e.id !== evId) } : d); saveDays(next); return next; });
+  }, [saveDays]);
+
+  const reorderEvent = useCallback((dayId: string, fromId: string, toId: string) => {
+    if (fromId === toId) return;
+    setDays(prev => {
+      const next = prev.map(d => {
+        if (d.id !== dayId) return d;
+        const fromIdx = d.events.findIndex(e => e.id === fromId);
+        const toIdx   = d.events.findIndex(e => e.id === toId);
+        if (fromIdx < 0 || toIdx < 0) return d;
+        const events = [...d.events];
+        const [moved] = events.splice(fromIdx, 1);
+        events.splice(toIdx, 0, moved);
+        return { ...d, events };
+      });
+      saveDays(next);
+      return next;
+    });
   }, [saveDays]);
 
   const addDay = useCallback(() => {
@@ -711,18 +813,38 @@ export default function Japan2026Room() {
                       <div style={{ overflow: "hidden", maxHeight: isOpen ? "none" : 0 }}>
                         {editingDays ? (
                           <div>
-                            {d.events.map((ev, ei) => (
-                              <div key={ev.id} style={{ display: "grid", gridTemplateColumns: "100px 1fr 28px", gap: "12px", padding: "10px 0", borderTop: ei > 0 ? `1px solid ${C.line2}` : "none", alignItems: "center" }}>
-                                <input value={ev.time} onChange={e => updateEvent(d.id, ev.id, { time: e.target.value })}
-                                  placeholder="Saat"
-                                  style={{ fontSize: "11px", letterSpacing: ".14em", textTransform: "uppercase", color: C.muted, fontWeight: 500, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%" }} />
-                                <input value={ev.text} onChange={e => updateEvent(d.id, ev.id, { text: e.target.value })}
-                                  placeholder="Etkinlik açıklaması"
-                                  style={{ fontSize: "15px", color: C.ink, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%" }} />
-                                <button onClick={() => removeEvent(d.id, ev.id)} style={{ color: C.muted, fontSize: "16px", lineHeight: 1, flexShrink: 0, transition: "color .15s" }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
-                              </div>
-                            ))}
+                            {d.events.map((ev, ei) => {
+                              const isOver = dragOverEv === ev.id && dragEv?.dayId === d.id && dragEv?.eventId !== ev.id;
+                              return (
+                                <div key={ev.id}
+                                  onDragOver={e => { if (dragEv?.dayId === d.id) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverEv(ev.id); } }}
+                                  onDragLeave={() => setDragOverEv(prev => prev === ev.id ? null : prev)}
+                                  onDrop={e => {
+                                    if (dragEv?.dayId === d.id && dragEv.eventId !== ev.id) {
+                                      e.preventDefault();
+                                      reorderEvent(d.id, dragEv.eventId, ev.id);
+                                    }
+                                    setDragEv(null); setDragOverEv(null);
+                                  }}
+                                  style={{ display: "grid", gridTemplateColumns: "20px 100px 1fr 28px", gap: "10px", padding: "10px 0", borderTop: ei > 0 ? `1px solid ${C.line2}` : "none", alignItems: "center", borderBottom: isOver ? `2px solid ${C.red}` : undefined, background: dragEv?.eventId === ev.id ? C.line2 : "transparent", transition: "background .15s" }}>
+                                  <span draggable={true}
+                                    onDragStart={e => { setDragEv({ dayId: d.id, eventId: ev.id }); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", ev.id); }}
+                                    onDragEnd={() => { setDragEv(null); setDragOverEv(null); }}
+                                    title="Sürükle"
+                                    style={{ cursor: "grab", display: "flex", alignItems: "center", justifyContent: "center", color: C.muted, userSelect: "none" }}>
+                                    <DragDots />
+                                  </span>
+                                  <input value={ev.time} onChange={e => updateEvent(d.id, ev.id, { time: e.target.value })}
+                                    placeholder="Saat"
+                                    style={{ fontSize: "11px", letterSpacing: ".14em", textTransform: "uppercase", color: C.muted, fontWeight: 500, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%" }} />
+                                  <input value={ev.text} onChange={e => updateEvent(d.id, ev.id, { text: e.target.value })}
+                                    placeholder="Etkinlik açıklaması"
+                                    style={{ fontSize: "15px", color: C.ink, border: "none", borderBottom: `1px solid ${C.line2}`, background: "transparent", outline: "none", width: "100%" }} />
+                                  <button onClick={() => removeEvent(d.id, ev.id)} style={{ color: C.muted, fontSize: "16px", lineHeight: 1, flexShrink: 0, transition: "color .15s" }}
+                                    onMouseEnter={e => (e.currentTarget.style.color = C.red)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>×</button>
+                                </div>
+                              );
+                            })}
                             <button onClick={() => addEvent(d.id)}
                               style={{ marginTop: "16px", fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", color: C.muted, fontWeight: 500, display: "flex", alignItems: "center", gap: "8px", transition: "color .15s" }}
                               onMouseEnter={e => (e.currentTarget.style.color = C.ink)} onMouseLeave={e => (e.currentTarget.style.color = C.muted)}>
@@ -841,46 +963,56 @@ export default function Japan2026Room() {
             <TabHead title="Oteller" lede="Shinjuku'da bir hafta, Namba'da bir gece." />
             <div style={{ paddingBottom: "120px" }}>
               <DetSection title="Hanabi Hotel" titleEm="ハナビホテル" sub="Tokyo · Shinjuku-ku · 7 gece">
+                <img src="/japan2026/hotels/hanabi.jpg" alt="Hanabi Hotel" style={{ width: "100%", height: "auto", maxHeight: "360px", objectFit: "cover", marginBottom: "24px", border: `1px solid ${C.line}` }} />
                 <InfoGrid style={{ borderTop: "none", paddingTop: 0, marginTop: 0 }}>
                   <div>
                     <IR label="Adres" val="Hyakunincho 2-8-5, Shinjuku-ku" />
                     <IR label="Check-in" val="11 Mayıs · 15:00" />
                     <IR label="Check-out" val="18 Mayıs · 05:00–10:00" />
-                    <IR label="Oda" val="Japon tarzı · 3 kişi · futon" />
+                    <IR label="Oda" val="Japon tarzı · 3 yetişkin · 3 futon" />
                     <IR label="Rezervasyon adı" val="Kahraman Burak" />
+                    <IR label="Telefon" val="+81 3 3366 9688" href="tel:+81333669688" />
                   </div>
                   <div>
                     <IR label="Rezervasyon" val="5001.805.511" copy id="hanabi" copied={copied} onCopy={copyVal} />
                     <IR label="PIN" val="4826" copy id="pin" copied={copied} onCopy={copyVal} />
-                    <IR label="Telefon" val="+81 3 3366 9688" href="tel:+81333669688" />
                     <IR label="Fiyat" val="¥143,329 (~₺40,343)" />
-                    <IR label="Wi-Fi · Otopark" val="Ücretsiz · ¥2,000/gün" />
+                    <IR label="Wi-Fi" val="Ücretsiz · genel" />
+                    <IR label="Otopark" val="¥2,000 / gün" />
+                    <IR label="En yakın istasyon" val="Shin-Okubo · Yamanote" />
                   </div>
                 </InfoGrid>
                 <a href="https://maps.google.com/?q=Shinjuku-ku+Hyakunincho+2-8-5+Tokyo" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "12px 22px", border: `1px solid ${C.ink}`, fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", fontWeight: 500, marginTop: "24px", color: C.ink }}>
                   Haritada göster →
                 </a>
-                <NoteBox>Narita Express → Shinjuku (~80 dk) — Yamanote hattı, bir durak Shin-Okubo — üç dakika yürüyüş.</NoteBox>
+                <NoteBox>Narita Express → Shinjuku (~80 dk) → Yamanote bir durak → Shin-Okubo → 3 dk yürüyüş.</NoteBox>
                 <NoteBox type="red">4 Mayıs sonrası iade yok. Rezervasyon kesinleşmiş sayılır.</NoteBox>
               </DetSection>
 
-              <DetSection title="Hotel Hillarys" titleEm="·" sub="Osaka · Naniwa-ku · 1 gece">
+              <DetSection title="Hotel Hillarys" titleEm="ホテルヒラリーズ" sub="Osaka · Naniwa-ku · 1 gece">
+                <img src="/japan2026/hotels/hillarys.jpg" alt="Hotel Hillarys" style={{ width: "100%", height: "auto", maxHeight: "360px", objectFit: "cover", marginBottom: "24px", border: `1px solid ${C.line}` }} />
                 <InfoGrid style={{ borderTop: "none", paddingTop: 0, marginTop: 0 }}>
                   <div>
                     <IR label="Adres" val="Nippombashi 3-4-10, Naniwa-ku" />
-                    <IR label="Check-in" val="12 Mayıs · 20:00+ (geç check-in)" />
+                    <IR label="Check-in" val="12 Mayıs · 20:00+ (geç)" />
                     <IR label="Check-out" val="13 Mayıs · Çarşamba" />
+                    <IR label="Oda" val="3 yetişkin · standart" />
+                    <IR label="Rezervasyon adı" val="Oğuzhan Eren" />
+                    <IR label="Posta kodu" val="556-0006" />
                   </div>
                   <div>
                     <IR label="Rezervasyon" val="6237128862" copy id="hillarys" copied={copied} onCopy={copyVal} />
                     <IR label="Fiyat" val="¥9,210 · ödendi" />
-                    <IR label="Posta kodu" val="556-0006" />
+                    <IR label="Wi-Fi" val="Ücretsiz · genel" />
+                    <IR label="Otopark" val="Anlaşıldı (otel araba erken alır)" />
+                    <IR label="En yakın istasyon" val="Nippombashi · Sennichimae" />
+                    <IR label="Mahalle" val="Dotonbori 8 dk yürüyüş" />
                   </div>
                 </InfoGrid>
-                <NoteBox type="red">Bu otel yalnızca 20:00 sonrası check-in kabul ediyor. Erken varışta Dotonbori, Shinsaibashi veya Amerika-mura'yı gezel.</NoteBox>
                 <a href="https://maps.google.com/?q=Naniwa-ku+Nippombashi+3-4-10+Osaka" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "12px 22px", border: `1px solid ${C.ink}`, fontSize: "11px", letterSpacing: ".22em", textTransform: "uppercase", fontWeight: 500, marginTop: "24px", color: C.ink }}>
                   Haritada göster →
                 </a>
+                <NoteBox type="red">Resmi check-in 20:00 sonrası, ama otelle önceden konuşuldu — geç saatte gelsek bile arabayı erken bırakabiliyoruz.</NoteBox>
               </DetSection>
             </div>
           </div>
@@ -1698,6 +1830,19 @@ function EmergSection({ title, children, last }: { title: string; children: Reac
 
 function EmergGrid({ children }: { children: React.ReactNode }) {
   return <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "0 80px" }}>{children}</div>;
+}
+
+function DragDots() {
+  return (
+    <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden style={{ display: "block" }}>
+      <circle cx="2" cy="3"  r="1.2" fill="currentColor" />
+      <circle cx="8" cy="3"  r="1.2" fill="currentColor" />
+      <circle cx="2" cy="8"  r="1.2" fill="currentColor" />
+      <circle cx="8" cy="8"  r="1.2" fill="currentColor" />
+      <circle cx="2" cy="13" r="1.2" fill="currentColor" />
+      <circle cx="8" cy="13" r="1.2" fill="currentColor" />
+    </svg>
+  );
 }
 
 function DocCard({ variants, mine }: { variants: DocEntry[]; mine?: boolean }) {
