@@ -26,8 +26,7 @@ const pressStart = Press_Start_2P({
 
 export const metadata: Metadata = {
   title: "afroximity.com",
-  // COPY: site description — fill via enrich session
-  description: "afroximity.com",
+  description: "a personal mausoleum, under construction forever.",
 };
 
 export default function RootLayout({

@@ -14,161 +14,203 @@ export default function SplashGate() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [router]);
 
+  const goNext = () => router.push("/hub");
+
   return (
-    /*
-     * position:fixed + z-index:9999 breaks out of the (site) layout visually.
-     * The geocities site chrome renders behind this — invisible to the user.
-     */
     <div
-      onClick={() => router.push("/hub")}
       style={{
         position: "fixed",
-        backgroundImage: "url('https://file.garden/ZWlUCY4S7Xz2vypS/archived%20backgrounds/colours/purple/backg130.jpg')",
-        backgroundRepeat: "repeat",
         inset: 0,
         zIndex: 9999,
-        background: "#000000",
+        background: "var(--win-desktop)",
+        fontFamily: "var(--gc-font-ui)",
+        color: "var(--win-text)",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        cursor: "pointer",
         userSelect: "none",
-        fontFamily: "'Courier New', monospace",
         overflow: "hidden",
       }}
     >
-      {/* Animated neon corner borders — CSS placeholder until real flame border GIF */}
-      {/* GIF: public/gifs/flames/border-fire-top.gif */}
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        border: "3px solid transparent",
-        animation: "gc-pulse-border 2.5s ease-in-out infinite",
-        pointerEvents: "none",
-      }} />
-
-      {/* Top-left corner accent */}
-      <div style={{
-        position: "absolute",
-        top: 16,
-        left: 16,
-        width: 60,
-        height: 60,
-        borderTop: "2px solid #9D00FF",
-        borderLeft: "2px solid #9D00FF",
-        animation: "gc-pulse-border 2s ease-in-out infinite",
-      }} />
-      <div style={{
-        position: "absolute",
-        top: 16,
-        right: 16,
-        width: 60,
-        height: 60,
-        borderTop: "2px solid #9D00FF",
-        borderRight: "2px solid #9D00FF",
-        animation: "gc-pulse-border 2s ease-in-out infinite 0.5s",
-      }} />
-      <div style={{
-        position: "absolute",
-        bottom: 16,
-        left: 16,
-        width: 60,
-        height: 60,
-        borderBottom: "2px solid #9D00FF",
-        borderLeft: "2px solid #9D00FF",
-        animation: "gc-pulse-border 2s ease-in-out infinite 1s",
-      }} />
-      <div style={{
-        position: "absolute",
-        bottom: 16,
-        right: 16,
-        width: 60,
-        height: 60,
-        borderBottom: "2px solid #9D00FF",
-        borderRight: "2px solid #9D00FF",
-        animation: "gc-pulse-border 2s ease-in-out infinite 1.5s",
-      }} />
-
-      {/* GIF slot: skull or flame centerpiece */}
-      {/* GIF: public/gifs/skulls/burning-skull.gif */}
-      <div style={{
-        width: 100,
-        height: 100,
-        marginBottom: 32,
-        background: "radial-gradient(circle, #3a0066 0%, #000 70%)",
-        border: "1px solid #9D00FF",
-        borderRadius: "50%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 40,
-        animation: "gc-float 3s ease-in-out infinite",
-        boxShadow: "0 0 20px #9D00FF, 0 0 40px rgba(157,0,255,0.3)",
-      }}>
-        ☠
-      </div>
-
-      {/* Main title */}
-      <h1
-        className="gc-blink"
-        style={{
-          fontFamily: "var(--font-vt323), Impact, 'Arial Black', sans-serif",
-          fontSize: "clamp(36px, 8vw, 80px)",
-          letterSpacing: "0.3em",
-          textTransform: "uppercase",
-          color: "#FF00FF",
-          textShadow: "0 0 10px #FF00FF, 0 0 30px rgba(255,0,255,0.5), 0 0 60px rgba(255,0,255,0.2), 3px 3px 0 #660033",
-          margin: 0,
-          textAlign: "center",
-          padding: "0 20px",
-        }}
-      >
-        ENTER AFROXIMITY.ZONE
-      </h1>
-
-      {/* Enter button */}
+      {/* Setup wizard window */}
       <div
+        className="win-window"
         style={{
-          marginTop: 32,
-          border: "2px solid #9D00FF",
-          padding: "10px 28px",
-          fontFamily: "Impact, sans-serif",
-          fontSize: 20,
-          letterSpacing: "0.25em",
-          color: "#9D00FF",
-          textShadow: "0 0 8px #9D00FF",
-          boxShadow: "0 0 12px rgba(157,0,255,0.4), inset 0 0 12px rgba(157,0,255,0.1)",
-          cursor: "pointer",
-          transition: "all 0.2s",
-          animation: "gc-pulse-border 3s ease-in-out infinite",
+          width: 503,
+          maxWidth: "calc(100% - 24px)",
+          padding: 3,
+          boxShadow: "2px 2px 0 rgba(0,0,0,0.4)",
         }}
       >
-        [ ENTER ]
+        {/* Title bar */}
+        <div className="win-titlebar">
+          <span>afroximity.zone Setup</span>
+          <div className="win-titlebar-buttons">
+            <span className="win-titlebar-btn" aria-hidden>?</span>
+            <span className="win-titlebar-btn" aria-hidden>×</span>
+          </div>
+        </div>
+
+        {/* Body — left art panel + right content */}
+        <div
+          style={{
+            background: "var(--win-face)",
+            display: "flex",
+            borderTop: "1px solid var(--win-light)",
+          }}
+        >
+          {/* Left art panel — fake "Setup" splash banner */}
+          <div
+            style={{
+              width: 164,
+              minHeight: 314,
+              background:
+                "linear-gradient(180deg, #000080 0%, #1084d0 60%, #87ceeb 100%)",
+              color: "#fff",
+              padding: "16px 12px",
+              fontFamily: "var(--gc-font-ui)",
+              fontSize: 11,
+              borderRight: "1px solid var(--win-shadow)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ fontFamily: "var(--gc-font-italic)", fontStyle: "italic", fontSize: 28, lineHeight: 1, fontWeight: "bold" }}>
+              afro
+              <br />
+              ximity
+              <br />
+              .zone
+            </div>
+            <div style={{ fontSize: 10, opacity: 0.85, lineHeight: 1.4 }}>
+              Personal Edition
+              <br />
+              Version 1.0 (1998)
+              <br />
+              <br />
+              © 2026 afroximity
+            </div>
+          </div>
+
+          {/* Right content — Welcome page */}
+          <div
+            style={{
+              flex: 1,
+              padding: "18px 22px 14px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--gc-font-ui)",
+                fontWeight: "bold",
+                fontSize: 13,
+                color: "var(--win-text)",
+                marginBottom: 10,
+              }}
+            >
+              Welcome to the afroximity.zone Setup Wizard
+            </div>
+
+            <p
+              style={{
+                fontFamily: "var(--gc-font-body)",
+                fontSize: 12,
+                lineHeight: 1.5,
+                color: "var(--win-text)",
+                margin: "0 0 10px",
+              }}
+            >
+              This wizard will install <b>afroximity.zone</b> on your computer.
+              It is strongly recommended that you close all other programs and
+              browsers before continuing.
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--gc-font-body)",
+                fontSize: 12,
+                lineHeight: 1.5,
+                color: "var(--win-text)",
+                margin: "0 0 10px",
+              }}
+            >
+              This is a personal homepage in the old sense — hand-built, on its
+              own handle, away from the megacorps that turned the web into a
+              mall. It will not be the prettiest thing you see this week, but
+              it is mine, and it will still be here.
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--gc-font-body)",
+                fontSize: 12,
+                lineHeight: 1.5,
+                color: "var(--win-text)",
+                margin: "0 0 14px",
+              }}
+            >
+              Click <b>Next</b> to continue, or <b>Cancel</b> to exit Setup.
+            </p>
+
+            <div style={{ flex: 1 }} />
+
+            {/* Footer divider + buttons */}
+            <div
+              style={{
+                marginTop: 8,
+                paddingTop: 10,
+                borderTop: "1px solid var(--win-shadow)",
+                boxShadow: "0 -1px 0 var(--win-light) inset",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 6,
+              }}
+            >
+              <button
+                type="button"
+                className="win-button"
+                style={{ minWidth: 75 }}
+                disabled
+                onClick={(e) => e.preventDefault()}
+              >
+                &lt; Back
+              </button>
+              <button
+                type="button"
+                className="win-button"
+                style={{ minWidth: 75, fontWeight: "bold" }}
+                onClick={goNext}
+                autoFocus
+              >
+                Next &gt;
+              </button>
+              <button
+                type="button"
+                className="win-button"
+                style={{ minWidth: 75, marginLeft: 8 }}
+                onClick={goNext}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Subtext */}
-      <p style={{
-        marginTop: 40,
-        fontSize: 11,
-        color: "#555",
-        fontFamily: "'Courier New', monospace",
-        letterSpacing: "0.1em",
-      }}>
-        best viewed in Netscape Navigator 4.0 at 800×600
-      </p>
-
-      <p style={{
-        marginTop: 6,
-        fontSize: 10,
-        color: "#333",
-        fontFamily: "'Courier New', monospace",
-      }}>
-        press ENTER or click anywhere to proceed
-      </p>
-
-      {/* MIDI: public/midi/xfiles-theme.mid */}
-      {/* <audio autoPlay loop src="/midi/xfiles.mp3" /> */}
+      {/* Click anywhere fallback (preserves the original "click to enter" feel) */}
+      <button
+        onClick={goNext}
+        aria-label="Enter site"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "transparent",
+          border: 0,
+          cursor: "default",
+          zIndex: -1,
+        }}
+      />
     </div>
   );
 }

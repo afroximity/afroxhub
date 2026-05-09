@@ -479,8 +479,11 @@ function nowStr() {
 
 function getCountdown() {
   const diff = DEPARTURE.getTime() - Date.now();
-  if (diff <= 0) return { days: "0", gone: true };
-  return { days: String(Math.floor(diff / 86400000)), gone: false };
+  if (diff <= 0) return { value: "🎌", unit: "", gone: true };
+  const days = Math.floor(diff / 86400000);
+  if (days >= 1) return { value: String(days), unit: "gün", gone: false };
+  const hours = Math.max(1, Math.ceil(diff / 3600000));
+  return { value: String(hours), unit: "saat", gone: false };
 }
 
 function groupDocs(docs: DocEntry[]): { key: string; variants: DocEntry[] }[] {
@@ -857,8 +860,8 @@ export default function Japan2026Room() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
             <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "15px", letterSpacing: "-.01em", color: C.ink2 }}>
-              <b style={{ fontWeight: 500, color: C.red, fontStyle: "italic" }}>{cdDays.gone ? "Gidiyoruz!" : cdDays.days}</b>
-              {!cdDays.gone && " gün kaldı"}
+              <b style={{ fontWeight: 500, color: C.red, fontStyle: "italic" }}>{cdDays.gone ? "Gidiyoruz!" : cdDays.value}</b>
+              {!cdDays.gone && ` ${cdDays.unit} kaldı`}
             </div>
             <button onClick={() => setSwitchOpen(true)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "5px 14px 5px 5px", border: `1px solid ${C.line}`, borderRadius: "999px", fontSize: "12px", fontWeight: 500, letterSpacing: ".04em", transition: "border-color .15s" }}>
               <img src={u.avatar} alt={user} style={{ width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", display: "block" }} />
@@ -913,7 +916,7 @@ export default function Japan2026Room() {
                   Issue 01 · İlkbahar
                 </div>
                 <h1 style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "clamp(72px,10vw,156px)", letterSpacing: "-.05em", lineHeight: .92, marginBottom: "36px" }}>
-                  <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{cdDays.gone ? "🎌" : cdDays.days}</em> gün<br />Japonya<span style={{ color: C.red }}>.</span>
+                  <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{cdDays.value}</em>{cdDays.unit && ` ${cdDays.unit}`}<br />Japonya<span style={{ color: C.red }}>.</span>
                 </h1>
                 <p style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, fontSize: "24px", color: C.ink2, maxWidth: "600px", letterSpacing: "-.01em", lineHeight: 1.4 }}>
                   Üç yolcu için küçük bir oda — Eren, Zenci ve Ossan — gitmeden önce her parçayı yerine oturtmak için.
@@ -928,7 +931,7 @@ export default function Japan2026Room() {
                 { label: "Japonya'da", value: "7", unit: "gün", sub: "6 gece Tokyo · 1 Osaka\n12–14 Mayıs araçlı" },
                 { label: "Checklist", value: String(clPct), unit: "%", sub: `${clDone} / ${clTotal} tamamlandı\n${clPct === 100 ? "Her şey hazır 🎉" : "Devam ediyor"}` },
               ].map((s, i) => (
-                <div key={i} style={{ paddingRight: "32px", borderRight: i < 3 ? `1px solid ${C.line}` : "none" }}>
+                <div key={i} style={{ paddingLeft: i > 0 ? "32px" : 0, paddingRight: "32px", borderRight: i < 3 ? `1px solid ${C.line}` : "none" }}>
                   <div style={{ fontSize: "10px", letterSpacing: ".28em", textTransform: "uppercase", color: C.muted, fontWeight: 500, marginBottom: "18px" }}>{s.label}</div>
                   <div style={{ fontFamily: C.serif, fontWeight: 300, fontSize: "54px", letterSpacing: "-.04em", lineHeight: 1, marginBottom: "10px" }}>
                     {s.value} <em style={{ fontStyle: "italic", color: C.red, fontWeight: 400 }}>{s.unit}</em>

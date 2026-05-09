@@ -1,196 +1,426 @@
 "use client";
 
-import { useEffect, useState } from "react";
+/**
+ * Win98 InstallShield-style room transition.
+ *
+ * Phase 1: "Installing" — fake progress bar, scrolling file-copy log,
+ *          file/folder/disk illusion. Auto-advances when bar hits 100%.
+ * Phase 2: "Setup Complete" — Finish button. Click → onDone() → room reveals.
+ *
+ * Component name + signature kept for RoomRenderer.tsx compatibility.
+ */
+
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = { slug: string; onDone?: () => void };
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&!?";
+const FILE_TEMPLATES = [
+  "windows/system32/{slug}.dll",
+  "windows/system32/{slug}.ocx",
+  "{slug}/assets/index.idx",
+  "{slug}/assets/sprites/01.gif",
+  "{slug}/assets/sprites/02.gif",
+  "{slug}/assets/sprites/03.gif",
+  "{slug}/sounds/intro.wav",
+  "{slug}/sounds/ambient.mid",
+  "{slug}/cursors/default.cur",
+  "{slug}/cursors/link.ani",
+  "{slug}/data/manifest.dat",
+  "{slug}/data/strings.txt",
+  "{slug}/fonts/serif.fnt",
+  "{slug}/fonts/sans.fnt",
+  "{slug}/wallpapers/01.bmp",
+  "{slug}/wallpapers/02.bmp",
+  "{slug}/dlls/decoration.dll",
+  "{slug}/dlls/glitter.dll",
+  "{slug}/dlls/marquee.dll",
+  "{slug}/scripts/onload.bat",
+  "{slug}/registry/keys.reg",
+  "{slug}/locales/en-us.lng",
+  "{slug}/locales/tr-tr.lng",
+  "shared/gifs/skull-flame.gif",
+  "shared/gifs/spinning-globe.gif",
+  "shared/gifs/under-construction.gif",
+  "shared/buttons/netscape4.gif",
+  "shared/buttons/html40.gif",
+  "shared/midi/welcome.mid",
+];
 
-function randomChar() {
-  return CHARS[Math.floor(Math.random() * CHARS.length)];
-}
+const DURATION_MS = 3200; // total install time
+const FRAME_MS = 60;
 
-function scramble(target: string, progress: number) {
-  return target
-    .split("")
-    .map((char, i) => (i < Math.floor(progress * target.length) ? char : randomChar()))
-    .join("");
-}
-
-export default function GlitchTransition({ slug, onDone }: Props) {
+export default function InstallTransition({ slug, onDone }: Props) {
   const label = slug.toUpperCase().replace(/-/g, " ");
-  const [displayLabel, setDisplayLabel] = useState(scramble(label, 0));
+  const fileList = useMemo(
+    () => FILE_TEMPLATES.map(t => t.replace(/\{slug\}/g, slug)),
+    [slug],
+  );
+
   const [progress, setProgress] = useState(0);
-  const [lat] = useState(() => (Math.random() * 180 - 90).toFixed(4));
-  const [lon] = useState(() => (Math.random() * 360 - 180).toFixed(4));
-  const [phase, setPhase] = useState<"glitch" | "reveal">("glitch");
+  const [phase, setPhase] = useState<"install" | "complete">("install");
+  const [logIndex, setLogIndex] = useState(0);
+  const startedAt = useRef<number | null>(null);
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    let frame = 0;
-    const totalFrames = 48; // ~800ms at 60fps-ish
-    let raf: number;
-
-    function tick() {
-      frame++;
-      const p = Math.min(frame / totalFrames, 1);
+    function tick(t: number) {
+      if (startedAt.current === null) startedAt.current = t;
+      const elapsed = t - startedAt.current;
+      const p = Math.min(elapsed / DURATION_MS, 1);
       setProgress(p);
 
-      if (p < 0.6) {
-        // pure scramble
-        setDisplayLabel(scramble(label, 0));
-      } else {
-        // reveal left-to-right
-        setPhase("reveal");
-        setDisplayLabel(scramble(label, (p - 0.6) / 0.4));
-      }
+      // advance scrolling file log
+      const idx = Math.min(
+        fileList.length - 1,
+        Math.floor(p * fileList.length * 1.4),
+      );
+      setLogIndex(idx);
 
-      if (frame < totalFrames + 6) {
-        raf = requestAnimationFrame(tick);
+      if (p < 1) {
+        frameRef.current = requestAnimationFrame(tick);
       } else {
-        onDone?.();
+        setPhase("complete");
       }
     }
+    frameRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    };
+  }, [fileList.length]);
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [label, onDone]);
+  // Visible window of recent files (scrolling effect)
+  const WINDOW = 6;
+  const visible = fileList.slice(Math.max(0, logIndex - WINDOW + 1), logIndex + 1);
+  const currentFile = fileList[logIndex] ?? "";
+  const pctText = `${Math.floor(progress * 100)}%`;
+
+  // Win98 progress bar = stack of vertical blue blocks separated by 1px gaps
+  const TOTAL_BLOCKS = 28;
+  const filledBlocks = Math.round(progress * TOTAL_BLOCKS);
 
   return (
-    <div style={{
-      position: "fixed",
-      inset: 0,
-      background: "#000",
-      zIndex: 9998,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      fontFamily: "'Courier New', monospace",
-      overflow: "hidden",
-    }}>
-
-      {/* CRT scanlines */}
-      <div style={{
-        position: "absolute",
+    <div
+      style={{
+        position: "fixed",
         inset: 0,
-        background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)",
-        pointerEvents: "none",
-        zIndex: 1,
-      }} />
-
-      {/* Chromatic aberration layers */}
-      <div style={{
-        position: "absolute",
-        inset: 0,
+        zIndex: 9998,
+        background: "var(--win-desktop)",
+        fontFamily: "var(--gc-font-ui)",
+        color: "var(--win-text)",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        pointerEvents: "none",
-        zIndex: 0,
-      }}>
-        {/* Red offset */}
-        <div style={{
-          position: "absolute",
-          fontFamily: "Impact, sans-serif",
-          fontSize: "clamp(20px, 4vw, 44px)",
-          letterSpacing: "0.3em",
-          color: "rgba(255,0,0,0.35)",
-          transform: `translate(${-3 + Math.sin(progress * Math.PI * 4) * 2}px, 1px)`,
-          whiteSpace: "nowrap",
-          textTransform: "uppercase",
-        }}>
-          {displayLabel}
+        userSelect: "none",
+      }}
+      onKeyDown={(e) => {
+        if (phase === "complete" && (e.key === "Enter" || e.key === " ")) {
+          onDone?.();
+        }
+      }}
+      tabIndex={-1}
+    >
+      <div
+        className="win-window"
+        style={{
+          width: 460,
+          maxWidth: "calc(100% - 24px)",
+          padding: 3,
+          boxShadow: "2px 2px 0 rgba(0,0,0,0.4)",
+        }}
+      >
+        {/* Title bar */}
+        <div className="win-titlebar">
+          <span>
+            {phase === "install"
+              ? `afroximity.zone Setup — Installing ${label}`
+              : "Setup Complete"}
+          </span>
+          <div className="win-titlebar-buttons">
+            <span className="win-titlebar-btn" aria-hidden>?</span>
+            <span className="win-titlebar-btn" aria-hidden>×</span>
+          </div>
         </div>
-        {/* Cyan offset */}
-        <div style={{
-          position: "absolute",
-          fontFamily: "Impact, sans-serif",
-          fontSize: "clamp(20px, 4vw, 44px)",
-          letterSpacing: "0.3em",
-          color: "rgba(0,255,255,0.35)",
-          transform: `translate(${3 + Math.cos(progress * Math.PI * 4) * 2}px, -1px)`,
-          whiteSpace: "nowrap",
-          textTransform: "uppercase",
-        }}>
-          {displayLabel}
-        </div>
+
+        {phase === "install" ? (
+          <div
+            style={{
+              background: "var(--win-face)",
+              padding: "16px 18px 14px",
+              borderTop: "1px solid var(--win-light)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 14,
+              }}
+            >
+              {/* Animated 'copying files' icon — folder + paper sliding */}
+              <div style={{ width: 56, height: 56, position: "relative", flexShrink: 0 }}>
+                {/* destination folder */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 4,
+                    right: 0,
+                    width: 36,
+                    height: 28,
+                    background: "#ffd86b",
+                    border: "1px solid #000",
+                    boxShadow: "inset -1px -1px 0 #b8893a",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 26,
+                    right: 6,
+                    width: 14,
+                    height: 5,
+                    background: "#ffd86b",
+                    border: "1px solid #000",
+                    borderBottom: 0,
+                  }}
+                />
+                {/* source folder */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 4,
+                    left: 0,
+                    width: 36,
+                    height: 28,
+                    background: "#ffd86b",
+                    border: "1px solid #000",
+                    boxShadow: "inset -1px -1px 0 #b8893a",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    left: 6,
+                    width: 14,
+                    height: 5,
+                    background: "#ffd86b",
+                    border: "1px solid #000",
+                    borderBottom: 0,
+                  }}
+                />
+                {/* flying paper */}
+                <div
+                  style={{
+                    position: "absolute",
+                    width: 10,
+                    height: 12,
+                    background: "#fff",
+                    border: "1px solid #000",
+                    animation: "gc-file-fly 0.9s linear infinite",
+                  }}
+                />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontFamily: "var(--gc-font-body)",
+                    fontSize: 12,
+                    color: "var(--win-text)",
+                    marginBottom: 4,
+                  }}
+                >
+                  Copying files...
+                </div>
+                <div
+                  style={{
+                    fontFamily: "var(--gc-font-code)",
+                    fontSize: 11,
+                    color: "var(--win-text)",
+                    background: "var(--win-panel)",
+                    border: "1px solid var(--win-shadow)",
+                    padding: "2px 6px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                  title={currentFile}
+                >
+                  {currentFile}
+                </div>
+              </div>
+            </div>
+
+            {/* Win98-style progress bar */}
+            <div style={{ marginTop: 14 }}>
+              <div
+                style={{
+                  fontFamily: "var(--gc-font-body)",
+                  fontSize: 12,
+                  marginBottom: 4,
+                }}
+              >
+                {pctText} Complete
+              </div>
+              <div
+                className="win-bevel-in"
+                style={{
+                  height: 22,
+                  padding: 2,
+                  display: "flex",
+                  gap: 2,
+                  background: "var(--win-panel)",
+                }}
+              >
+                {Array.from({ length: TOTAL_BLOCKS }).map((_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      background: i < filledBlocks ? "var(--win-titlebar)" : "transparent",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Scrolling log */}
+            <div
+              className="win-bevel-in"
+              style={{
+                marginTop: 12,
+                background: "var(--win-panel)",
+                fontFamily: "var(--gc-font-code)",
+                fontSize: 10,
+                color: "#444",
+                padding: "4px 6px",
+                height: 88,
+                overflow: "hidden",
+              }}
+            >
+              {visible.map((f, i) => (
+                <div
+                  key={`${logIndex}-${i}`}
+                  style={{
+                    opacity: 0.4 + (i / WINDOW) * 0.6,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  &gt; {f}
+                </div>
+              ))}
+            </div>
+
+            {/* Cancel (disabled, like real installers) */}
+            <div
+              style={{
+                marginTop: 14,
+                paddingTop: 10,
+                borderTop: "1px solid var(--win-shadow)",
+                boxShadow: "0 -1px 0 var(--win-light) inset",
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                type="button"
+                className="win-button"
+                style={{ minWidth: 75, opacity: 0.7 }}
+                disabled
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              background: "var(--win-face)",
+              padding: "16px 18px 14px",
+              borderTop: "1px solid var(--win-light)",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div style={{ display: "flex", gap: 14 }}>
+              {/* Big checkmark icon */}
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  flexShrink: 0,
+                  background: "#fff",
+                  border: "1px solid var(--win-dark)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 32,
+                  lineHeight: 1,
+                  color: "#008000",
+                  fontWeight: "bold",
+                }}
+              >
+                ✓
+              </div>
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontFamily: "var(--gc-font-ui)",
+                    fontWeight: "bold",
+                    fontSize: 13,
+                    marginBottom: 6,
+                  }}
+                >
+                  {label} has been installed.
+                </div>
+                <p
+                  style={{
+                    fontFamily: "var(--gc-font-body)",
+                    fontSize: 12,
+                    lineHeight: 1.5,
+                    margin: 0,
+                  }}
+                >
+                  Setup has finished installing the room on your computer.
+                  Click <b>Finish</b> to enter <b>{label}</b>.
+                </p>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: 18,
+                paddingTop: 10,
+                borderTop: "1px solid var(--win-shadow)",
+                boxShadow: "0 -1px 0 var(--win-light) inset",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 6,
+              }}
+            >
+              <button
+                type="button"
+                className="win-button"
+                style={{ minWidth: 75 }}
+                disabled
+              >
+                &lt; Back
+              </button>
+              <button
+                type="button"
+                className="win-button"
+                style={{ minWidth: 75, fontWeight: "bold" }}
+                autoFocus
+                onClick={() => onDone?.()}
+              >
+                Finish
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Main label */}
-      <div style={{
-        position: "relative",
-        zIndex: 2,
-        fontFamily: "Impact, 'Arial Black', sans-serif",
-        fontSize: "clamp(20px, 4vw, 44px)",
-        letterSpacing: "0.3em",
-        color: phase === "reveal" ? "#fff" : "#9D00FF",
-        textShadow: phase === "reveal"
-          ? "0 0 12px #fff"
-          : "0 0 8px #9D00FF, 0 0 20px rgba(157,0,255,0.5)",
-        textTransform: "uppercase",
-        whiteSpace: "nowrap",
-        transition: "color 0.2s, text-shadow 0.2s",
-      }}>
-        {displayLabel}
-      </div>
-
-      {/* Status line */}
-      <div style={{
-        position: "relative",
-        zIndex: 2,
-        marginTop: 24,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 6,
-      }}>
-        <div style={{ fontSize: 11, color: "#00FF00", letterSpacing: "0.15em" }}>
-          ACCESSING ZONE<span className="gc-blink">_</span>
-        </div>
-        <div style={{ fontSize: 9, color: "#444", letterSpacing: "0.1em" }}>
-          SECTOR: {slug} / LAT: {lat} / LONG: {lon}
-        </div>
-
-        {/* Progress bar */}
-        <div style={{
-          width: 200,
-          height: 3,
-          background: "#111",
-          border: "1px solid #3a0066",
-          marginTop: 8,
-          overflow: "hidden",
-        }}>
-          <div style={{
-            height: "100%",
-            width: `${progress * 100}%`,
-            background: "linear-gradient(90deg, #9D00FF, #00FFFF)",
-            transition: "width 0.05s linear",
-            boxShadow: "0 0 6px #9D00FF",
-          }} />
-        </div>
-      </div>
-
-      {/* Horizontal scan-tear lines (random positions) */}
-      {[15, 38, 62, 79].map((top, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            top: `${top}%`,
-            left: 0,
-            right: 0,
-            height: "2px",
-            background: i % 2 === 0
-              ? "rgba(157,0,255,0.4)"
-              : "rgba(0,255,255,0.3)",
-            animation: `gc-scanrip ${0.6 + i * 0.15}s ease-out forwards`,
-            animationDelay: `${i * 0.08}s`,
-            zIndex: 3,
-          }}
-        />
-      ))}
-
     </div>
   );
 }

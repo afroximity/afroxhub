@@ -16,15 +16,31 @@
   --gc-dark:    #110022;
 
   /* ── Authentic 1998 personal-page font stack ──
-     Body, headings, screams use system fonts every late-90s machine actually had.
-     VT323 / Press Start 2P are demoted to badges, counters, "NEW!" stickers only. */
-  --gc-font-body:    "Times New Roman", Times, Georgia, serif;
+     Verdana/Tahoma were THE Windows 98 personal-page fonts. Times is reserved
+     for italic asides. Comic Sans only for hand-written notes/captions. */
+  --gc-font-body:    Verdana, Tahoma, "DejaVu Sans", Geneva, sans-serif;
   --gc-font-ui:      "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, sans-serif;
+  --gc-font-italic:  "Times New Roman", Times, Georgia, serif;
   --gc-font-display: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
   --gc-font-scream:  Impact, "Haettenschweiler", "Arial Narrow Bold", sans-serif;
   --gc-font-code:    "Courier New", Courier, monospace;
   --gc-font-pixel:       var(--font-vt323), "Courier New", monospace;
   --gc-font-pixel-tight: var(--font-press-start), monospace;
+
+  /* ── Windows 98 chrome palette ── */
+  --win-desktop:    #008080;  /* classic teal desktop */
+  --win-face:       #c0c0c0;  /* silver window face */
+  --win-light:      #ffffff;  /* 3D highlight */
+  --win-shadow:     #808080;  /* 3D shadow */
+  --win-dark:       #000000;  /* 3D dark shadow + outer ring */
+  --win-titlebar:   #000080;  /* navy active title bar */
+  --win-titlebar-2: #1084d0;  /* gradient end */
+  --win-titletext:  #ffffff;
+  --win-panel:      #ffffff;  /* inner content panels */
+  --win-text:       #000000;
+  --win-link:       #0000ee;  /* unvisited hyperlink blue */
+  --win-link-visit: #551a8b;  /* visited */
+  --win-accent:     #800000;  /* burgundy emphasis */
 }
 
 @theme inline {
@@ -116,6 +132,15 @@ a {
   to   { width: 100%; }
 }
 
+/* file-flying animation for the Win98 install transition */
+@keyframes gc-file-fly {
+  0%   { top: 8px;  left: 4px;  opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { top: 22px; left: 22px; opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 36px; left: 40px; opacity: 0; }
+}
+
 @keyframes gc-flicker {
   0%, 100% { opacity: 1; }
   92%       { opacity: 1; }
@@ -195,19 +220,23 @@ a {
 
 /* 88×31 button style */
 .gc-button-88 {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 88px;
   height: 31px;
   border: 1px solid var(--gc-purple);
-  font-family: var(--gc-font-pixel-tight);
-  font-size: 7px;
+  font-family: var(--gc-font-ui);
+  font-size: 9px;
+  line-height: 1.05;
   text-align: center;
-  line-height: 31px;
   background: var(--gc-dark);
   color: var(--gc-green);
   cursor: pointer;
   text-decoration: none;
   transition: border-color 0.2s;
+  padding: 2px 3px;
+  box-sizing: border-box;
 }
 .gc-button-88:hover {
   border-color: var(--gc-magenta);
@@ -245,32 +274,159 @@ a {
   /* GIF: public/gifs/dividers/lightning-divider.gif */
 }
 
-/* table-based layout helpers — 1024px stage, period-correct 1024×768 monitor feel */
+/* table-based layout helpers — fills its parent (which is the 1024px stage) */
 .gc-table-layout {
-  width: 1024px;
-  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 6px 0;
+  table-layout: fixed;
 }
 
 .gc-table-layout td {
   vertical-align: top;
-  padding: 10px;
+  padding: 0;
 }
 
-/* nav column */
+/* nav column — Win98 sunken panel */
 .gc-nav-col {
   width: 190px;
-  border-right: 1px solid var(--gc-purple);
-  background: rgba(10, 0, 20, 0.8);
+  background: var(--win-face);
 }
 
-/* gifs sidebar column */
+/* gifs sidebar column — Win98 sunken panel */
 .gc-sidebar-col {
   width: 200px;
-  border-left: 1px solid var(--gc-purple);
-  background: rgba(10, 0, 20, 0.6);
+  background: var(--win-face);
   text-align: center;
+}
+
+/* ════════════════════════════════════════
+   Windows 98 chrome utilities
+   ════════════════════════════════════════ */
+
+/* Raised bevel — buttons, window outer */
+.win-bevel-out {
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--win-light) var(--win-shadow) var(--win-shadow) var(--win-light);
+  outline: 1px solid var(--win-dark);
+  background: var(--win-face);
+}
+
+/* Sunken bevel — input fields, well panels */
+.win-bevel-in {
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--win-shadow) var(--win-light) var(--win-light) var(--win-shadow);
+  outline: 1px solid var(--win-dark);
+  background: var(--win-panel);
+}
+
+/* Window: outer raised + title bar + body */
+.win-window {
+  background: var(--win-face);
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--win-light) var(--win-shadow) var(--win-shadow) var(--win-light);
+  outline: 1px solid var(--win-dark);
+  padding: 3px;
+  font-family: var(--gc-font-ui);
+  color: var(--win-text);
+}
+
+/* Title bar — navy gradient with white text */
+.win-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 3px 4px 3px 6px;
+  background: linear-gradient(90deg, var(--win-titlebar) 0%, var(--win-titlebar-2) 100%);
+  color: var(--win-titletext);
+  font-family: var(--gc-font-ui);
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.win-titlebar-buttons {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.win-titlebar-btn {
+  width: 16px;
+  height: 14px;
+  background: var(--win-face);
+  border: 1px solid var(--win-light);
+  box-shadow: inset -1px -1px 0 var(--win-shadow), inset 1px 1px 0 var(--win-light), 0 0 0 1px var(--win-dark);
+  color: var(--win-text);
+  font-family: var(--gc-font-ui);
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+  cursor: default;
+}
+
+/* Body section inside a win-window */
+.win-window-body {
+  background: var(--win-panel);
+  border: 1px solid var(--win-dark);
+  margin-top: 3px;
+  padding: 10px 12px;
+  font-family: var(--gc-font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--win-text);
+}
+
+/* Hyperlink color in Win98 windows */
+.win-window-body a,
+.win-link {
+  color: var(--win-link);
+  text-decoration: underline;
+}
+.win-window-body a:visited,
+.win-link:visited {
+  color: var(--win-link-visit);
+}
+
+/* Win98-style raised button */
+.win-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 75px;
+  height: 23px;
+  padding: 0 12px;
+  background: var(--win-face);
+  color: var(--win-text);
+  font-family: var(--gc-font-ui);
+  font-size: 12px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--win-light) var(--win-shadow) var(--win-shadow) var(--win-light);
+  outline: 1px solid var(--win-dark);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.win-button:active {
+  border-color: var(--win-shadow) var(--win-light) var(--win-light) var(--win-shadow);
+}
+
+/* Inset well, e.g. for marquee or counter slot */
+.win-well {
+  background: var(--win-panel);
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--win-shadow) var(--win-light) var(--win-light) var(--win-shadow);
+  outline: 1px solid var(--win-dark);
+  padding: 6px 8px;
+  font-family: var(--gc-font-ui);
+  font-size: 12px;
+  color: var(--win-text);
 }
 
 /* GIF placeholder block */

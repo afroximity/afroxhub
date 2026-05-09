@@ -10,125 +10,181 @@ const NAV_LINKS = [
 export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div style={{
-      backgroundColor: "#0a0014",
-      backgroundImage: "url('/gifs/bg/purple-lace.jpg')",
-      backgroundRepeat: "repeat",
+      backgroundColor: "var(--win-desktop)",
       minHeight: "100vh",
       fontFamily: "var(--gc-font-ui)",
-      fontSize: 15,
-      color: "#ccc",
+      fontSize: 12,
+      color: "var(--win-text)",
+      padding: "16px 0",
     }}>
-      <div style={{
-        width: "1024px",
-        maxWidth: "100%",
-        margin: "0 auto",
-        border: "1px solid #9D00FF",
-        borderTop: "none",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}>
+      <div
+        className="win-window"
+        style={{
+          width: "1024px",
+          maxWidth: "calc(100% - 16px)",
+          margin: "0 auto",
+          minHeight: "calc(100vh - 32px)",
+          display: "flex",
+          flexDirection: "column",
+          padding: 3,
+        }}
+      >
 
-        {/* ── SITE HEADER ── */}
-        <header style={{
-          borderBottom: "2px solid #9D00FF",
-          background: "linear-gradient(180deg, #1a0033 0%, #0a0014 100%)",
-          padding: "0",
-        }}>
-          {/* Top banner row */}
-          <div style={{
+        {/* ── TITLE BAR ── */}
+        <div className="win-titlebar">
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {/* GIF: public/gifs/misc/site-logo.gif */}
+            <span
+              style={{
+                display: "inline-block",
+                width: 16,
+                height: 16,
+                background: "var(--win-face)",
+                border: "1px solid var(--win-dark)",
+                color: "var(--win-titlebar)",
+                fontFamily: "var(--gc-font-ui)",
+                fontWeight: "bold",
+                fontSize: 12,
+                lineHeight: "14px",
+                textAlign: "center",
+              }}
+            >
+              ✦
+            </span>
+            <span>afroximity.com — Microsoft Internet Explorer</span>
+          </div>
+          <div className="win-titlebar-buttons">
+            <span className="win-titlebar-btn" aria-hidden>_</span>
+            <span className="win-titlebar-btn" aria-hidden>□</span>
+            <span className="win-titlebar-btn" aria-hidden>×</span>
+          </div>
+        </div>
+
+        {/* ── MENU BAR (File / Edit / View ...) ── */}
+        <div
+          style={{
+            display: "flex",
+            gap: 14,
+            padding: "3px 8px",
+            background: "var(--win-face)",
+            fontFamily: "var(--gc-font-ui)",
+            fontSize: 12,
+            color: "var(--win-text)",
+            borderBottom: "1px solid var(--win-shadow)",
+          }}
+        >
+          <span><u>F</u>ile</span>
+          <span><u>E</u>dit</span>
+          <span><u>V</u>iew</span>
+          <span><u>F</u>avorites</span>
+          <span><u>T</u>ools</span>
+          <span><u>H</u>elp</span>
+        </div>
+
+        {/* ── ADDRESS BAR ── */}
+        <div
+          style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            padding: "10px 14px",
-            borderBottom: "1px dotted #3a0066",
-          }}>
-            <Link href="/hub" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-              {/* GIF: public/gifs/misc/site-logo.gif */}
-              <div style={{
-                width: 36,
-                height: 36,
-                background: "radial-gradient(circle, #9D00FF 0%, #0a0014 80%)",
-                border: "1px solid #9D00FF",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 18,
-                boxShadow: "0 0 10px rgba(157,0,255,0.5)",
-                animation: "gc-float 4s ease-in-out infinite",
-              }}>
+            gap: 6,
+            padding: "4px 8px",
+            background: "var(--win-face)",
+            borderBottom: "1px solid var(--win-shadow)",
+          }}
+        >
+          <span style={{ fontSize: 11, color: "var(--win-text)" }}>Address</span>
+          <div className="win-well" style={{ flex: 1, padding: "2px 6px", fontFamily: "var(--gc-font-code)", fontSize: 12 }}>
+            http://www.afroximity.com/hub
+          </div>
+        </div>
+
+        {/* ── BRAND HEADER (inside the window) ── */}
+        <header
+          style={{
+            background: "var(--win-face)",
+            padding: "10px 14px 6px",
+            borderBottom: "1px solid var(--win-shadow)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <Link href="/hub" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10, color: "var(--win-text)" }}>
+              <div
+                style={{
+                  width: 32,
+                  height: 32,
+                  background: "var(--win-titlebar)",
+                  border: "1px solid var(--win-dark)",
+                  color: "var(--win-titletext)",
+                  fontFamily: "var(--gc-font-ui)",
+                  fontWeight: "bold",
+                  fontSize: 22,
+                  lineHeight: "30px",
+                  textAlign: "center",
+                }}
+              >
                 ✦
               </div>
               <div>
-                <div style={{
-                  fontFamily: "var(--gc-font-scream)",
-                  fontSize: 38,
-                  letterSpacing: "0.18em",
-                  color: "#9D00FF",
-                  textShadow: "0 0 10px #9D00FF, 0 0 20px rgba(157,0,255,0.4)",
-                  textTransform: "uppercase",
-                }}>
+                <div
+                  style={{
+                    fontFamily: "var(--gc-font-ui)",
+                    fontWeight: "bold",
+                    fontSize: 22,
+                    color: "var(--win-titlebar)",
+                    letterSpacing: "0.02em",
+                  }}
+                >
                   AFROXIMITY.COM
                 </div>
-                <div style={{ fontFamily: "var(--gc-font-display)", fontSize: 12, color: "#888", letterSpacing: "0.05em", marginTop: 2 }}>
-                  {/* COPY: site tagline — fill via enrich session */}
-                  Area51 / Vault / afroxhub
+                <div style={{ fontFamily: "var(--gc-font-italic)", fontStyle: "italic", fontSize: 12, color: "var(--win-text)", marginTop: 1 }}>
+                  a personal mausoleum, under construction forever.
                 </div>
               </div>
             </Link>
 
-            <nav style={{ display: "flex", gap: 0 }}>
-              {NAV_LINKS.map((link, i) => (
-                <span key={link.href} style={{ display: "flex", alignItems: "center" }}>
-                  {i > 0 && <span style={{ color: "#3a0066", padding: "0 4px", fontSize: 12 }}>|</span>}
-                  <Link
-                    href={link.href}
-                    style={{
-                      fontFamily: "var(--gc-font-display)",
-                      fontSize: 16,
-                      color: "#00FF00",
-                      textDecoration: "none",
-                      padding: "3px 10px",
-                      textShadow: "0 0 4px rgba(0,255,0,0.5)",
-                      letterSpacing: "0.04em",
-                      transition: "color 0.15s, text-shadow 0.15s",
-                    }}
-                  >
-                    [ {link.label} ]
-                  </Link>
-                </span>
+            <nav style={{ display: "flex", gap: 6 }}>
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="win-button"
+                  style={{ minWidth: 64 }}
+                >
+                  {link.label}
+                </Link>
               ))}
             </nav>
           </div>
-
-          {/* Animated divider */}
-          <div className="gc-divider" style={{ margin: 0 }} />
         </header>
 
         {/* ── MAIN CONTENT ── */}
-        <main style={{ flex: 1, padding: "14px" }}>
+        <main style={{ flex: 1, padding: "10px", background: "var(--win-face)" }}>
           {children}
         </main>
 
-        {/* ── SITE FOOTER ── */}
-        <footer style={{
-          borderTop: "1px solid #3a0066",
-          padding: "10px 14px",
-          background: "rgba(0,0,0,0.6)",
-          textAlign: "center",
-        }}>
-          <div className="gc-divider" style={{ marginBottom: 8 }} />
-          <p style={{ fontFamily: "var(--gc-font-body)", fontStyle: "italic", fontSize: 12, color: "#555", letterSpacing: "0.03em" }}>
-            afroximity.com — best viewed in Netscape Navigator 4.0 at 1024×768 — © 2026
-          </p>
-          <p style={{ fontFamily: "var(--gc-font-display)", fontSize: 11, color: "#444", marginTop: 4 }}>
-            <a href="/" style={{ color: "#444", textDecoration: "none" }}>SPLASH</a>
-            {" · "}
-            <a href="/rooms" style={{ color: "#444", textDecoration: "none" }}>ROOMS</a>
-            {" · "}
-            <a href="/tools" style={{ color: "#444", textDecoration: "none" }}>TOOLS</a>
-          </p>
+        {/* ── STATUS BAR ── */}
+        <footer
+          style={{
+            background: "var(--win-face)",
+            borderTop: "1px solid var(--win-light)",
+            padding: "3px 8px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 8,
+            fontFamily: "var(--gc-font-ui)",
+            fontSize: 11,
+            color: "var(--win-text)",
+          }}
+        >
+          <div className="win-well" style={{ flex: 1, padding: "1px 6px", fontSize: 11 }}>
+            Done — afroximity.com © 2026
+          </div>
+          <div className="win-well" style={{ width: 110, padding: "1px 6px", fontSize: 11, textAlign: "center" }}>
+            <a href="/" style={{ color: "var(--win-link)", marginRight: 4 }}>splash</a>·
+            <a href="/rooms" style={{ color: "var(--win-link)", margin: "0 4px" }}>rooms</a>·
+            <a href="/tools" style={{ color: "var(--win-link)", marginLeft: 4 }}>tools</a>
+          </div>
         </footer>
 
       </div>

@@ -1,7 +1,7 @@
 # AFROXIMITY.COM — Hub State & Sitemap
 
-Last updated: 2026-05-03  
-Status: Foundation phase — harness built, GeoCities shell in progress.
+Last updated: 2026-05-09
+Status: Foundation phase — hub copy live, 1024px stage, period-correct font stack, asset pipeline built.
 
 ---
 
@@ -17,16 +17,56 @@ Status: Foundation phase — harness built, GeoCities shell in progress.
 
 ## Palette & Typography
 
+**Active hub aesthetic (2026-05-09 redirect): Win98 chrome.** Grey desktop windows, navy title bars, white inner panels, system fonts. The neon `--gc-*` tokens stay defined for *rooms* that want to opt into Area51 cyber-purple, but the `(site)` shell no longer uses them.
+
+### Win98 chrome tokens (`--win-*` in `globals.css`)
+
 | Token | Value | Use |
 |-------|-------|-----|
-| `--gc-bg` | `#0a0014` | Page background |
-| `--gc-purple` | `#9D00FF` | Primary accent, borders |
-| `--gc-green` | `#00FF00` | Nav links, acid highlights |
-| `--gc-magenta` | `#FF00FF` | Headlines, blink elements |
-| `--gc-cyan` | `#00FFFF` | Secondary accent |
-| `--gc-red` | `#FF0000` | Warnings, blink |
+| `--win-desktop` | `#008080` | Outer page bg (classic teal desktop) |
+| `--win-face` | `#c0c0c0` | Window face / chrome panels |
+| `--win-light` | `#ffffff` | 3D bevel highlight |
+| `--win-shadow` | `#808080` | 3D bevel shadow |
+| `--win-dark` | `#000000` | Outer ring + dark shadow |
+| `--win-titlebar` | `#000080` | Active title bar (navy) |
+| `--win-titlebar-2` | `#1084d0` | Title bar gradient end |
+| `--win-titletext` | `#ffffff` | Title bar text |
+| `--win-panel` | `#ffffff` | Inner content surfaces |
+| `--win-text` | `#000000` | Body text |
+| `--win-link` | `#0000ee` | Unvisited hyperlink |
+| `--win-link-visit` | `#551a8b` | Visited hyperlink |
+| `--win-accent` | `#800000` | Burgundy emphasis (NEW, marquee) |
 
-Fonts: VT323 (headers), Press Start 2P (pixel labels), Courier New (body), Impact (SCREAMING TITLES)
+### Win98 utility classes (CSS — use these, don't reinvent inline)
+
+- `.win-window`, `.win-titlebar`, `.win-titlebar-buttons`, `.win-titlebar-btn`
+- `.win-window-body`, `.win-bevel-out`, `.win-bevel-in`, `.win-well`
+- `.win-button`, `.win-link`
+
+Hub TSX wraps content in a small `<Window title="...">` helper (in `app/(site)/hub/page.tsx`) that emits a titlebar + body. Use it for new sections.
+
+### Legacy GC neon tokens (kept for rooms only)
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--gc-bg` | `#0a0014` | Room background (Area51 dark) |
+| `--gc-purple` | `#9D00FF` | Cyber primary |
+| `--gc-green` | `#00FF00` | Acid highlights |
+| `--gc-magenta` | `#FF00FF` | Cyber headlines |
+| `--gc-cyan` | `#00FFFF` | Cyber secondary |
+| `--gc-red` | `#FF0000` | Warnings |
+
+### Fonts (`--gc-font-*` in `globals.css`)
+
+- `--gc-font-body`: **Verdana, Tahoma** — primary body / paragraph font (the actual late-90s Windows personal-page stack)
+- `--gc-font-ui`: **MS Sans Serif → Tahoma** — chrome, title bars, buttons
+- `--gc-font-italic`: **Times New Roman** — italic asides only (taglines, captions in italic)
+- `--gc-font-display`: **Comic Sans MS** — hand-written feel only (signatures, captions)
+- `--gc-font-scream`: Impact — use sparingly, room titles
+- `--gc-font-code`: Courier New — addresses, slugs, code, terminal text
+- `--gc-font-pixel` / `--gc-font-pixel-tight`: VT323 / Press Start 2P — badges, counters, "NEW!" stickers only
+
+Stage: **1024px** wide window centered on a teal desktop.
 
 ---
 
@@ -50,20 +90,29 @@ Fonts: VT323 (headers), Press Start 2P (pixel labels), Courier New (body), Impac
 
 ## THE LAB — Hub Homepage — `/hub`
 
-**Status:** Planned  
-**Route:** `app/(site)/hub/page.tsx`  
-**Aesthetic:** Three-column table, purple/neon, maximum density  
+**Status:** Live (copy captured 2026-05-09 via `enrich: hub homepage copy`)
+**Route:** `app/(site)/hub/page.tsx`
+**Aesthetic:** Three-column table, 1024px stage, **Win98 chrome** (teal desktop, navy title bars, white panels, Verdana/Tahoma body, MS Sans Serif chrome). Burgundy accents replace neon green/magenta on the hub. Neon `--gc-*` tokens reserved for individual rooms.
+**Voice / target feeling:** Welcomed into a private den — *you found me*. Sincere first-person. No legal name on the hub (only `afroximity`).
+
+**Captured copy (do not auto-edit without re-running questionnaire):**
+- **Site tagline** (header sub-line): `a personal mausoleum, under construction forever.`
+- **Marquee:** `★ UNDER ETERNAL CONSTRUCTION ★` (repeating)
+- **About-this-page manifesto:**
+  > I made this because the internet stopped feeling like anyone lived here. Every door now leads to the same five lobbies, and what used to be a million weird front yards is a feed someone else owns. So this is me standing my ground... A homepage in the old sense, hand-built, on my own handle, away from the megacorps that turned the web into a mall. It will not be the prettiest thing you see this week, but it is mine, and it will still be here.
+- **Contact email:** `oguzhan.ern@gmail.com` (mailto on the spinning `@` slot).
+- **Root metadata description:** matches tagline.
 
 **Left column — Nav:**
-- Links: Home | Rooms | Tools | About | Guestbook
-- Style: acid-green, blinking on hover
-- Spinning `@` email link at bottom
+- Links: Home | Rooms | Tools | Guestbook (placeholder) | Links (placeholder)
+- Style: acid-green Comic Sans, blinking on hover
+- Spinning `@` email link at bottom — live mailto
 
 **Center column — Content:**
-- `<h1>`: `W E L C O M E  T O  T H E  L A B`
-- Marquee greeting (CSS simulated)
-- Welcome manifesto: `{/* COPY: personal welcome manifesto — fill via enrich session */}`
-- "Last Updated: 2026-05-03" in Courier
+- `<h1>`: `W E L C O M E  T O  T H E  L A B` (Impact, clamp 48–84px)
+- Marquee greeting (CSS simulated, VT323)
+- Welcome manifesto in `▌ ABOUT THIS PAGE` box (Times, 17px)
+- "Last Updated: 2026-05-03" in Courier (refresh on edit)
 - GIF slot: `/* GIF: public/gifs/construction/under-construction.gif */`
 
 **Right column — Widgets:**
@@ -187,14 +236,18 @@ Same GeoCities treatment as rooms directory, "TOOLS ARCHIVE" header.
 **Status:** Background texture sourced. GIF slots still CSS placeholders.
 
 **Sourced assets:**
-- `backg130.jpg` — purple lace/fabric tile from pixelmoondust.neocities.org. Currently hotlinked from file.garden. **Self-host:** download and save to `public/gifs/bg/purple-lace.jpg`, then update `backgroundImage` url in `app/(site)/layout.tsx` and `app/(site)/page.tsx`.
+- `purple-lace.jpg` — purple lace/fabric tile from pixelmoondust.neocities.org. **Self-hosted 2026-05-09** at `public/gifs/bg/purple-lace.jpg`; `app/(site)/layout.tsx` already references it. Provenance in `public/gifs/asset-manifest.yaml`.
 
-**To source GIFs:**
-1. Visit gifcities.org
-2. Search: "skull flame" | "spinning globe" | "under construction" | "purple border" | "matrix rain" | "new badge" | "spinning at sign" | "lightning divider" | "eagle" | "cat sparkle"
-3. Download → `public/gifs/{category}/{name}.gif`
-4. Search codebase for `/* GIF: public/gifs/{category}/{name}.gif */`
-5. Swap CSS placeholder for `background-image: url('/gifs/{category}/{name}.gif')`
+**Batch GIF tooling (NEW, 2026-05-09):**
+- `pnpm assets:grab "<query>" --count <n> --out <category>` — `scripts/assets/gifcities.ts`. Hits `gifcities.archive.org/api/v1/gifsearch`, downloads via `blob.gifcities.org/<checksum>.gif`, dedupes by SHA-1, appends provenance YAML to `public/gifs/asset-manifest.yaml`.
+- `pnpm assets:buttons "<theme>" --count <n>` — `scripts/assets/buttons.ts`. Wrapper that prepends `88x31` and routes to `public/gifs/buttons/`.
+- Suggested first runs: `"skull flame"→skulls`, `"spinning globe"→globes`, `"under construction"→construction`, `"lightning divider"→dividers`, `"new badge"→badges`, `"spinning at sign"→misc`.
+
+**To wire a sourced GIF into a slot:**
+1. Run `pnpm assets:grab "..." --out <category>` — files land in `public/gifs/<category>/`.
+2. Pick the one you want from the folder.
+3. Search codebase for `/* GIF: public/gifs/{category}/{name}.gif */`.
+4. Swap CSS placeholder for `background-image: url('/gifs/<category>/<actual-name>.gif')`.
 
 **Category folders to create under `public/gifs/`:**
 - `skulls/`
@@ -220,4 +273,4 @@ Same GeoCities treatment as rooms directory, "TOOLS ARCHIVE" header.
 | Scania shrine | `enrich+: Scania shrine` | Medium |
 | Gamer zone | `enrich+: gamer zone` | Low |
 | Dev terminal | `enrich: dev logs` | Low |
-| Hub manifesto copy | `enrich: hub homepage copy` | Blocker for launch |
+| Hub manifesto copy | `enrich: hub homepage copy` | ✅ Done 2026-05-09 |
