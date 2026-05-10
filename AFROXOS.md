@@ -1,7 +1,7 @@
 # afroxOS '97 — Design System Spec
 
-Last updated: 2026-05-09
-Status: Brainstorm captured. No code migration started yet.
+Last updated: 2026-05-10
+Status: API contract drafted (§ 10) and pending sign-off. ADRs in `docs/adr/`. No code migration started yet.
 Scope: This document is the source of truth for the afroxOS '97 visual + interaction system. It supersedes the Win98-chrome direction described in `CLAUDE.md` Tenet A *for the hub shell only*. Individual rooms keep full opt-out (see § Room sovereignty).
 
 ---
@@ -184,64 +184,344 @@ The same item (e.g., "Currency Converter") can appear in all three — that's in
 
 ---
 
-## 9. Window manager — `react-rnd` + `zustand`
+## 9. Window manager — architecture overview
 
-**Dependencies (locked):** only `react-rnd` and `zustand`. No styled-components, no React95, no winbox, no react-kitten.
+**Dependencies (locked):** only `react-rnd` and `zustand`. No styled-components, no React95, no winbox, no react-kitten. Rationale in `docs/adr/0001-window-primitive-react-rnd.md` and `docs/adr/0002-state-management-zustand.md`.
 
-**Store shape** (`lib/wm/store.ts`):
+**Layered design — boundary rules are enforceable:**
 
-```ts
-type WindowId = string;
+```
+lib/wm/                    ← kernel. Zero React below store.ts. Pure TS.
+├── types.ts               ← all public types
+├── store.ts               ← zustand store, pure state machine
+├── store.test.ts          ← reducer + invariants (vitest)
+├── api.ts                 ← public WM API (the only thing apps import)
+├── hooks.ts               ← React hooks for app code (useAxWindow etc.)
+├── events.ts              ← typed event bus
+├── manifest.ts            ← defineApp validator + registry
+├── persist.ts             ← session restore (window positions to localStorage)
+├── README.md              ← API reference, agent-onboarding, worked example
+└── index.ts               ← single entry, re-exports api/hooks/types only
 
-interface AxWindowState {
-  id: WindowId;
-  title: string;
-  icon?: string;
-  component: () => Promise<{ default: React.ComponentType }>; // dynamic import
-  props?: Record<string, unknown>;
-  x: number; y: number; w: number; h: number;
-  z: number;
-  minimized: boolean;
-  maximized: boolean;
-  prevRect?: { x: number; y: number; w: number; h: number }; // for restore
-}
+components/ax/             ← chrome. Imports from lib/wm via index.ts only.
+└── (AxWindow.tsx, AxTitlebar.tsx, AxButton.tsx, ...)
 
-interface WMStore {
-  windows: Record<WindowId, AxWindowState>;
-  focusedId: WindowId | null;
-  zCounter: number;
+app/(site)/                ← shell. Imports lib/wm + components/ax.
+└── (AxWorkbench, AxTaskbar, AxStartMenu, AxDock, AxSystemTray)
 
-  open(spec: Omit<AxWindowState, 'id' | 'z' | 'minimized' | 'maximized'>): WindowId;
-  close(id: WindowId): void;
-  focus(id: WindowId): void;
-  minimize(id: WindowId): void;
-  restore(id: WindowId): void;
-  toggleMaximize(id: WindowId): void;
-  move(id: WindowId, x: number, y: number): void;
-  resize(id: WindowId, w: number, h: number): void;
-}
+content/apps/{slug}/       ← apps. Import only useAxWindow + useAxWindowChrome.
+├── manifest.ts            ← defineApp({ ... })
+└── App.tsx                ← the app
 ```
 
-**Render layer** (`app/(site)/AxWorkbench.tsx`):
-- Reads the windows record, renders one `<react-rnd>` per non-minimized entry
-- `bringToFront` on mousedown anywhere inside the window (focus + zCounter++)
-- Maximize = full Workbench area minus taskbar
-- Closed windows fully unmount (room components un-render)
-
-**Why zustand over Context:**
-- No provider tree pollution
-- ~1 KB
-- Per-component subscription (only the focused window's titlebar re-renders on focus change)
-- Same author as Jotai if we ever need atomic state
-
-**Why react-rnd over winbox/kitten:**
-- 538 k weekly downloads, React 19 ready, 4.2 k stars, no styled-components dep
-- We want full chrome control; we only need the drag/resize primitive
-- No coupling to anyone else's titlebar opinion
+**Boundary enforcement:** `eslint-plugin-boundaries` config — apps may only import from `lib/wm` (public surface), never from `lib/wm/store` or `lib/wm/persist`. Components/ax may import from `lib/wm` only via its index. Lint failure = blocked merge.
 
 ---
 
-## 10. Routing — rooms as apps, URLs as fallback
+## 10. Window API contract — the public surface
+
+This section is the **stable** contract. Everything in this section is the API agents/devs depend on. Anything not in this section is implementation detail and can change. Breaking changes to this section require an ADR.
+
+### 10.1 Types (`lib/wm/types.ts`)
+
+```ts
+/** Stable, opaque window identifier. Format: `ax-${nanoid(10)}`. */
+export type WindowId = string & { readonly __brand: 'WindowId' };
+
+/** Props passed by the WM into every windowed app's default export. */
+export interface AppProps {
+  /** The window's stable ID. Same as useAxWindow().id. */
+  windowId: WindowId;
+  /** Caller-supplied props from WindowSpec.props, narrowed by the app's own type. */
+  [key: string]: unknown;
+}
+
+export interface WindowSpec {
+  /** Shown in titlebar, taskbar, and Alt+Tab. */
+  title: string;
+  /** Path to a 16×16 (or 32×32) PNG. Shown in titlebar + taskbar. */
+  icon?: string;
+  /** Lazy-loaded component module. Use `() => import('./App')`. */
+  component: () => Promise<{ default: React.ComponentType<AppProps> }>;
+  /** Forwarded to the app component as props. Must be JSON-serializable for session restore. */
+  props?: Record<string, unknown>;
+  /** Initial position in Workbench coords. Default: cascading offset from last open. */
+  defaultPosition?: { x: number; y: number };
+  /** Initial size. Default: 640×480. */
+  defaultSize?: { width: number; height: number };
+  /** Minimum size during resize. Default: 240×160. */
+  minSize?: { width: number; height: number };
+  resizable?: boolean;     // default true
+  minimizable?: boolean;   // default true
+  maximizable?: boolean;   // default true
+  /** If true, opening when an instance with same `singletonKey` exists focuses the existing window. */
+  singleton?: boolean;
+  /** Required when `singleton: true`. Defaults to manifest slug if opened via launchApp(). */
+  singletonKey?: string;
+  /** If true, window is modal — blocks clicks on others, dimmed backdrop. Use sparingly. */
+  modal?: boolean;
+}
+
+export interface WindowState {
+  readonly id: WindowId;
+  readonly title: string;
+  readonly icon?: string;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+  readonly z: number;
+  readonly minimized: boolean;
+  readonly maximized: boolean;
+  readonly focused: boolean;
+  readonly modal: boolean;
+  readonly mountState: 'loading' | 'ready' | 'errored' | 'closing';
+  readonly singletonKey?: string;
+}
+
+export interface WindowHandle {
+  readonly id: WindowId;
+  close(): void;
+  focus(): void;
+  minimize(): void;
+  restore(): void;
+  toggleMaximize(): void;
+  setTitle(title: string): void;
+  /** Imperative move/resize. Prefer letting the user drag. */
+  setRect(rect: Partial<{ x: number; y: number; width: number; height: number }>): void;
+}
+```
+
+### 10.2 The `wm` object (`lib/wm/api.ts`)
+
+```ts
+export const wm: {
+  /**
+   * Open a window. Returns a handle with imperative controls.
+   * - If `singleton: true` and an instance with the same key exists, focuses it
+   *   and returns the existing handle (does NOT re-mount).
+   * - Component import is awaited lazily; window appears immediately in
+   *   `mountState: 'loading'` and renders a sage-on-cream loading bevel until
+   *   ready. If import rejects, transitions to `mountState: 'errored'` and
+   *   shows an AxErrorWindow.
+   */
+  open(spec: WindowSpec): WindowHandle;
+
+  /** Returns null if id no longer exists (closed). */
+  get(id: WindowId): WindowHandle | null;
+
+  /** Snapshot of all windows in z-order (lowest first). */
+  list(): readonly WindowState[];
+
+  /** Currently focused window, or null if Workbench has focus. */
+  focused(): WindowState | null;
+
+  /** Subscribe to typed events. Returns an unsubscribe fn. */
+  on<E extends WMEventName>(event: E, cb: WMEventHandler<E>): () => void;
+};
+
+/**
+ * Convenience for opening a registered app by slug. Looks up the manifest,
+ * applies its windowDefaults, and calls wm.open().
+ *
+ * Apps SHOULD call this to launch other apps (cross-app coordination)
+ * instead of importing each other's components.
+ */
+export function launchApp(slug: string, props?: Record<string, unknown>): WindowHandle | null;
+```
+
+### 10.3 Hooks for app code (`lib/wm/hooks.ts`)
+
+These are the only kernel imports apps should touch.
+
+```ts
+/**
+ * App reads its own window state + requests changes.
+ * Must be called from inside a component rendered by the WM.
+ * Throws if called outside a WM-managed window.
+ */
+export function useAxWindow(): {
+  readonly id: WindowId;
+  readonly title: string;
+  readonly focused: boolean;
+  readonly minimized: boolean;
+  readonly maximized: boolean;
+  setTitle(title: string): void;
+  requestClose(): void;
+  requestFocus(): void;
+};
+
+/**
+ * Declares chrome the WM should render around the app.
+ * Re-runs on every render; the WM diffs internally.
+ */
+export function useAxWindowChrome(opts: {
+  /** Menu bar spec (File / Edit / etc.). Rendered inside AxWindow above the app body. */
+  menu?: AxMenuSpec;
+  /** Status bar spec, rendered at window bottom. */
+  statusBar?: AxStatusBarSpec;
+  /** When true, titlebar shows a • prefix and onBeforeClose is consulted. */
+  dirty?: boolean;
+  /** Return false (or a Promise resolving false) to cancel close. */
+  onBeforeClose?: () => boolean | Promise<boolean>;
+}): void;
+
+/** Subscribe to a slice of WM state with automatic re-render on change. */
+export function useWMSelector<T>(selector: (state: WMSnapshot) => T): T;
+```
+
+### 10.4 Manifest registration (`lib/wm/manifest.ts`)
+
+```ts
+export interface AppManifest {
+  /** kebab-case, must be unique across all apps. Used in URLs and singletonKey. */
+  slug: string;
+  title: string;
+  icon: string;
+  /** One-line description for the directory views. */
+  description: string;
+  /** Lazy import of the app's default export. */
+  component: () => Promise<{ default: React.ComponentType<AppProps> }>;
+
+  defaultDrawer?: 'tools' | 'rooms' | 'junk' | null;
+  pinnedToDock?: boolean;
+
+  /** Defaults applied when the app is launched via launchApp(slug). */
+  windowDefaults?: Partial<Pick<WindowSpec,
+    | 'defaultSize' | 'minSize' | 'resizable'
+    | 'minimizable' | 'maximizable' | 'singleton'>>;
+}
+
+/**
+ * Validates and registers an app at module-load time.
+ *
+ * Throws (at import) if:
+ *   - slug is duplicate
+ *   - slug is not kebab-case
+ *   - icon path is not an absolute path under /gifs/icons/
+ *   - description is empty (Tenet C — copy must be intentional)
+ */
+export function defineApp(manifest: AppManifest): AppManifest;
+```
+
+### 10.5 Event bus (`lib/wm/events.ts`)
+
+```ts
+export type WMEventName =
+  | 'window:open'      // payload: { id, spec }
+  | 'window:close'     // payload: { id }
+  | 'window:focus'     // payload: { id, prevId }
+  | 'window:minimize'  // payload: { id }
+  | 'window:restore'   // payload: { id }
+  | 'window:maximize'  // payload: { id, maximized }
+  | 'window:move'      // payload: { id, x, y }
+  | 'window:resize'    // payload: { id, width, height }
+  | 'app:launch'       // payload: { slug, id }
+  | 'wm:ready';        // payload: {} — fires once after persist hydration
+```
+
+Use the bus for cross-cutting telemetry, debugging, and the `Junk Drawer` "what's running" panel. Do NOT use it as the primary state read path — `useWMSelector` is faster and consistent.
+
+### 10.6 Lifecycle contract
+
+A window goes through these states, in order. Apps can observe via `mountState`.
+
+| State | When | App rendered? |
+|-------|------|---------------|
+| `loading` | After `wm.open()`, before `component` import resolves. | No — chrome shows loading bevel. |
+| `ready` | Component imported and mounted. | Yes. |
+| `errored` | `component` import rejected, or thrown during render. | No — chrome shows AxErrorWindow body with reload button. |
+| `closing` | After `requestClose()`/`close()`, while `onBeforeClose` resolves. | Yes — app still mounted, frozen UI. |
+| (removed) | `close()` resolved truthy. | No — fully unmounted, removed from store. |
+
+**Ordering guarantees:**
+- `wm.open()` is synchronous and returns a handle immediately. The window exists in the store before the import resolves.
+- `window:focus` always fires *after* `window:open` for the same id (open implies focus unless `modal: false` and another modal exists).
+- `window:close` fires before the app component unmounts. Cleanup (event listeners, intervals) happens in the app's own `useEffect` cleanup.
+
+### 10.7 Error semantics — predictable failures
+
+| Scenario | Behavior |
+|----------|----------|
+| `component` import rejects | Window enters `errored`. AxErrorWindow shows with the error message + "Reopen" button. Logs to console (dev) and `events.emit('window:open')` payload includes the error. |
+| `singleton: true` opened twice | Second call returns the **existing** handle. No remount, no prop merge. (If you need to update props on a singleton, call `handle.setRect()` etc. or close+reopen.) |
+| `singleton: true` without `singletonKey` and not via `launchApp` | Throws synchronously. Caller bug. |
+| `defineApp` with duplicate slug | Throws at import. App registry is tree-shaken-safe; this fires during build/dev startup. |
+| `setTitle("")` or > 80 chars | Truncates to 80, never empty. (Empty falls back to manifest title.) |
+| Window dragged off-screen | Clamped on resize/load to keep ≥ 80px visible inside Workbench. Stored coords are the dragged coords; clamping is render-time. |
+
+**No silent failures.** Every error path either throws (caller bug) or transitions `mountState` to `errored` (runtime). No try/catch swallowing.
+
+### 10.8 Persistence (`lib/wm/persist.ts`)
+
+Window positions, sizes, and "which apps were open" persist to `localStorage` under the key `afroxos.wm.session.v1`. Restore happens once on `<AxWorkbench>` mount, fires `wm:ready` when done.
+
+**What persists:**
+- For each open non-modal window: `slug` (if launched via `launchApp`), `x`, `y`, `width`, `height`, `minimized`, `maximized`, `props` (must be JSON-serializable).
+- The `z` order.
+
+**What does NOT persist:**
+- Modal windows (always re-opened by the parent).
+- Windows opened via `wm.open()` directly (no `slug` to re-launch from).
+- Component-internal state (apps own their own persistence).
+
+**Schema versioning:** the `v1` suffix is part of the contract. Bump = clear old state on read. Migration logic lives in `persist.ts`.
+
+**Disable mechanism:** `?nopersist=1` query param skips both write and read. Useful for screenshots / demos.
+
+### 10.9 Z-order rules
+
+- Each open window has a `z` integer assigned monotonically.
+- Focusing a window sets its `z` to `++zCounter`.
+- Modals always render above non-modals (separate z-band: `modalZ = z + 1_000_000`).
+- The Workbench (desktop, drawer icons) is conceptually at `z = -1` — never overlaps a window.
+- Taskbar, Dock, Start menu render in a fixed top layer (`z = 10_000_000`) — they always overlay everything except modals' backdrop.
+
+### 10.10 Keyboard contract (Phase 3)
+
+Reserved by the WM — apps must not bind these:
+
+| Combo | Action |
+|-------|--------|
+| `Alt+Tab` | Cycle focus through non-minimized windows. |
+| `Alt+F4` | Close focused window. |
+| `Ctrl+Alt+Esc` | Open `Task Manager` app (singleton). |
+| `Esc` (when modal focused) | If modal has `dismissable: true`, close it. |
+| `Win` / `Meta` | Toggle Start menu. |
+
+Phase 1 ships none of these; Phase 3 adds them with this exact mapping.
+
+### 10.11 SSR / hydration
+
+The WM is **client-only**. `lib/wm/store.ts` reads `localStorage` lazily on first access; `lib/wm/api.ts` has zero side effects at module load. The Workbench is rendered with `'use client'` and `useEffect`-guarded persist read. Server-rendered HTML shows the desktop background + drawer icon SSG; windows hydrate in. No layout shift because window positions come from persist, which only runs after mount.
+
+### 10.12 Performance contract
+
+- Every WM read in a component goes through `useWMSelector` with a stable selector. Re-renders are scoped per window — moving window A doesn't re-render window B's body.
+- `react-rnd` drag handlers are throttled to 60Hz internally; we do not add another rAF.
+- The Workbench renders one `<react-rnd>` per non-minimized window. Minimized windows render zero DOM (state stays in store, body unmounts).
+- Z-index changes do not trigger reorders in DOM — we set `z-index` CSS only. The DOM order matches insertion order.
+- Bundle budget: `lib/wm` (kernel + chrome primitives) ≤ 25 KB gzipped, excluding `react-rnd` (~12 KB) and `zustand` (~1 KB). Tracked by `pnpm size`.
+
+### 10.13 Accessibility
+
+- Each `<AxWindow>` is a `role="dialog"` with `aria-labelledby` pointing at the titlebar's title text.
+- Focused window has a sage-bordered focus ring and `aria-modal="false"` (modals get `aria-modal="true"`).
+- Tab order inside a window is the natural DOM order. The WM does not steal Tab.
+- `Esc` does not close non-modal windows by default — apps that want it bind it themselves.
+- Drawer icons are `<button>`s with `aria-label`; double-click is the *primary* gesture but Enter/Space also opens.
+- Color contrast: all `--ax-*` text-on-bg pairs in § 3 verified ≥ 4.5:1 (sage `#4d5a3a` on cream `#f0e6d2` is 6.8:1; cream `#f0e6d2` on sage `#4d5a3a` is 6.8:1; sepia `#1a1410` on cream is 14.6:1). Verified before merge.
+
+### 10.14 Stability promise
+
+Once Phase 2 ships and this section is reviewed + signed off:
+- **No breaking changes to § 10.1–10.6 without an ADR.** Type rename, signature change, or behavior change to public functions counts as breaking.
+- New optional fields on `WindowSpec` / `AppManifest` are non-breaking and don't need an ADR.
+- Internal store shape, hook implementations, persist format (with version bump) are not part of the contract — change freely.
+
+---
+
+## 11. Routing — rooms as apps, URLs as fallback
 
 The big architectural shift. Three states a room can render in:
 
@@ -259,7 +539,7 @@ The big architectural shift. Three states a room can render in:
 
 ---
 
-## 11. Homemade signature — the personality details
+## 12. Homemade signature — the personality details
 
 These are what make afroxOS '97 read as *one person made this*, not a Microsoft clone.
 
@@ -301,7 +581,7 @@ These are what make afroxOS '97 read as *one person made this*, not a Microsoft 
 
 ---
 
-## 12. Migration plan (phased)
+## 13. Migration plan (phased)
 
 ### Phase 1 — tokens + chrome primitives (no behavior change)
 - Add `--ax-*` tokens to `app/globals.css` (keep `--win-*` and `--gc-*`)
@@ -344,7 +624,7 @@ These are what make afroxOS '97 read as *one person made this*, not a Microsoft 
 
 ---
 
-## 13. Room sovereignty (unchanged)
+## 14. Room sovereignty (unchanged)
 
 Rooms inside `(rooms)/` continue to own 100% of their visual world. afroxOS '97 chrome **never leaks into a room**. A room can:
 
@@ -357,7 +637,7 @@ The afroxOS shell's job is to be the OS the room launches *from*. Once the room 
 
 ---
 
-## 14. Dependency rationale (what we considered, what we picked)
+## 15. Dependency rationale (what we considered, what we picked)
 
 | Package | Verdict | Reason |
 |---------|---------|--------|
@@ -375,7 +655,7 @@ The afroxOS shell's job is to be the OS the room launches *from*. Once the room 
 
 ---
 
-## 15. Asset pipeline
+## 16. Asset pipeline
 
 **New asset categories** to create under `public/gifs/`:
 - `icons/` — hand-drawn 32×32 OS icons (drawer, file, tool icons). Sub-folders: `icons/drawers/`, `icons/tools/`, `icons/rooms/`, `icons/system/`.
@@ -391,7 +671,7 @@ The afroxOS shell's job is to be the OS the room launches *from*. Once the room 
 
 ---
 
-## 16. What stays exactly the same
+## 17. What stays exactly the same
 
 - `app/(rooms)/` — rooms own their world, untouched
 - `app/(splash)/` splash gate — wizard chrome unchanged, copy reads `afroxOS '97`
@@ -405,7 +685,7 @@ The afroxOS shell's job is to be the OS the room launches *from*. Once the room 
 
 ---
 
-## 17. Open questions / parking lot
+## 18. Open questions / parking lot
 
 - **Workbench parchment tile** — flat ochre, or tiled parchment-noise texture? Decide after Phase 1 is on screen.
 - **Dock position** — top-right (NeXT-ish) or bottom-center (macOS-ish)? Suggest top-right because the bottom is already taskbar territory.
@@ -416,10 +696,22 @@ The afroxOS shell's job is to be the OS the room launches *from*. Once the room 
 
 ---
 
-## 18. Cross-references
+## 19. Cross-references
 
+**Tenet docs:**
 - `CLAUDE.md` — project tenets. afroxOS '97 supersedes Tenet A (hub aesthetic) for the `(site)` shell.
 - `HUB_STATE.md` — sitemap and copy state. Manifesto/tagline/email stay valid; just re-thread into the new shell.
 - `geocity.md` — era research. Still the source for room aesthetic decisions.
-- `app/globals.css` — tokens land here.
-- `app/(site)/page.tsx` — becomes the Workbench entry.
+
+**ADRs (`docs/adr/`):**
+- `0001-window-primitive-react-rnd.md` — why react-rnd over winbox/kitten/mosaic
+- `0002-state-management-zustand.md` — why zustand over Context/Jotai/Redux
+- `0003-rooms-as-windowed-apps.md` — the dual-render contract (windowed vs full-screen URL)
+- `0004-no-styled-components.md` — why we skip React95 and the styled-components ecosystem
+
+**Code landing zones (Phase 1+):**
+- `app/globals.css` — `--ax-*` tokens land here
+- `app/(site)/page.tsx` — becomes the Workbench entry
+- `lib/wm/` — kernel + public API (see § 9 for layout)
+- `components/ax/` — chrome primitives
+- `content/apps/{slug}/` — apps (rooms + tools, unified)
