@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 // ── TYPES ──────────────────────────────────────────────────────────────────
 type UserName  = "eren" | "zenci" | "ossan";
-type CheckState = Record<string, { v: boolean; u?: string; t?: string; d?: string }>;
+type CheckEntry = { u: UserName; t: string; d: string };
+type CheckState = Record<string, { v: boolean; checks: CheckEntry[] }>;
 type ActivityEntry = { user: string; action: "check" | "uncheck"; label: string; time: string; date: string };
 type DayEvent  = { id: string; time: string; text: string };
 type DayEntry  = { id: string; date: string; day: string; label: string; events: DayEvent[] };
@@ -32,6 +33,28 @@ const USERS: Record<UserName, { color: string; letter: string; avatar: string }>
   zenci: { color: "#BC002D", letter: "Z", avatar: "/japan2026/avatars/zenci.png" },
   ossan: { color: "#637b63", letter: "O", avatar: "/japan2026/avatars/ossan.png" },
 };
+const TENANT_COUNT = 3;
+
+// Coerce the API payload into the per-user shape. Tolerates the legacy
+// single-user shape ({v,u,t,d}) so a stale client/server pair during deploy
+// still renders something sensible.
+function normalizeCheckState(raw: unknown): CheckState {
+  const out: CheckState = {};
+  if (!raw || typeof raw !== "object") return out;
+  for (const [key, val] of Object.entries(raw as Record<string, unknown>)) {
+    if (!val || typeof val !== "object") continue;
+    const v = val as { v?: boolean; checks?: unknown; u?: string; t?: string; d?: string };
+    if (Array.isArray(v.checks)) {
+      const checks = v.checks
+        .filter((c): c is CheckEntry => !!c && typeof c === "object" && typeof (c as CheckEntry).u === "string" && (c as CheckEntry).u in USERS)
+        .map(c => ({ u: c.u as UserName, t: String(c.t ?? ""), d: String(c.d ?? "") }));
+      if (checks.length > 0) out[key] = { v: true, checks };
+    } else if (v.v && v.u && v.u in USERS) {
+      out[key] = { v: true, checks: [{ u: v.u as UserName, t: v.t ?? "", d: v.d ?? "" }] };
+    }
+  }
+  return out;
+}
 
 const DEPARTURE = new Date("2026-05-10T13:20:00");
 
@@ -510,6 +533,31 @@ function debounce<T extends unknown[]>(fn: (...args: T) => void, ms: number) {
   return (...args: T) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
+// Stacked avatar circles for everyone who has ticked a checkbox. Empty stack
+// renders nothing, keeping the row's grid `auto` column collapsed.
+function AvatarStack({ checks, size, allDone, allTag }: { checks: CheckEntry[]; size: number; allDone: boolean; allTag: string }) {
+  if (checks.length === 0) return null;
+  const overlap = Math.round(size * 0.36);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", whiteSpace: "nowrap" }}>
+      <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+        {[...checks].reverse().map((c, i) => {
+          const u = USERS[c.u];
+          return (
+            <img key={`${c.u}-${i}`} src={u.avatar} alt={c.u} title={`${c.u} · ${c.d} ${c.t}`}
+              style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", border: `1.5px solid ${C.bg}`, boxShadow: `0 0 0 1px ${u.color}33`, objectFit: "cover", marginLeft: i === checks.length - 1 ? 0 : `-${overlap}px`, background: C.line2 }} />
+          );
+        })}
+      </div>
+      {allDone && (
+        <span style={{ fontFamily: C.sans, fontSize: "10px", letterSpacing: ".22em", textTransform: "uppercase", fontWeight: 600, color: C.red }}>
+          ✓ {allTag}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────
 export default function Japan2026Room() {
   const [user, setUser]           = useState<UserName | null>(null);
@@ -591,7 +639,7 @@ export default function Japan2026Room() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const _applyLoaded = useCallback((cl: unknown, act: unknown, schema: unknown, itinerary: unknown, documents: unknown) => {
-      setClState(cl as CheckState);
+      setClState(normalizeCheckState(cl));
       setActivity(act as ActivityEntry[]);
       setDocs((documents as DocEntry[]) ?? []);
       // Merge: ensure Gelmişken sections always present (idempotent migration on load)
@@ -654,21 +702,23 @@ export default function Japan2026Room() {
   }, []);
 
   const handleCheck = useCallback((itemId: string, label: string, checked: boolean) => {
+    if (!user) return;
     const { date, time } = nowStr();
-    setClState(prev => ({
-      ...prev,
-      [itemId]: checked ? { v: true, u: user ?? "?", t: time, d: date } : { v: false },
-    }));
+    setClState(prev => {
+      const cur  = prev[itemId]?.checks ?? [];
+      const next = checked
+        ? [...cur.filter(c => c.u !== user), { u: user, t: time, d: date }]
+        : cur.filter(c => c.u !== user);
+      return { ...prev, [itemId]: { v: next.length > 0, checks: next } };
+    });
     fetch("/api/japan2026", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "checklist", key: itemId, checked, user: user ?? "?" }),
+      body: JSON.stringify({ type: "checklist", key: itemId, checked, user }),
     }).catch(console.error);
-    if (user) {
-      const entry: ActivityEntry = { user, action: checked ? "check" : "uncheck", label, time, date };
-      setActivity(prev => [entry, ...prev].slice(0, 60));
-      fetch("/api/japan2026", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "activity", user, action: entry.action, label }),
-      }).catch(console.error);
-    }
+    const entry: ActivityEntry = { user, action: checked ? "check" : "uncheck", label, time, date };
+    setActivity(prev => [entry, ...prev].slice(0, 60));
+    fetch("/api/japan2026", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "activity", user, action: entry.action, label }),
+    }).catch(console.error);
   }, [user]);
 
   const handleNote = useCallback((i: number, text: string) => {
@@ -2061,21 +2111,20 @@ export default function Japan2026Room() {
                         <div data-r="cl-sec-body" style={{ marginTop: "24px", marginLeft: "56px", paddingLeft: "24px", borderLeft: `1px solid ${C.line2}` }}>
                           {sec.note && <div style={{ fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, fontSize: "15px", color: C.ink2, marginBottom: "20px", padding: "14px 18px", background: "#FFF7E6", borderLeft: `2px solid #C99A2E`, lineHeight: 1.55 }}>{sec.note}</div>}
                           {(clSearch ? filtered : sec.items).map((item, li) => {
-                            const st = clState[item.id];
-                            const eu = st?.u ? USERS[st.u as UserName] : null;
+                            const st      = clState[item.id];
+                            const checks  = st?.checks ?? [];
+                            const mine    = user ? checks.find(c => c.u === user) : undefined;
+                            const allDone = checks.length === TENANT_COUNT;
                             return (
                               <label key={item.id} data-r="cl-item" style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "18px", padding: "14px 0", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "start", cursor: "pointer" }}>
-                                <input type="checkbox" checked={!!st?.v} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
-                                  style={{ width: "18px", height: "18px", appearance: "none", border: `1px solid ${st?.v ? C.red : C.ink}`, background: st?.v ? C.red : "transparent", cursor: "pointer", position: "relative", marginTop: "2px", flexShrink: 0, borderRadius: "1px" }} />
+                                <input type="checkbox" checked={!!mine} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
+                                  style={{ width: "18px", height: "18px", appearance: "none", border: `1px solid ${mine ? C.red : C.ink}`, background: mine ? C.red : "transparent", cursor: "pointer", position: "relative", marginTop: "2px", flexShrink: 0, borderRadius: "1px" }} />
                                 <div>
-                                  <div style={{ fontSize: "15px", lineHeight: 1.55, color: st?.v ? C.muted : C.ink, fontWeight: 400, letterSpacing: "-.005em", textDecoration: st?.v ? "line-through" : "none", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>{item.label}</div>
+                                  <div style={{ fontSize: "15px", lineHeight: 1.55, color: st?.v ? C.muted : C.ink, fontWeight: 400, letterSpacing: "-.005em", textDecoration: allDone ? "line-through" : "none", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>{item.label}</div>
                                 </div>
-                                {st?.v && eu && (
-                                  <div data-r="cl-item-meta" style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4, paddingTop: "3px" }}>
-                                    <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: eu.color, marginRight: "6px", verticalAlign: "middle" }} />
-                                    {st.u} · {st.t}
-                                  </div>
-                                )}
+                                <div data-r="cl-item-meta" style={{ paddingTop: "1px" }}>
+                                  <AvatarStack checks={checks} size={20} allDone={allDone} allTag="hepsi" />
+                                </div>
                               </label>
                             );
                           })}
@@ -2236,23 +2285,22 @@ export default function Japan2026Room() {
                     {isOpen && (
                       <div style={{ padding: "8px 0 48px", background: `linear-gradient(180deg, ${C.redSoft} 0%, transparent 50%)` }}>
                         {sec.items.map((item, li) => {
-                          const st = clState[item.id];
-                          const eu = st?.u ? USERS[st.u as UserName] : null;
+                          const st      = clState[item.id];
+                          const checks  = st?.checks ?? [];
+                          const mine    = user ? checks.find(c => c.u === user) : undefined;
+                          const allDone = checks.length === TENANT_COUNT;
                           return (
                             <label key={item.id} data-r="gelmis-item" style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "20px", padding: "18px 8px", borderTop: li > 0 ? `1px solid ${C.line2}` : "none", alignItems: "center", cursor: "pointer", transition: "background .15s" }}
                               onMouseEnter={e => (e.currentTarget.style.background = "rgba(188,0,45,.04)")}
                               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                              <input type="checkbox" checked={!!st?.v} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
-                                style={{ width: "22px", height: "22px", appearance: "none", border: `1.5px solid ${st?.v ? C.red : C.ink}`, background: st?.v ? C.red : "transparent", cursor: "pointer", flexShrink: 0, borderRadius: "2px", display: "grid", placeItems: "center" }} />
-                              <div style={{ fontFamily: C.serif, fontStyle: st?.v ? "italic" : "normal", fontWeight: 400, fontSize: "17px", lineHeight: 1.5, color: st?.v ? C.muted : C.ink, letterSpacing: "-.005em", textDecoration: st?.v ? "line-through" : "none", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>
+                              <input type="checkbox" checked={!!mine} onChange={ev => handleCheck(item.id, item.label, ev.target.checked)}
+                                style={{ width: "22px", height: "22px", appearance: "none", border: `1.5px solid ${mine ? C.red : C.ink}`, background: mine ? C.red : "transparent", cursor: "pointer", flexShrink: 0, borderRadius: "2px", display: "grid", placeItems: "center" }} />
+                              <div style={{ fontFamily: C.serif, fontStyle: st?.v ? "italic" : "normal", fontWeight: 400, fontSize: "17px", lineHeight: 1.5, color: st?.v ? C.muted : C.ink, letterSpacing: "-.005em", textDecoration: allDone ? "line-through" : "none", textDecorationThickness: "1px", textUnderlineOffset: "3px" }}>
                                 {item.label}
                               </div>
-                              {st?.v && eu && (
-                                <div data-r="gelmis-item-meta" style={{ fontSize: "11px", color: C.muted, fontFamily: C.serif, fontStyle: "italic", fontWeight: 300, textAlign: "right", whiteSpace: "nowrap", lineHeight: 1.4 }}>
-                                  <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: eu.color, marginRight: "8px", verticalAlign: "middle" }} />
-                                  {st.u} · {st.t}
-                                </div>
-                              )}
+                              <div data-r="gelmis-item-meta">
+                                <AvatarStack checks={checks} size={26} allDone={allDone} allTag="tam" />
+                              </div>
                             </label>
                           );
                         })}
