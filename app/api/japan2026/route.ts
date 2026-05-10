@@ -15,6 +15,24 @@ async function ensureTables() {
     )
   `;
   await sql`
+    CREATE TABLE IF NOT EXISTS room_checklist_users (
+      room       TEXT        NOT NULL,
+      key        TEXT        NOT NULL,
+      user_name  TEXT        NOT NULL,
+      checked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (room, key, user_name)
+    )
+  `;
+  // One-shot idempotent backfill so existing single-user checks survive the
+  // move to the per-user table. ON CONFLICT DO NOTHING means re-runs are no-ops.
+  await sql`
+    INSERT INTO room_checklist_users (room, key, user_name, checked_at)
+    SELECT room, key, user_name, COALESCE(checked_at, now())
+    FROM room_checklist
+    WHERE checked = true AND user_name IS NOT NULL AND user_name <> '?'
+    ON CONFLICT DO NOTHING
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS room_activity (
       id         SERIAL PRIMARY KEY,
       room       TEXT        NOT NULL,
@@ -74,14 +92,21 @@ export async function GET(req: NextRequest) {
 
   if (type === "checklist") {
     const rows = await sql`
-      SELECT key, checked, user_name, checked_at
-      FROM room_checklist WHERE room = ${ROOM}
+      SELECT key, user_name, checked_at
+      FROM room_checklist_users WHERE room = ${ROOM}
+      ORDER BY key, checked_at
     `;
-    const data: Record<string, unknown> = {};
+    const data: Record<string, { v: boolean; checks: Array<{ u: string; t: string; d: string }> }> = {};
     for (const r of rows) {
-      data[r.key] = r.checked
-        ? { v: true, u: r.user_name, t: new Date(r.checked_at).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }), d: new Date(r.checked_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" }) }
-        : { v: false };
+      const at = new Date(r.checked_at);
+      const entry = {
+        u: r.user_name as string,
+        t: at.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }),
+        d: at.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
+      };
+      const bucket = data[r.key] ?? { v: true, checks: [] };
+      bucket.checks.push(entry);
+      data[r.key] = bucket;
     }
     return NextResponse.json(data);
   }
@@ -191,18 +216,18 @@ export async function POST(req: NextRequest) {
   }
 
   if (type === "checklist") {
-    const { key, checked, user } = body;
+    const { key, checked, user } = body as { key: string; checked: boolean; user: string };
+    if (!user || user === "?") return NextResponse.json({ error: "missing user" }, { status: 400 });
     if (checked) {
       await sql`
-        INSERT INTO room_checklist (room, key, checked, user_name, checked_at)
-        VALUES (${ROOM}, ${key}, true, ${user}, now())
-        ON CONFLICT (room, key) DO UPDATE SET checked = true, user_name = ${user}, checked_at = now()
+        INSERT INTO room_checklist_users (room, key, user_name, checked_at)
+        VALUES (${ROOM}, ${key}, ${user}, now())
+        ON CONFLICT (room, key, user_name) DO UPDATE SET checked_at = now()
       `;
     } else {
       await sql`
-        INSERT INTO room_checklist (room, key, checked, user_name, checked_at)
-        VALUES (${ROOM}, ${key}, false, null, null)
-        ON CONFLICT (room, key) DO UPDATE SET checked = false, user_name = null, checked_at = null
+        DELETE FROM room_checklist_users
+        WHERE room = ${ROOM} AND key = ${key} AND user_name = ${user}
       `;
     }
     return NextResponse.json({ ok: true });
